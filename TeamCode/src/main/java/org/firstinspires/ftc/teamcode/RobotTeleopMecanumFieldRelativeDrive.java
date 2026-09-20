@@ -29,11 +29,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -54,29 +52,48 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 @TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
 //@Disabled
+
+//public class Manual extends OpMode {
+//    public Mecanum mecanum = new Mecanum();
+//    public Yeeter yeeter = new Yeeter();
+//    public AprilTag_9968 aTag = new AprilTag_9968();
+//    public PrisimColor led = new PrisimColor();
+//    public ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+//}
+
 public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
-    // This declares the four motors needed
+    public ServoArm servoArm = new ServoArm();
+    public Intake intake = new Intake();
+
+    // This declares the five motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
+
 
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
     @Override
     public void init() {
+        servoArm.init(hardwareMap);
+        intake.init(hardwareMap);
+
         frontLeftDrive = hardwareMap.get(DcMotor.class, "Motor_LF");
         frontRightDrive = hardwareMap.get(DcMotor.class, "Motor_RF");
         backLeftDrive = hardwareMap.get(DcMotor.class, "Motor_LR");
         backRightDrive = hardwareMap.get(DcMotor.class, "Motor_RR");
 
+//        // We set the left motors in reverse which is needed for drive trains where the left
+//        // motors are opposite to the right ones.
+//        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+//        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
@@ -86,11 +103,18 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
+
+        // Production Robot and Outreach Robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+
+//        // Outreach Robot
+//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+//                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+//        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+//                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -115,6 +139,19 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+        // If you press the right bumper, servo extends and then retracts on release
+        if (gamepad1.right_bumper) {
+            servoArm.DeployedPosition();
+        } else {
+            servoArm.toHome();
+        }
+       // If you press X the intake turns on
+        if (gamepad1.x) {
+            intake.intakeSpeed(1);
+       }
+        else {
+            intake.intakeSpeed(-1);
         }
     }
 
