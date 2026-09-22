@@ -28,13 +28,19 @@ public class OneCycle1Intake extends OpMode {
     public Constants constants = new Constants();
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private Pose startPose = PoseFactory.degrees().of(0,0,0);
-    private Pose launchPose = PoseFactory.degrees().of(0,0,0);
-    private Pose HPIntakeApproach = PoseFactory.degrees().of(0,0,0);
-    private Pose HPintake = PoseFactory.degrees().of(0,0,0);
-    private Pose Park = PoseFactory.degrees().of(0,0,0);
+    private Pose startPose = PoseFactory.degrees().of(0, 0, 0);
+    private Pose launchPose = PoseFactory.degrees().of(0, 0, 0);
 
-    private Pose ParkControlPoint = PoseFactory.degrees().of(0,0,0);
+    //private Pose HPIntakeApproach = PoseFactory.degrees().of(0,0,0);
+    private Pose HPintake = PoseFactory.degrees().of(0, 0, 0);
+    private Pose Park = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose ParkControlPoint = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose FlowerIntake = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose FlowerIntakeRotate = PoseFactory.degrees().of(0, 0, 0);
+
 
 
 
@@ -74,11 +80,11 @@ public class OneCycle1Intake extends OpMode {
 // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
 // also interpolating heading at the same time.
 
-    Path CycleThenIntake() {
+    Path CycleThenIntakeGarden() {
         return line(startPose, HPintake).linear(startPose, HPintake);
     }
 
-   // Path approachIntake() {
+    // Path approachIntake() {
     //    return line(launchPose, HPIntakeApproach).linear(launchPose, HPIntakeApproach);
     //}
 
@@ -90,19 +96,45 @@ public class OneCycle1Intake extends OpMode {
         return curve(HPintake, ParkControlPoint, Park).linear(HPintake, Park);
     }
 
+    Path CycleThenApproachFlower() {
+        return line(startPose, FlowerIntake).linear(startPose, FlowerIntake);
+    }
+
+    Path FlowerIntake() {
+        return line(FlowerIntake, FlowerIntakeRotate).linear(FlowerIntake, FlowerIntakeRotate);
+    }
+
+    Path SecondCycle() {
+        return line(FlowerIntakeRotate, startPose).linear(FlowerIntakeRotate, startPose);
+    }
+
 
     private Command autoRoutine() {
+        if (alliance == Alliance.RED) {
+            return sequential(
 
-        return sequential(
+                    follow(follower, CycleThenIntakeGarden()),
 
-                follow(follower, CycleThenIntake()),
+                    //follow(follower, approachIntake()),
 
-                //follow(follower, approachIntake()),
+                    //follow(follower, intakeFromHP()),
 
-                //follow(follower, intakeFromHP()),
+                    follow(follower, parkInSpot())
+            );
+        }
 
-                follow(follower, parkInSpot())
-        );
+        if (alliance == Alliance.BLUE) {
+            return sequential(
+
+                    follow(follower, CycleThenApproachFlower()),
+
+                    follow(follower, FlowerIntake()),
+
+                    follow(follower, SecondCycle())
+            );
+        }
+        return null;
+
     }
 
 
@@ -112,20 +144,23 @@ public class OneCycle1Intake extends OpMode {
     private void loadPreset(Alliance alliance, AutoStartLocation location) {
 
         if (alliance == Alliance.BLUE && location == AutoStartLocation.GOAL) {
-
-            // add coordinates here
-
+            startPose = poseFactory.of(56, 8, 180);
+            HPintake = poseFactory.of(8, 8, 180);
+            Park = poseFactory.of(9, 90, -89.1655);
+            ParkControlPoint = poseFactory.of(30, 40, -89.1655);
+            FlowerIntake = poseFactory.of(56, 8, 180);
+            FlowerIntakeRotate = poseFactory.of(56, 8, 180);
+            launchPose = poseFactory.of(56, 8, 180);
+            startPose = poseFactory.of(56, 8, 180);
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.GOAL) {
-
             startPose = poseFactory.of(56, 8, 180);
             //launchPose = poseFactory.of(56.318, 29.9584, 90);
             //HPIntakeApproach = poseFactory.of(16, 25, -90);
             HPintake = poseFactory.of(8, 8, 180);
             Park = poseFactory.of(9, 90, -89.1655);
             ParkControlPoint = poseFactory.of(30, 40, -89.1655);
-
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.POINT) {
