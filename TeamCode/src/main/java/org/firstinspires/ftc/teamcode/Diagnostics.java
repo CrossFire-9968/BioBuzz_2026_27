@@ -29,13 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /*
@@ -47,9 +46,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  *
  * Also see the Telemetry javadocs.
  */
-@TeleOp(name = "Concept: Telemetry", group = "Concept")
+@TeleOp(name = "Concept: Diagnostics", group = "Concept")
 //@Disabled
-public class ConceptTelemetry extends LinearOpMode  {
+public class Diagnostics extends LinearOpMode  {
 
     // declare the encoder interface
     private DcMotor m0;
