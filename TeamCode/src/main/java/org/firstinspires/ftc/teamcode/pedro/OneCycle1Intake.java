@@ -50,7 +50,7 @@ public class OneCycle1Intake extends OpMode {
 
     private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
 
-    Alliance alliance = Alliance.UNKNOWN;
+    Alliance alliance = null;
     AutoStartLocation location = AutoStartLocation.UNKNOWN;
     boolean runBuild = false;
     String allianceSelected = "";
@@ -108,7 +108,8 @@ public class OneCycle1Intake extends OpMode {
         return line(FlowerIntakeRotate, startPose).linear(FlowerIntakeRotate, startPose);
     }
 
-
+// Tested commenting out the if statement, which made it run, so the issue is either
+    //most likely with the alliance not selecting or the if structure
     private Command autoRoutine() {
         if (alliance == Alliance.RED) {
             return sequential(
@@ -124,7 +125,7 @@ public class OneCycle1Intake extends OpMode {
         }
 
         if (alliance == Alliance.BLUE) {
-            return sequential(
+           return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
 
@@ -133,6 +134,7 @@ public class OneCycle1Intake extends OpMode {
                     follow(follower, SecondCycle())
             );
         }
+        telemetry.addLine("Alliance not set");
         return null;
 
     }
@@ -242,7 +244,7 @@ public class OneCycle1Intake extends OpMode {
         // SELECT ALLIANCE
         // =========================
 
-        if (alliance == Alliance.UNKNOWN) {
+        if (alliance == null) {
 
             telemetry.addLine("Select Alliance");
             telemetry.addLine("");
