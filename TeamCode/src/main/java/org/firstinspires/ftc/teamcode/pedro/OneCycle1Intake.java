@@ -50,7 +50,7 @@ public class OneCycle1Intake extends OpMode {
 
     private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
 
-    Alliance alliance = null;
+    Alliance alliance = Alliance.UNKNOWN;
     AutoStartLocation location = AutoStartLocation.UNKNOWN;
     boolean runBuild = false;
     String allianceSelected = "";
@@ -111,7 +111,7 @@ public class OneCycle1Intake extends OpMode {
 // Tested commenting out the if statement, which made it run, so the issue is either
     //most likely with the alliance not selecting or the if structure
     private Command autoRoutine() {
-        if (alliance == Alliance.RED) {
+        if (alliance == Alliance.BLUE) {
             return sequential(
 
                     follow(follower, CycleThenIntakeGarden()),
@@ -124,7 +124,7 @@ public class OneCycle1Intake extends OpMode {
             );
         }
 
-        if (alliance == Alliance.BLUE) {
+        if (alliance == Alliance.RED) {
            return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
@@ -150,10 +150,10 @@ public class OneCycle1Intake extends OpMode {
             HPintake = poseFactory.of(8, 8, 180);
             Park = poseFactory.of(9, 90, -89.1655);
             ParkControlPoint = poseFactory.of(30, 40, -89.1655);
-            FlowerIntake = poseFactory.of(56, 8, 180);
-            FlowerIntakeRotate = poseFactory.of(56, 8, 180);
-            launchPose = poseFactory.of(56, 8, 180);
-            startPose = poseFactory.of(56, 8, 180);
+            //FlowerIntake = poseFactory.of(56, 8, 180);
+            //FlowerIntakeRotate = poseFactory.of(56, 8, 180);
+            //launchPose = poseFactory.of(56, 8, 180);
+            //startPose = poseFactory.of(56, 8, 180);
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.GOAL) {
@@ -244,7 +244,8 @@ public class OneCycle1Intake extends OpMode {
         // SELECT ALLIANCE
         // =========================
 
-        if (alliance == null) {
+        if (alliance == Alliance.UNKNOWN) {
+
 
             telemetry.addLine("Select Alliance");
             telemetry.addLine("");
