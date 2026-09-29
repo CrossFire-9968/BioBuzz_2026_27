@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -62,6 +63,11 @@ public class DriveWithNewMotor extends OpMode {
 
     DcMotorEx newMotor;
 
+    public static final double NEW_P = 2.5;
+    public static final double NEW_I = 0.1;
+    public static final double NEW_D = 0.2;
+    public static final double NEW_F = 0.5;
+
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
@@ -84,7 +90,6 @@ public class DriveWithNewMotor extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        newMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
@@ -96,6 +101,29 @@ public class DriveWithNewMotor extends OpMode {
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        // Configure PID gains for speed control motor
+        newMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        //Get coefficients for the RUN_USING_ENCODER RunMode.
+        PIDFCoefficients pidfOrig = newMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //Change coefficients using methods included with DcMotorEx class.
+        PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
+        newMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
+
+        // Re-read coefficients and verify change.
+        PIDFCoefficients pidfModified = newMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //Display information to user.
+            telemetry.addData("Runtime (sec)", "%.01f", getRuntime());
+            telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
+                    pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
+            telemetry.addData("P,I,D,F (modified)", "%.04f, %.04f, %.04f, %.04f",
+                    pidfModified.p, pidfModified.i, pidfModified.d, pidfModified.f);
+            telemetry.update();
+
+
     }
 
     @Override
@@ -164,6 +192,8 @@ public class DriveWithNewMotor extends OpMode {
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+
+        //Driving speed control motor
         newMotor.setPower(0);
     }
 }
