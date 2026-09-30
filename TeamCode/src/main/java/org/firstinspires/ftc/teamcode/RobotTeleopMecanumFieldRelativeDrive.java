@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /*
@@ -85,15 +86,17 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "Motor_LR");
         backRightDrive = hardwareMap.get(DcMotor.class, "Motor_RR");
 
-//        // We set the left motors in reverse which is needed for drive trains where the left
-//        // motors are opposite to the right ones.
-//        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-//        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        // Compitition
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+
+//        // We set the left motors in reverse which is needed for drive trains where the left
+//        // motors are opposite to the right ones.
+//        // Bee Bot - Nemo
+//        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+//        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
@@ -133,24 +136,24 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         if (gamepad1.a) {
             imu.resetYaw();
         }
-        // If you press the left bumper, you get a drive from the point of view of the robot
+        // If you press x, you get a drive from the point of view of the robot
         // (much like driving an RC vehicle)
-        if (gamepad1.left_bumper) {
+        if (gamepad1.x) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
-        // If you press the right bumper, servo extends and then retracts on release
-        if (gamepad1.right_bumper) {
+        // If you press y, servo extends and then retracts on release
+        if (gamepad1.y) {
             servoArm.DeployedPosition();
         } else {
             servoArm.toHome();
         }
        // If you press X the intake turns on
-        if (gamepad1.x) {
+        if (gamepad1.right_bumper) {
             intake.intakeSpeed(1);
        }
-        else {
+        else if (gamepad1.left_bumper) {
             intake.intakeSpeed(-1);
         }
     }

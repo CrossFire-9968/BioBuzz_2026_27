@@ -32,6 +32,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 
 import org.firstinspires.ftc.robotcore.external.Func;
 
@@ -50,11 +56,25 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 //@Disabled
 public class Diagnostics extends LinearOpMode  {
 
+//    GoBildaPinpointDriver pinpoint;
+
     // declare the encoder interface
     private DcMotor m0;
     private DcMotor m1;
     private DcMotor m2;
     private DcMotor m3;
+//
+//    @Override
+//    public void init() {
+//        // Get a reference to the sensor
+//        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+//
+//        // Configure the sensor
+//        configurePinpoint();
+//
+//        // Set the location of the robot - this should be the place you are starting the robot from
+//        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+//    }
 
     @Override public void runOpMode() {
 
