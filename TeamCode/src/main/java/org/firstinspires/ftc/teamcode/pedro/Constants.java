@@ -35,8 +35,8 @@ public class Constants {
             c -> {
                 c.name.set("pinpoint");
                 c.podType.set(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-                c.xPodOffset.set(0.8113278366449311);
-                c.yPodOffset.set(-5.723549549973856);
+                c.xPodOffset.set(2.9297229436438856);
+                c.yPodOffset.set(-1.243149990171898);
                 c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
                 c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
                 c.globalDistanceUnit.set(DistanceUnit.INCH);
