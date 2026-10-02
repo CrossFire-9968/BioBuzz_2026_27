@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 import static com.pedropathing.api.Paths.line;
 
 
-@TeleOp(name = "TeleopPPTest")
+@TeleOp(name = "TeleopPPTest2")
 public class TeleopPPTest2 extends OpMode {
 
 
