@@ -41,6 +41,8 @@ public class OneCycle1Intake extends OpMode {
 
     private Pose FlowerIntakeRotate = PoseFactory.degrees().of(0, 0, 0);
 
+    private Pose FlowerIntakeControlPoint = PoseFactory.degrees().of(0, 0, 0);
+
 
 
 
@@ -97,7 +99,7 @@ public class OneCycle1Intake extends OpMode {
     }
 
     Path CycleThenApproachFlower() {
-        return line(startPose, FlowerIntake).linear(startPose, FlowerIntake);
+        return curve(startPose, FlowerIntakeControlPoint, FlowerIntake).linear(startPose, FlowerIntake);
     }
 
     Path FlowerIntake() {
@@ -131,7 +133,7 @@ public class OneCycle1Intake extends OpMode {
 
                     follow(follower, FlowerIntake()),
 
-                    follow(follower, SecondCycle())
+                    follow(follower, parkInSpot())
             );
         }
         telemetry.addLine("Alliance not set");
@@ -157,12 +159,14 @@ public class OneCycle1Intake extends OpMode {
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.GOAL) {
-            startPose = poseFactory.of(56, 8, 180);
-            //launchPose = poseFactory.of(56.318, 29.9584, 90);
-            //HPIntakeApproach = poseFactory.of(16, 25, -90);
-            HPintake = poseFactory.of(8, 8, 180);
-            Park = poseFactory.of(9, 90, -89.1655);
-            ParkControlPoint = poseFactory.of(30, 40, -89.1655);
+            startPose = poseFactory.of(82.3921, 8.636, 0);
+            FlowerIntake = poseFactory.of(82.3921, 8.636, 90);
+            FlowerIntakeControlPoint = poseFactory.of(84.1933, 25.1236, 0);
+            FlowerIntakeRotate = poseFactory.of(82.3921, 8.636, 80);
+            ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
+            Park = poseFactory.of(137.2073, 38.3958, -90);
+            //Park = poseFactory.of(9, 90, -89.1655);
+            //ParkControlPoint = poseFactory.of(30, 40, -89.1655);
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.POINT) {
