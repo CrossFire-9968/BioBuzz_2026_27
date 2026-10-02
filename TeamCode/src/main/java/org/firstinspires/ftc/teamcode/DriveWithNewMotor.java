@@ -59,10 +59,10 @@ public class DriveWithNewMotor extends OpMode {
 
     DcMotorEx newMotor;
 
-    public static final double NEW_P = 2.5;
-    public static final double NEW_I = 0.1;
-    public static final double NEW_D = 0.2;
-    public static final double NEW_F = 0.5;
+    public static final double NEW_P = 1;
+    public static final double NEW_I = 0;
+    public static final double NEW_D = 0;
+    public static final double NEW_F = 0;
 
     double TargetSpeed_DegPerSec = 50.0;
 
@@ -80,26 +80,23 @@ public class DriveWithNewMotor extends OpMode {
         PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
         newMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
 
-        // Re-read coefficients and verify change.
-        PIDFCoefficients pidfModified = newMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //Display information to user.
-            telemetry.addData("Runtime (sec)", "%.01f", getRuntime());
-            telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
-                    pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
-            telemetry.addData("P,I,D,F (modified)", "%.04f, %.04f, %.04f, %.04f",
-                    pidfModified.p, pidfModified.i, pidfModified.d, pidfModified.f);
-            telemetry.update();
-
-
     }
 
     @Override
     public void loop() {
-        telemetry.addLine("Press A to reset Yaw");
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
+//        telemetry.addLine("Press A to reset Yaw");
+//        telemetry.addLine("Hold left bumper to drive in robot relative");
+//        telemetry.addLine("The left joystick sets the robot direction");
+//        telemetry.addLine("Moving the right joystick left and right turns the robot");
+
+        //Change target speed during test runs
+        if (gamepad1.dpadLeftWasPressed()) {
+            TargetSpeed_DegPerSec -= 5;
+        } else if (gamepad1.dpadRightWasPressed()) {
+            TargetSpeed_DegPerSec += 5;
+        } else if (gamepad1.dpadDownWasPressed()) {
+            TargetSpeed_DegPerSec = 0;
+        }
 
 
         //Driving speed control motor
@@ -107,7 +104,19 @@ public class DriveWithNewMotor extends OpMode {
         //newMotor.setPower(0.05);
         newMotor.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
 
-        telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.04f", TargetSpeed_DegPerSec);
-        telemetry.addData("Motor velocity (DegPerSec):","%.04f", newMotor.getVelocity(AngleUnit.DEGREES));
+
+        //Get coefficients for the RUN_USING_ENCODER RunMode.
+        PIDFCoefficients pidfOrig = newMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //Display information to user.
+        telemetry.addData("Runtime (sec)", "%.01f", getRuntime());
+        telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
+                pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
+        //telemetry.update();
+
+        telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
+        telemetry.addData("Motor velocity (DegPerSec):","%.01f", newMotor.getVelocity(AngleUnit.DEGREES));
+
+        telemetry.update();
     }
   }
