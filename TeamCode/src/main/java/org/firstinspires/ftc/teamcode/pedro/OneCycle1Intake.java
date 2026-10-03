@@ -13,8 +13,10 @@ import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.api.Paths.path;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static com.pedropathing.ivy.pedro.PedroCommands.*;
 
 import static java.util.concurrent.locks.LockSupport.park;
 
@@ -133,6 +135,7 @@ public class OneCycle1Intake extends OpMode {
 
                     follow(follower, FlowerIntake()),
 
+
                     follow(follower, parkInSpot())
             );
         }
@@ -147,7 +150,7 @@ public class OneCycle1Intake extends OpMode {
 
     private void loadPreset(Alliance alliance, AutoStartLocation location) {
 
-        if (alliance == Alliance.BLUE && location == AutoStartLocation.GOAL) {
+        if (alliance == Alliance.BLUE) {
             startPose = poseFactory.of(56, 8, 180);
             HPintake = poseFactory.of(8, 8, 180);
             Park = poseFactory.of(9, 90, -89.1655);
@@ -158,13 +161,13 @@ public class OneCycle1Intake extends OpMode {
             //startPose = poseFactory.of(56, 8, 180);
         }
 
-        if (alliance == Alliance.RED && location == AutoStartLocation.GOAL) {
-            startPose = poseFactory.of(82.3921, 8.636, 0);
-            FlowerIntake = poseFactory.of(82.3921, 8.636, 90);
-            FlowerIntakeControlPoint = poseFactory.of(84.1933, 25.1236, 0);
-            FlowerIntakeRotate = poseFactory.of(82.3921, 8.636, 80);
-            ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
-            Park = poseFactory.of(137.2073, 38.3958, -90);
+        if (alliance == Alliance.RED) {
+            startPose = poseFactory.of(80.8022, 8.636, 90);
+            FlowerIntakeControlPoint = poseFactory.of(76.8989, 30.4281, 0);
+            FlowerIntake = poseFactory.of(85,30, -105);
+            FlowerIntakeRotate = poseFactory.of(85, 30.3, -90);
+            Park = poseFactory.of(125.1393, 36.7135, -90);
+            //ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
             //Park = poseFactory.of(9, 90, -89.1655);
             //ParkControlPoint = poseFactory.of(30, 40, -89.1655);
         }
