@@ -45,13 +45,9 @@ public class OneCycle1Intake extends OpMode {
 
     private Pose FlowerIntakeControlPoint = PoseFactory.degrees().of(0, 0, 0);
 
-
-
-
-
-
+    //set Enum so that we can select Position
     private enum Alliance {BLUE, RED, UNKNOWN}
-
+    //set Enum so that we can select Position
     private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
 
     Alliance alliance = Alliance.UNKNOWN;
