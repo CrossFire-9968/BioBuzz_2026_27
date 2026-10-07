@@ -6,6 +6,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
@@ -13,10 +14,12 @@ import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.api.Paths.path;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.*;
+import static com.pedropathing.ivy.Scheduler.schedule;
 
 import static java.util.concurrent.locks.LockSupport.park;
 
@@ -44,6 +47,10 @@ public class OneCycle1Intake extends OpMode {
     private Pose FlowerIntakeRotate = PoseFactory.degrees().of(0, 0, 0);
 
     private Pose FlowerIntakeControlPoint = PoseFactory.degrees().of(0, 0, 0);
+
+    public double variable = 0;
+
+
 
     //set Enum so that we can select Position
     private enum Alliance {BLUE, RED, UNKNOWN}
@@ -77,6 +84,33 @@ public class OneCycle1Intake extends OpMode {
     private masterStateEnum MotifPose;
 
 
+
+    Command Wait = Command.build()
+            .setStart(() -> {
+                // executed on start
+            })
+            .setExecute(() -> {
+                Command holdAtPosition = hold(follower);
+                waitMs(10000);
+                variable = 1;
+                // executed on execute
+            })
+            .setDone(() -> {
+                variable = 1;
+                // return true to end the command
+                return true;
+            })
+            .setEnd(endCondition -> {
+                // executed on end
+            });
+            //.requiring(/* requirements */)
+            //.setInterruptedBehavior(/* interrupted behavior */)
+            //.setBlockedBehavior(/* blocked behavior */)
+            //.setConflictBehavior(/* conflict behavior */)
+            //.setPriority(/* priority */);
+
+
+
 // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
 // also interpolating heading at the same time.
 
@@ -101,6 +135,8 @@ public class OneCycle1Intake extends OpMode {
     }
 
     Path FlowerIntake() {
+        //Scheduler.schedule(Wait);
+        //Scheduler.execute();
         return line(FlowerIntake, FlowerIntakeRotate).linear(FlowerIntake, FlowerIntakeRotate);
     }
 
@@ -128,6 +164,10 @@ public class OneCycle1Intake extends OpMode {
            return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
+
+                   instant(() -> hold(follower).schedule()),
+
+                   waitMs(10000),
 
                     follow(follower, FlowerIntake()),
 
