@@ -99,11 +99,6 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
 //        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
-        // wires, you should remove these
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -145,16 +140,22 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         }
         // If you press y, servo extends and then retracts on release
         if (gamepad1.y) {
-            servoArm.DeployedPosition();
+            servoArm.deployedPosition();
         } else {
             servoArm.toHome();
         }
        // If you press X the intake turns on
         if (gamepad1.right_bumper) {
-            intake.intakeSpeed(1);
-       }
+//            intake.intakeSpeed(-1);
+            intake.intake();
+;       }
         else if (gamepad1.left_bumper) {
-            intake.intakeSpeed(-1);
+//            intake.intakeSpeed(1);
+            intake.outake();
+        }
+        else {
+//            intake.intakeSpeed(0);
+            intake.stoptake();
         }
     }
 
@@ -186,7 +187,7 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1.0;
-        double maxSpeed = 1.0;  // make this slower for outreaches
+        double maxSpeed = .5;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
