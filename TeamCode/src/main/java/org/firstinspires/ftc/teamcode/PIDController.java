@@ -28,13 +28,11 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -54,31 +52,35 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 @TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
 //@Disabled
-public class DriveWithNewMotor extends OpMode {
+public class PIDController extends OpMode {
 
 
-    DcMotorEx newMotor;
+    DcMotorEx shooter1;
+    DcMotorEx shooter2;
 
     public static final double NEW_P = 1;
-    public static final double NEW_I = 0;
+    public static final double NEW_I = 1;
     public static final double NEW_D = 0;
     public static final double NEW_F = 0;
 
-    double TargetSpeed_DegPerSec = 50.0;
+    double TargetSpeed_DegPerSec = -200.0;
 
     @Override
     public void init() {
-          newMotor = hardwareMap.get(DcMotorEx.class, "NewMotor");
+        shooter1 = hardwareMap.get(DcMotorEx.class, "shooter1");
+        shooter2 = hardwareMap.get(DcMotorEx.class, "shooter2");
 
-        // Configure PID gains for speed control motor
-        newMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         //Get coefficients for the RUN_USING_ENCODER RunMode.
-        PIDFCoefficients pidfOrig = newMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        //PIDFCoefficients pidfOrig = shooter1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Change coefficients using methods included with DcMotorEx class.
         PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
-        newMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
+        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
+
+        telemetry.setAutoClear(false);
 
     }
 
@@ -100,22 +102,22 @@ public class DriveWithNewMotor extends OpMode {
 
 
         //Driving speed control motor
-        //0.05 minimum w/ manual boost
-        //newMotor.setPower(0.05);
-        newMotor.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
+        shooter2.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
+        //shooter2.setPower(-0.6);
 
 
         //Get coefficients for the RUN_USING_ENCODER RunMode.
-        PIDFCoefficients pidfOrig = newMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients pidfOrig = shooter1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Display information to user.
-        telemetry.addData("Runtime (sec)", "%.01f", getRuntime());
-        telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
-                pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
+        //telemetry.addData("Runtime (sec)", "%.01f", getRuntime());
+        //telemetry.addData("P,I,D,F (orig)", "%.04f, %.04f, %.04f, %.04f",
+               // pidfOrig.p, pidfOrig.i, pidfOrig.d, pidfOrig.f);
         //telemetry.update();
 
-        telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
-        telemetry.addData("Motor velocity (DegPerSec):","%.01f", newMotor.getVelocity(AngleUnit.DEGREES));
+        //telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
+        //telemetry.addData("Shooter1 velocity (DegPerSec):","%.01f", shooter1.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", shooter2.getVelocity(AngleUnit.DEGREES));
 
         telemetry.update();
     }
