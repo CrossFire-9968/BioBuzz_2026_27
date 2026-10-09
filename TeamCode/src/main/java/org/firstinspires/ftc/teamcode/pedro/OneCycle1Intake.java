@@ -16,6 +16,7 @@ import static com.pedropathing.api.Paths.path;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.*;
@@ -26,9 +27,13 @@ import static java.util.concurrent.locks.LockSupport.park;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Intake;
+
 //@Configurable
 @Autonomous(name = "OneCycle1Intake")
 public class OneCycle1Intake extends OpMode {
+
+    public Intake intake = new Intake();
     // Initialize poses
     public Constants constants = new Constants();
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -85,22 +90,25 @@ public class OneCycle1Intake extends OpMode {
 
 
 
-    Command Wait = Command.build()
+    Command setIntake = Command.build()
             .setStart(() -> {
+                intake.intake();
+                telemetry.addLine("INTAKE START");
                 // executed on start
             })
             .setExecute(() -> {
-                Command holdAtPosition = hold(follower);
-                waitMs(10000);
-                variable = 1;
+                telemetry.addData("Intake power", intake.Intake.getPower());
+
                 // executed on execute
             })
-            .setDone(() -> {
-                variable = 1;
+            //.setDone(() -> {
+
                 // return true to end the command
-                return true;
-            })
+               // return false;
+            //})
             .setEnd(endCondition -> {
+                telemetry.addLine("INTAKE END: " + endCondition);
+                intake.stoptake();
                 // executed on end
             });
             //.requiring(/* requirements */)
@@ -150,7 +158,12 @@ public class OneCycle1Intake extends OpMode {
         if (alliance == Alliance.BLUE) {
             return sequential(
 
-                    follow(follower, CycleThenIntakeGarden()),
+                    deadline(
+                            follow(follower, CycleThenIntakeGarden()),
+                            setIntake
+                    ),
+
+                    //follow(follower, CycleThenIntakeGarden()),
 
                     //follow(follower, approachIntake()),
 
@@ -169,7 +182,9 @@ public class OneCycle1Intake extends OpMode {
 
                    waitMs(10000),
 
-                    follow(follower, FlowerIntake()),
+
+                   follow(follower, FlowerIntake()),
+
 
 
                     follow(follower, parkInSpot())
@@ -229,6 +244,8 @@ public class OneCycle1Intake extends OpMode {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
+
+        intake.init(hardwareMap);
 
 
         // Log completed initialization to Panels and driver station (custom log function)

@@ -51,7 +51,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+//@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
 //@Disabled
 
 //public class Manual extends OpMode {
@@ -61,7 +61,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //    public PrisimColor led = new PrisimColor();
 //    public ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 //}
-
+/*
 public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
@@ -206,3 +206,4 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
 }
+*/
