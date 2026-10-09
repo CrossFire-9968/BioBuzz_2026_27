@@ -21,7 +21,7 @@ public class ServoArm
     }
 
     // Stop feeder servo
-    public void DeployedPosition()
+    public void deployedPosition()
     {
         double DeployedPosition = 1.0;
         servoArm.setPosition(DeployedPosition);
