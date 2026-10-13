@@ -92,8 +92,9 @@ public class OneCycle1Intake extends OpMode {
 
     Command setIntake = Command.build()
             .setStart(() -> {
-                intake.intake();
                 telemetry.addLine("INTAKE START");
+                intake.intake();
+                telemetry.addLine("INTAKE START2");
                 // executed on start
             })
             .setExecute(() -> {
@@ -157,6 +158,8 @@ public class OneCycle1Intake extends OpMode {
     private Command autoRoutine() {
         if (alliance == Alliance.BLUE) {
             return sequential(
+
+                    setIntake,
 
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
