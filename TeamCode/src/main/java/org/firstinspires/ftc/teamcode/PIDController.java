@@ -55,32 +55,33 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class PIDController extends OpMode {
 
 
-    DcMotorEx shooter1;
-    DcMotorEx shooter2;
+    DcMotorEx Launcher1;
+    DcMotorEx Launcher2;
 
     public static final double NEW_P = 1;
     public static final double NEW_I = 1;
     public static final double NEW_D = 0;
     public static final double NEW_F = 0;
 
-    double TargetSpeed_DegPerSec = -200.0;
+    //Nectar target speed. Adjust for pollen.
+    double TargetSpeed_DegPerSec = 165.0;
 
     @Override
     public void init() {
-        shooter1 = hardwareMap.get(DcMotorEx.class, "shooter1");
-        shooter2 = hardwareMap.get(DcMotorEx.class, "shooter2");
+        Launcher1 = hardwareMap.get(DcMotorEx.class, "Launcher1");
+        Launcher2 = hardwareMap.get(DcMotorEx.class, "Launcher2");
 
-        shooter1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        shooter2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        Launcher2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         //Get coefficients for the RUN_USING_ENCODER RunMode.
-        //PIDFCoefficients pidfOrig = shooter1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        //PIDFCoefficients pidfOrig = Launcher1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Change coefficients using methods included with DcMotorEx class.
         PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
-        shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
+        Launcher1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
 
-        telemetry.setAutoClear(false);
+        //telemetry.setAutoClear(false);
 
     }
 
@@ -102,12 +103,13 @@ public class PIDController extends OpMode {
 
 
         //Driving speed control motor
-        shooter2.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
-        //shooter2.setPower(-0.6);
+        Launcher2.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
+        Launcher2.setDirection(DcMotorEx.Direction.REVERSE);
+        //Launcher2.setPower(-0.6);
 
 
         //Get coefficients for the RUN_USING_ENCODER RunMode.
-        PIDFCoefficients pidfOrig = shooter1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients pidfOrig = Launcher1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Display information to user.
         //telemetry.addData("Runtime (sec)", "%.01f", getRuntime());
@@ -116,8 +118,8 @@ public class PIDController extends OpMode {
         //telemetry.update();
 
         //telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
-        //telemetry.addData("Shooter1 velocity (DegPerSec):","%.01f", shooter1.getVelocity(AngleUnit.DEGREES));
-        telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", shooter2.getVelocity(AngleUnit.DEGREES));
+        //telemetry.addData("Shooter1 velocity (DegPerSec):","%.01f", Launcher1.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Launcher2.getVelocity(AngleUnit.DEGREES));
 
         telemetry.update();
     }
