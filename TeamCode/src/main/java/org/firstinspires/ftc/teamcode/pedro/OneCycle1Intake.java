@@ -21,6 +21,8 @@ import static java.util.concurrent.locks.LockSupport.park;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.OpModeStorage;
+
 //@Configurable
 @Autonomous(name = "OneCycle1Intake")
 public class OneCycle1Intake extends OpMode {
@@ -475,5 +477,12 @@ public class OneCycle1Intake extends OpMode {
             //panelsTelemetry.debug(caption + ": " + message);
 
         }
+    }
+    // in your autonomous
+
+
+    @Override
+    public void stop() {
+        OpModeStorage.autonomousEndPose = follower.pose(); //saves your position in that file
     }
 }

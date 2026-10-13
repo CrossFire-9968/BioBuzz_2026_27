@@ -45,11 +45,7 @@ public class TeleopPPTest extends OpMode {
     public void loop() {
 
 
-        /*
-         * ==========================================
-         * RETURN TO AUTO START BUTTON
-         * ==========================================
-         */
+
 
 
         if (gamepad1.triangleWasPressed() && !returningToStart) {
@@ -84,20 +80,14 @@ public class TeleopPPTest extends OpMode {
 
 
 
-        /*
-         * ==========================================
-         * NORMAL TELEOP DRIVING
-         * ==========================================
-         */
-
 
         if (!returningToStart) {
 
 
             DrivePowers powers = ManualDrive.fieldCentric(
                     -gamepad1.left_stick_y,
-                    gamepad1.left_stick_x,
-                    gamepad1.right_stick_x,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
                     follower.pose().heading()
             );
 
@@ -108,11 +98,7 @@ public class TeleopPPTest extends OpMode {
 
 
 
-        /*
-         * ==========================================
-         * CHECK IF RETURN PATH IS FINISHED
-         * ==========================================
-         */
+
 
 
         if (returningToStart && !follower.isBusy()) {
@@ -124,11 +110,7 @@ public class TeleopPPTest extends OpMode {
 
 
 
-        /*
-         * ==========================================
-         * UPDATE PEDRO
-         * ==========================================
-         */
+
 
 
         follower.update();
@@ -136,11 +118,7 @@ public class TeleopPPTest extends OpMode {
 
 
 
-        /*
-         * ==========================================
-         * TELEMETRY
-         * ==========================================
-         */
+
 
 
         Pose robotPose = follower.pose();
