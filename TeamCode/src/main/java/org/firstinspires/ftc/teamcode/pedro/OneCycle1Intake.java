@@ -6,6 +6,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
@@ -13,19 +14,27 @@ import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.api.Paths.path;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static com.pedropathing.ivy.pedro.PedroCommands.*;
+import static com.pedropathing.ivy.Scheduler.schedule;
 
 import static java.util.concurrent.locks.LockSupport.park;
 
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.OpModeStorage;
 
 //@Configurable
 @Autonomous(name = "OneCycle1Intake")
 public class OneCycle1Intake extends OpMode {
+
+    public Intake intake = new Intake();
     // Initialize poses
     public Constants constants = new Constants();
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -43,13 +52,15 @@ public class OneCycle1Intake extends OpMode {
 
     private Pose FlowerIntakeRotate = PoseFactory.degrees().of(0, 0, 0);
 
+    private Pose FlowerIntakeControlPoint = PoseFactory.degrees().of(0, 0, 0);
+
+    public double variable = 0;
 
 
 
-
-
+    //set Enum so that we can select Position
     private enum Alliance {BLUE, RED, UNKNOWN}
-
+    //set Enum so that we can select Position
     private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
 
     Alliance alliance = Alliance.UNKNOWN;
@@ -79,6 +90,37 @@ public class OneCycle1Intake extends OpMode {
     private masterStateEnum MotifPose;
 
 
+
+    Command setIntake = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("INTAKE START");
+                intake.intake();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+                telemetry.addData("Intake power", intake.Intake.getPower());
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                telemetry.addLine("INTAKE END: " + endCondition);
+                intake.stoptake();
+                // executed on end
+            });
+    //.requiring(/* requirements */)
+    //.setInterruptedBehavior(/* interrupted behavior */)
+    //.setBlockedBehavior(/* blocked behavior */)
+    //.setConflictBehavior(/* conflict behavior */)
+    //.setPriority(/* priority */);
+
+
+
 // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
 // also interpolating heading at the same time.
 
@@ -99,10 +141,12 @@ public class OneCycle1Intake extends OpMode {
     }
 
     Path CycleThenApproachFlower() {
-        return line(startPose, FlowerIntake).linear(startPose, FlowerIntake);
+        return curve(startPose, FlowerIntakeControlPoint, FlowerIntake).linear(startPose, FlowerIntake);
     }
 
     Path FlowerIntake() {
+        //Scheduler.schedule(Wait);
+        //Scheduler.execute();
         return line(FlowerIntake, FlowerIntakeRotate).linear(FlowerIntake, FlowerIntakeRotate);
     }
 
@@ -110,13 +154,20 @@ public class OneCycle1Intake extends OpMode {
         return line(FlowerIntakeRotate, startPose).linear(FlowerIntakeRotate, startPose);
     }
 
-// Tested commenting out the if statement, which made it run, so the issue is either
+    // Tested commenting out the if statement, which made it run, so the issue is either
     //most likely with the alliance not selecting or the if structure
     private Command autoRoutine() {
         if (alliance == Alliance.BLUE) {
             return sequential(
 
-                    follow(follower, CycleThenIntakeGarden()),
+                    setIntake,
+
+                    deadline(
+                            follow(follower, CycleThenIntakeGarden()),
+                            setIntake
+                    ),
+
+                    //follow(follower, CycleThenIntakeGarden()),
 
                     //follow(follower, approachIntake()),
 
@@ -127,13 +178,20 @@ public class OneCycle1Intake extends OpMode {
         }
 
         if (alliance == Alliance.RED) {
-           return sequential(
+            return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
 
+                    instant(() -> hold(follower).schedule()),
+
+                    waitMs(10000),
+
+
                     follow(follower, FlowerIntake()),
 
-                    follow(follower, SecondCycle())
+
+
+                    follow(follower, parkInSpot())
             );
         }
         telemetry.addLine("Alliance not set");
@@ -147,7 +205,7 @@ public class OneCycle1Intake extends OpMode {
 
     private void loadPreset(Alliance alliance, AutoStartLocation location) {
 
-        if (alliance == Alliance.BLUE && location == AutoStartLocation.GOAL) {
+        if (alliance == Alliance.BLUE) {
             startPose = poseFactory.of(56, 8, 180);
             HPintake = poseFactory.of(8, 8, 180);
             Park = poseFactory.of(9, 90, -89.1655);
@@ -158,13 +216,15 @@ public class OneCycle1Intake extends OpMode {
             //startPose = poseFactory.of(56, 8, 180);
         }
 
-        if (alliance == Alliance.RED && location == AutoStartLocation.GOAL) {
-            startPose = poseFactory.of(56, 8, 180);
-            //launchPose = poseFactory.of(56.318, 29.9584, 90);
-            //HPIntakeApproach = poseFactory.of(16, 25, -90);
-            HPintake = poseFactory.of(8, 8, 180);
-            Park = poseFactory.of(9, 90, -89.1655);
-            ParkControlPoint = poseFactory.of(30, 40, -89.1655);
+        if (alliance == Alliance.RED) {
+            startPose = poseFactory.of(80.8022, 8.636, 90);
+            FlowerIntakeControlPoint = poseFactory.of(76.8989, 30.4281, 0);
+            FlowerIntake = poseFactory.of(85,30, -105);
+            FlowerIntakeRotate = poseFactory.of(85, 30.3, -90);
+            Park = poseFactory.of(125.1393, 36.7135, -90);
+            //ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
+            //Park = poseFactory.of(9, 90, -89.1655);
+            //ParkControlPoint = poseFactory.of(30, 40, -89.1655);
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.POINT) {
@@ -188,6 +248,8 @@ public class OneCycle1Intake extends OpMode {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
+
+        intake.init(hardwareMap);
 
 
         // Log completed initialization to Panels and driver station (custom log function)
