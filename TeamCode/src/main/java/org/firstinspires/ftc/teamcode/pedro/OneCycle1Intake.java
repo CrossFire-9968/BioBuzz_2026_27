@@ -159,7 +159,6 @@ public class OneCycle1Intake extends OpMode {
         if (alliance == Alliance.BLUE) {
             return sequential(
 
-                    setIntake,
 
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
@@ -205,7 +204,7 @@ public class OneCycle1Intake extends OpMode {
     private void loadPreset(Alliance alliance, AutoStartLocation location) {
 
         if (alliance == Alliance.BLUE) {
-            startPose = poseFactory.of(56, 8, 180);
+            startPose = poseFactory.of(56, 8, 90);
             HPintake = poseFactory.of(8, 8, 180);
             Park = poseFactory.of(9, 90, -89.1655);
             ParkControlPoint = poseFactory.of(30, 40, -89.1655);
