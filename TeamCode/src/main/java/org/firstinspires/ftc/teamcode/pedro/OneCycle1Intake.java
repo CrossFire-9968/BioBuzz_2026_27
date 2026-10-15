@@ -159,8 +159,6 @@ public class OneCycle1Intake extends OpMode {
         if (alliance == Alliance.BLUE) {
             return sequential(
 
-                    setIntake,
-
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
                             setIntake
