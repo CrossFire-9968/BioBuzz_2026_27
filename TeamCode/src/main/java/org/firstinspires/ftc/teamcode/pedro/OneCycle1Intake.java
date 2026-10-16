@@ -6,6 +6,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -39,6 +40,8 @@ public class OneCycle1Intake extends OpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private Pose startPose = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose startPoseControlPoint = PoseFactory.degrees().of(0, 0, 0);
     private Pose launchPose = PoseFactory.degrees().of(0, 0, 0);
 
     //private Pose HPIntakeApproach = PoseFactory.degrees().of(0,0,0);
@@ -104,19 +107,19 @@ public class OneCycle1Intake extends OpMode {
             })
             //.setDone(() -> {
 
-                // return true to end the command
-               // return false;
+            // return true to end the command
+            // return false;
             //})
             .setEnd(endCondition -> {
                 telemetry.addLine("INTAKE END: " + endCondition);
                 intake.stoptake();
                 // executed on end
             });
-            //.requiring(/* requirements */)
-            //.setInterruptedBehavior(/* interrupted behavior */)
-            //.setBlockedBehavior(/* blocked behavior */)
-            //.setConflictBehavior(/* conflict behavior */)
-            //.setPriority(/* priority */);
+    //.requiring(/* requirements */)
+    //.setInterruptedBehavior(/* interrupted behavior */)
+    //.setBlockedBehavior(/* blocked behavior */)
+    //.setConflictBehavior(/* conflict behavior */)
+    //.setPriority(/* priority */);
 
 
 
@@ -124,7 +127,7 @@ public class OneCycle1Intake extends OpMode {
 // also interpolating heading at the same time.
 
     Path CycleThenIntakeGarden() {
-        return line(startPose, HPintake).linear(startPose, HPintake);
+        return curve(startPose, startPoseControlPoint, HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
     }
 
     // Path approachIntake() {
@@ -153,12 +156,11 @@ public class OneCycle1Intake extends OpMode {
         return line(FlowerIntakeRotate, startPose).linear(FlowerIntakeRotate, startPose);
     }
 
-// Tested commenting out the if statement, which made it run, so the issue is either
+    // Tested commenting out the if statement, which made it run, so the issue is either
     //most likely with the alliance not selecting or the if structure
     private Command autoRoutine() {
         if (alliance == Alliance.BLUE) {
             return sequential(
-
 
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
@@ -176,16 +178,16 @@ public class OneCycle1Intake extends OpMode {
         }
 
         if (alliance == Alliance.RED) {
-           return sequential(
+            return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
 
-                   instant(() -> hold(follower).schedule()),
+                    instant(() -> hold(follower).schedule()),
 
-                   waitMs(10000),
+                    waitMs(10000),
 
 
-                   follow(follower, FlowerIntake()),
+                    follow(follower, FlowerIntake()),
 
 
 
@@ -205,7 +207,8 @@ public class OneCycle1Intake extends OpMode {
 
         if (alliance == Alliance.BLUE) {
             startPose = poseFactory.of(56, 8, 90);
-            HPintake = poseFactory.of(8, 8, 180);
+            startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 270);
+            HPintake = poseFactory.of(8, 8, 270);
             Park = poseFactory.of(9, 90, -89.1655);
             ParkControlPoint = poseFactory.of(30, 40, -89.1655);
             //FlowerIntake = poseFactory.of(56, 8, 180);
