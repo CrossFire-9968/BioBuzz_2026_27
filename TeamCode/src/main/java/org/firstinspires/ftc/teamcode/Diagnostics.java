@@ -92,7 +92,7 @@ public class Diagnostics extends LinearOpMode  {
             @Override public Double value() {
                 return getBatteryVoltage();
             }
-        });
+            });
 
 
         // Initialize encoder using exact name from HW configuration
