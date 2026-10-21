@@ -18,6 +18,7 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.*;
@@ -111,8 +112,29 @@ public class OneCycle1Intake extends OpMode {
                // return false;
             //})
             .setEnd(endCondition -> {
-                telemetry.addLine("INTAKE END: " + endCondition);
+
+                // executed on end
+            });
+
+    Command intakeOff = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("INTAKE START");
                 intake.stoptake();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+                telemetry.addData("Intake power", intake.Intake.getPower());
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                telemetry.addLine("INTAKE END: " + endCondition);
                 // executed on end
             });
             //.requiring(/* requirements */)
@@ -126,8 +148,12 @@ public class OneCycle1Intake extends OpMode {
 // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
 // also interpolating heading at the same time.
 
+    //Path CycleThenIntakeGarden() {
+    //    return curve(startPose, startPoseControlPoint, HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
+    //}
+
     Path CycleThenIntakeGarden() {
-        return curve(startPose, startPoseControlPoint, HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
+        return line(startPose,HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
     }
 
     // Path approachIntake() {
@@ -173,7 +199,14 @@ public class OneCycle1Intake extends OpMode {
 
                     //follow(follower, intakeFromHP()),
 
-                    follow(follower, parkInSpot())
+
+                    sequential(
+                            follow(follower, parkInSpot()),
+                            intakeOff
+                    )
+
+
+
             );
         }
 
@@ -207,9 +240,9 @@ public class OneCycle1Intake extends OpMode {
 
         if (alliance == Alliance.BLUE) {
             startPose = poseFactory.of(56, 8, 90);
-            startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 270);
-            HPintake = poseFactory.of(8, 8, 270);
-            Park = poseFactory.of(9, 90, -89.1655);
+            startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 180);
+            HPintake = poseFactory.of(7.5, 15, 180);
+            Park = poseFactory.of(9, 98, -89.1655);
             ParkControlPoint = poseFactory.of(30, 40, -89.1655);
             //FlowerIntake = poseFactory.of(56, 8, 180);
             //FlowerIntakeRotate = poseFactory.of(56, 8, 180);
