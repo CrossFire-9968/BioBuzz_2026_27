@@ -62,7 +62,7 @@ public class OneCycle1Intake extends OpMode {
     //set Enum so that we can select Position
     private enum Alliance {HiveUp, HiveDown, UNKNOWN}
     //set Enum so that we can select Position
-    private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
+    private enum AutoStartLocation {Red, Blue, UNKNOWN}
 
     Alliance alliance = Alliance.UNKNOWN;
     AutoStartLocation location = AutoStartLocation.UNKNOWN;
@@ -364,14 +364,14 @@ public class OneCycle1Intake extends OpMode {
 
             if (gamepad1.dpad_left) {
 
-                location = AutoStartLocation.GOAL;
-                locationSelected = "GOAL";
+                location = AutoStartLocation.Red;
+                locationSelected = "Red";
                 telemetry.addLine(locationSelected);
 
             } else if (gamepad1.dpad_right) {
 
-                location = AutoStartLocation.POINT;
-                locationSelected = "POINT";
+                location = AutoStartLocation.Blue;
+                locationSelected = "Blue";
                 telemetry.addLine(locationSelected);
 
             } else if (gamepad1.circle) {
