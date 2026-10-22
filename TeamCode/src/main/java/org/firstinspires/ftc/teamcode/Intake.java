@@ -30,11 +30,11 @@ public class Intake
 //        Intake2.setPower(-1);
     }
     public void outake() {
-        Intake.setPower(1);
+        Intake.setPower(-1);
 //        Intake2.setPower(1);
     }
     public void stoptake() {
-
+        
         Intake.setPower(0);
 //        Intake2.setPower(0);
     }
