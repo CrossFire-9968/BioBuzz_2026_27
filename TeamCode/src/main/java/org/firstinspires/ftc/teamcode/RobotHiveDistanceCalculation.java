@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 
 
@@ -10,24 +9,31 @@ public class RobotHiveDistanceCalculation {
 
 
 
-    private Follower follower;
-    Pose robotPose = follower.pose();
+    private static Follower follower;
+    static Pose robotPose = follower.pose();
 
-    double RobotX = robotPose.x();
-    double RobotY = robotPose.y();
+    static double RobotX = Math.round(robotPose.x());
+    static double RobotY = Math.round(robotPose.y());
 
-    double RedAudienceX = 58;
-    double RedAudienceY = 53;
-    double RedScoringX = 58;
-    double RedScoringY = 53;
+    static double RedX = 58;
+    static double BlueX = 84;
+    static double AudienceY = 53;
+    static double ScoringY = 89;
+    static double HiveHeight = 18;
+
+
+
+    /* Using the Pythagorean theorem and the variables above,
+    these next several lines will calculate the distance between
+    the robot and the hive.
+
+    Will find a way to make interchangeable variables depending on where we shoot.
+     */
+
+    static double legA = Math.abs(RedX - RobotX);
+    static double legB = Math.abs(AudienceY - RobotY);
+    static double sideC = Math.sqrt(legA * legA + legB * legB);
+    static double RobotToHiveDistance = Math.sqrt(sideC * sideC + HiveHeight * HiveHeight);
+
+
 }
-
-//class HiveCoordinates {
-//    public double x;
-//    public double y;
-//
-//    HiveCoordinates(double x, double y) {
-//        this.x = x;
-//        this.y = y;
-//    }
-//}

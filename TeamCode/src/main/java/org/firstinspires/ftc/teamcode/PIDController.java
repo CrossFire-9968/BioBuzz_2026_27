@@ -122,6 +122,7 @@ public class PIDController extends OpMode {
         //telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
         //telemetry.addData("Shooter1 velocity (DegPerSec):","%.01f", Launcher1.getVelocity(AngleUnit.DEGREES));
         telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Launcher2.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("Distance To Hive (Inches):", RobotHiveDistanceCalculation.RobotToHiveDistance);
 
         telemetry.update();
     }
