@@ -7,7 +7,6 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.interpolator.Interpolator;
-import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
@@ -18,7 +17,6 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
-import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.*;
@@ -62,7 +60,7 @@ public class OneCycle1Intake extends OpMode {
 
 
     //set Enum so that we can select Position
-    private enum Alliance {BLUE, RED, UNKNOWN}
+    private enum Alliance {HiveUp, HiveDown, UNKNOWN}
     //set Enum so that we can select Position
     private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
 
@@ -185,7 +183,7 @@ public class OneCycle1Intake extends OpMode {
 // Tested commenting out the if statement, which made it run, so the issue is either
     //most likely with the alliance not selecting or the if structure
     private Command autoRoutine() {
-        if (alliance == Alliance.BLUE) {
+        if (alliance == Alliance.HiveUp) {
             return sequential(
 
                     deadline(
@@ -210,7 +208,7 @@ public class OneCycle1Intake extends OpMode {
             );
         }
 
-        if (alliance == Alliance.RED) {
+        if (alliance == Alliance.HiveDown) {
            return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
@@ -238,7 +236,7 @@ public class OneCycle1Intake extends OpMode {
 
     private void loadPreset(Alliance alliance, AutoStartLocation location) {
 
-        if (alliance == Alliance.BLUE) {
+        if (alliance == Alliance.HiveUp) {
             startPose = poseFactory.of(56, 8, 90);
             startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 180);
             HPintake = poseFactory.of(7.5, 15, 180);
@@ -250,7 +248,7 @@ public class OneCycle1Intake extends OpMode {
             //startPose = poseFactory.of(56, 8, 180);
         }
 
-        if (alliance == Alliance.RED) {
+        if (alliance == Alliance.HiveDown) {
             startPose = poseFactory.of(80.8022, 8.636, 90);
             FlowerIntakeControlPoint = poseFactory.of(76.8989, 30.4281, 0);
             FlowerIntake = poseFactory.of(85,30, -105);
@@ -259,19 +257,6 @@ public class OneCycle1Intake extends OpMode {
             //ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
             //Park = poseFactory.of(9, 90, -89.1655);
             //ParkControlPoint = poseFactory.of(30, 40, -89.1655);
-        }
-
-        if (alliance == Alliance.RED && location == AutoStartLocation.POINT) {
-
-            //add coordinates here
-
-        }
-
-
-        if (alliance == Alliance.BLUE && location == AutoStartLocation.POINT) {
-
-            //add coordinates here
-
         }
     }
 
@@ -345,77 +330,33 @@ public class OneCycle1Intake extends OpMode {
         if (alliance == Alliance.UNKNOWN) {
 
 
-            telemetry.addLine("Select Alliance");
+            telemetry.addLine("Select Position");
             telemetry.addLine("");
-            telemetry.addLine("Dpad Up: Blue");
-            telemetry.addLine("Dpad Down: Red");
+            telemetry.addLine("Dpad Up: HiveUp");
+            telemetry.addLine("Dpad Down: HiveDown");
 
             if (gamepad1.dpad_up) {
 
-                alliance = Alliance.BLUE;
-                allianceSelected = "BLUE";
+                alliance = Alliance.HiveUp;
+                allianceSelected = "HiveUp";
                 telemetry.addLine(allianceSelected);
 
             } else if (gamepad1.dpad_down) {
 
-                alliance = Alliance.RED;
-                allianceSelected = "RED";
+                alliance = Alliance.HiveDown;
+                allianceSelected = "HiveDown";
                 telemetry.addLine(allianceSelected);
 
             }
         }
-
-
-        // =========================
-        // SELECT START LOCATION
-        // =========================
-
-        else if (location == AutoStartLocation.UNKNOWN) {
-
-            telemetry.addLine("Alliance Selected: " + allianceSelected);
-            telemetry.addLine("");
-            telemetry.addLine("Select Start Location");
-            telemetry.addLine("Dpad Left: Goal");
-            telemetry.addLine("Dpad Right: Point");
-            telemetry.addLine("");
-            telemetry.addLine("Circle: Start Over");
-            telemetry.addLine(String.valueOf(gamepad1));
-
-            if (gamepad1.dpad_left) {
-
-                location = AutoStartLocation.GOAL;
-                locationSelected = "GOAL";
-                telemetry.addLine(locationSelected);
-
-            } else if (gamepad1.dpad_right) {
-
-                location = AutoStartLocation.POINT;
-                locationSelected = "POINT";
-                telemetry.addLine(locationSelected);
-
-            } else if (gamepad1.circle) {
-
-                alliance = Alliance.UNKNOWN;
-                location = AutoStartLocation.UNKNOWN;
-
-                allianceSelected = "";
-                locationSelected = "";
-
-            }
-
-
-            // Selection is complete.
-            // Tell the next init_loop() cycle to build everything.
-
-            if (alliance != Alliance.UNKNOWN &&
-                    location != AutoStartLocation.UNKNOWN) {
+            if (alliance != Alliance.UNKNOWN) {
 
                 telemetry.addLine("runbuild about to run");
 
                 runBuild = true;
 
             }
-        }
+
 
 
         // =========================
