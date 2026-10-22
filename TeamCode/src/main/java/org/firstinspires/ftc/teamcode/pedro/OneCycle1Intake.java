@@ -349,14 +349,54 @@ public class OneCycle1Intake extends OpMode {
 
             }
         }
-            if (alliance != Alliance.UNKNOWN) {
+
+
+        // =========================
+        // SELECT START LOCATION
+        // =========================
+
+        else if (location == AutoStartLocation.UNKNOWN) {
+
+            telemetry.addLine("Alliance Selected: " + allianceSelected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+            if (gamepad1.dpad_left) {
+
+                location = AutoStartLocation.GOAL;
+                locationSelected = "GOAL";
+                telemetry.addLine(locationSelected);
+
+            } else if (gamepad1.dpad_right) {
+
+                location = AutoStartLocation.POINT;
+                locationSelected = "POINT";
+                telemetry.addLine(locationSelected);
+
+            } else if (gamepad1.circle) {
+
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+
+                allianceSelected = "";
+                locationSelected = "";
+
+            }
+
+
+            // Selection is complete.
+            // Tell the next init_loop() cycle to build everything.
+
+            if (alliance != Alliance.UNKNOWN &&
+                    location != AutoStartLocation.UNKNOWN) {
 
                 telemetry.addLine("runbuild about to run");
 
                 runBuild = true;
 
             }
-
+        }
 
 
         // =========================
