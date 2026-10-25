@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 public class OneCycle1Intake extends OpMode {
     // Initialize poses
     public Constants constants = new Constants();
+
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private Pose startPose = PoseFactory.degrees().of(0,0,0);
