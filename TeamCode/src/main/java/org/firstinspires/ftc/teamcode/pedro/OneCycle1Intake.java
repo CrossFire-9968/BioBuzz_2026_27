@@ -163,11 +163,15 @@ public class OneCycle1Intake extends OpMode {
     //}
 
     Path parkInSpot() {
-        return curve(HPintake, ParkControlPoint, Park).linear(HPintake, Park);
+        return curve(startPose, ParkControlPoint, Park).linear(startPose, Park);
     }
 
     Path CycleThenApproachFlower() {
         return curve(startPose, FlowerIntakeControlPoint, FlowerIntake).linear(startPose, FlowerIntake);
+    }
+
+    Path CycleAfterIntake() {
+        return line(FlowerIntake, startPose).linear(FlowerIntake, startPose);
     }
 
     Path FlowerIntake() {
@@ -190,6 +194,8 @@ public class OneCycle1Intake extends OpMode {
                             follow(follower, CycleThenIntakeGarden()),
                             setIntake
                     ),
+
+                    follow(follower, CycleAfterIntake()),
 
                     //follow(follower, CycleThenIntakeGarden()),
 
@@ -241,7 +247,7 @@ public class OneCycle1Intake extends OpMode {
             startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 180);
             HPintake = poseFactory.of(7.5, 15, 180);
             Park = poseFactory.of(9, 98, -89.1655);
-            ParkControlPoint = poseFactory.of(30, 40, -89.1655);
+            ParkControlPoint = poseFactory.of(3, 7, -90);
             //FlowerIntake = poseFactory.of(56, 8, 180);
             //FlowerIntakeRotate = poseFactory.of(56, 8, 180);
             //launchPose = poseFactory.of(56, 8, 180);
