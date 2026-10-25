@@ -16,14 +16,14 @@ public class ServoArm
     // Start feeder servo
     public void toHome()
     {
-        double homePosition = 0.5;
+        double homePosition = 0;
         servoArm.setPosition(homePosition);
     }
 
     // Stop feeder servo
-    public void DeployedPosition()
+    public void deployedPosition()
     {
-        double DeployedPosition = 1.0;
+        double DeployedPosition = 0.8;
         servoArm.setPosition(DeployedPosition);
     }
 }

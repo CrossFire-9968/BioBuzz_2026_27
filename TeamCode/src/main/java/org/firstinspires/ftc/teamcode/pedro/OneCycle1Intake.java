@@ -36,6 +36,7 @@ public class OneCycle1Intake extends OpMode {
     public Intake intake = new Intake();
     // Initialize poses
     public Constants constants = new Constants();
+
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private Pose startPose = PoseFactory.degrees().of(0, 0, 0);

@@ -65,6 +65,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
+    public Launcher launcher = new Launcher();
 
     // This declares the five motors needed
     DcMotor frontLeftDrive;
@@ -80,6 +81,7 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
     public void init() {
         servoArm.init(hardwareMap);
         intake.init(hardwareMap);
+        launcher.init(hardwareMap);
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, "Motor_LF");
         frontRightDrive = hardwareMap.get(DcMotor.class, "Motor_RF");
@@ -126,9 +128,9 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
 
-        // If you press the A button, then you reset the Yaw to be zero from the way
+        // If you press the up dpad, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
-        if (gamepad1.a) {
+        if (gamepad1.dpad_up) {
             imu.resetYaw();
         }
         // If you press x, you get a drive from the point of view of the robot
@@ -144,7 +146,7 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         } else {
             servoArm.toHome();
         }
-       // If you press X the intake turns on
+       // If you press right bumper the intake turns on
         if (gamepad1.right_bumper) {
 //            intake.intakeSpeed(-1);
             intake.intake();
@@ -157,7 +159,14 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
 //            intake.intakeSpeed(0);
             intake.stoptake();
         }
+        if (gamepad1.a) {
+            launcher.LaunchPollen();
+        }
+        else {
+            launcher.LaunchOff();
+        }
     }
+
 
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
