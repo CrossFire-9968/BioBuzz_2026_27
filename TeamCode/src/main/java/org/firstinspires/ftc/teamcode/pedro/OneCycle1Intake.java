@@ -28,10 +28,13 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.Launcher;
 
 //@Configurable
 @Autonomous(name = "OneCycle1Intake")
 public class OneCycle1Intake extends OpMode {
+
+    public Launcher launcher = new Launcher();
 
     public Intake intake = new Intake();
     // Initialize poses
@@ -142,6 +145,55 @@ public class OneCycle1Intake extends OpMode {
             //.setConflictBehavior(/* conflict behavior */)
             //.setPriority(/* priority */);
 
+    Command launch = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("Launching");
+                launcher.LaunchPollen();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+                telemetry.addData("Intake power", intake.Intake.getPower());
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                telemetry.addLine("INTAKE END: " + endCondition);
+                // executed on end
+            });
+
+    Command stopLaunch = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("Launching");
+                launcher.stop();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+                telemetry.addData("Intake power", intake.Intake.getPower());
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                telemetry.addLine("INTAKE END: " + endCondition);
+                // executed on end
+            });
+    //.requiring(/* requirements */)
+    //.setInterruptedBehavior(/* interrupted behavior */)
+    //.setBlockedBehavior(/* blocked behavior */)
+    //.setConflictBehavior(/* conflict behavior */)
+    //.setPriority(/* priority */);
+
 
 
 // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
@@ -191,12 +243,23 @@ public class OneCycle1Intake extends OpMode {
         if (alliance == Alliance.HiveUp) {
             return sequential(
 
+                    sequential(
+                            launch,
+                            stopLaunch
+                    ),
+
+
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
                             setIntake
                     ),
 
                     follow(follower, CycleAfterIntake()),
+
+                    sequential(
+                            launch,
+                            stopLaunch
+                    ),
 
                     //follow(follower, CycleThenIntakeGarden()),
 
