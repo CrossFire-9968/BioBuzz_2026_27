@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.pedro.OneCycle1Intake;
 
 import java.util.concurrent.TimeUnit;
 
@@ -60,8 +61,9 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
-//@Disabled
+@Disabled
 public class SensorHuskyLens extends LinearOpMode {
+    public OneCycle1Intake onecycle1intake = new OneCycle1Intake();
 
     private final int READ_PERIOD = 1;
 

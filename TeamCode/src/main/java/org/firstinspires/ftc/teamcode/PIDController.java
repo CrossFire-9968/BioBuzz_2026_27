@@ -28,6 +28,11 @@
  */
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.RobotHiveDistanceCalculation.RobotToHiveDistance;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,10 +55,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@TeleOp(name = "PIDController", group = "Robot")
 //@Disabled
 public class PIDController extends OpMode {
 
+//    RobotHiveDistanceCalculation robotHiveDistanceCalculation = new RobotHiveDistanceCalculation();
 
     DcMotorEx Launcher1;
     DcMotorEx Launcher2;
@@ -65,6 +71,9 @@ public class PIDController extends OpMode {
 
     //Nectar target speed. Adjust for pollen.
     double TargetSpeed_DegPerSec = 165.0;
+
+    private static Follower follower;
+    static Pose robotPose = follower.pose();
 
     @Override
     public void init() {
@@ -89,10 +98,8 @@ public class PIDController extends OpMode {
 
     @Override
     public void loop() {
-//        telemetry.addLine("Press A to reset Yaw");
-//        telemetry.addLine("Hold left bumper to drive in robot relative");
-//        telemetry.addLine("The left joystick sets the robot direction");
-//        telemetry.addLine("Moving the right joystick left and right turns the robot");
+
+
 
         //Change target speed during test runs
         if (gamepad1.dpadLeftWasPressed()) {
@@ -122,7 +129,7 @@ public class PIDController extends OpMode {
         //telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
         //telemetry.addData("Shooter1 velocity (DegPerSec):","%.01f", Launcher1.getVelocity(AngleUnit.DEGREES));
         telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Launcher2.getVelocity(AngleUnit.DEGREES));
-        telemetry.addData("Distance To Hive (Inches):", RobotHiveDistanceCalculation.RobotToHiveDistance);
+        telemetry.addData("Distance To Hive (Inches):", "%.01f", RobotToHiveDistance(robotPose.x(), robotPose.y()));
 
         telemetry.update();
     }

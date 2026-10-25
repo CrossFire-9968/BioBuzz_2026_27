@@ -8,6 +8,7 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -19,6 +20,7 @@ import static com.pedropathing.api.Paths.line;
 
 
 @TeleOp(name = "TeleopPPTest")
+@Disabled
 public class TeleopPPTest extends OpMode {
 
 

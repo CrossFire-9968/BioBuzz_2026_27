@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -53,7 +54,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Also see the Telemetry javadocs.
  */
 @TeleOp(name = "Concept: Diagnostics", group = "Concept")
-//@Disabled
+@Disabled
 public class Diagnostics extends LinearOpMode  {
 
 //    GoBildaPinpointDriver pinpoint;

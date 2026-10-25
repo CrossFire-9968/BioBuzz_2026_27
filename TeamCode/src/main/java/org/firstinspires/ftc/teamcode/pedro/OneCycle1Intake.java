@@ -60,15 +60,15 @@ public class OneCycle1Intake extends OpMode {
 
 
     //set Enum so that we can select Position
-    private enum Alliance {HiveUp, HiveDown, UNKNOWN}
+    public enum Alliance {HiveUp, HiveDown, UNKNOWN}
     //set Enum so that we can select Position
     private enum AutoStartLocation {Red, Blue, UNKNOWN}
 
-    Alliance alliance = Alliance.UNKNOWN;
-    AutoStartLocation location = AutoStartLocation.UNKNOWN;
+    public Alliance alliance = Alliance.UNKNOWN;
+    public static AutoStartLocation location = AutoStartLocation.UNKNOWN;
     boolean runBuild = false;
     String allianceSelected = "";
-    String locationSelected = "";
+    public static String locationSelected = "";
 
     // Other Variables
     //public Yeeter yeeter = new Yeeter();
