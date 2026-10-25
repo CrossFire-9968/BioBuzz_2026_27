@@ -51,7 +51,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-//@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
 //@Disabled
 
 //public class Manual extends OpMode {
@@ -61,7 +61,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //    public PrisimColor led = new PrisimColor();
 //    public ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 //}
-/*
+
 public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
@@ -79,7 +79,7 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
 
     @Override
     public void init() {
-        servoArm.init(hardwareMap);
+        //servoArm.init(hardwareMap);
         intake.init(hardwareMap);
         launcher.init(hardwareMap);
 
@@ -141,30 +141,34 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
         // If you press y, servo extends and then retracts on release
-        if (gamepad1.y) {
-            servoArm.deployedPosition();
-        } else {
-            servoArm.toHome();
-        }
-       // If you press right bumper the intake turns on
-        if (gamepad1.right_bumper) {
-//            intake.intakeSpeed(-1);
+        //if (gamepad1.y) {
+        //    servoArm.deployedPosition();
+        //} else {
+        //    servoArm.toHome();
+        //}
+        // If you press right bumper the intake turns on
+        if (gamepad2.triangle) {
             intake.intake();
-;       }
-        else if (gamepad1.left_bumper) {
-//            intake.intakeSpeed(1);
+        }
+        else if (gamepad2.square) {
             intake.outake();
         }
         else {
 //            intake.intakeSpeed(0);
             intake.stoptake();
         }
-        if (gamepad1.a) {
-            launcher.LaunchPollen();
+
+        if (gamepad2.left_bumper) {
+            launcher.SpoolUp();
+
+            if (gamepad2.right_bumper) {
+                launcher.LaunchPollen();
+            }
         }
         else {
             launcher.LaunchOff();
         }
+
     }
 
 
@@ -215,4 +219,3 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
 }
-*/

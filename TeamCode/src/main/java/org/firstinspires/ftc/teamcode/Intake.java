@@ -21,11 +21,11 @@ public class Intake
         Intake.setDirection(DcMotorSimple.Direction.FORWARD);
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        IntakeServo1 = hwMap.get(DcMotor.class, "Launcher1");
+        IntakeServo1 = hwMap.get(DcMotor.class, "IntakeServo1");
         IntakeServo1.setDirection(DcMotorSimple.Direction.FORWARD);
         IntakeServo1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        IntakeServo2 = hwMap.get(DcMotor.class, "Launcher1");
+        IntakeServo2 = hwMap.get(DcMotor.class, "IntakeServo2");
         IntakeServo2.setDirection(DcMotorSimple.Direction.FORWARD);
         IntakeServo2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

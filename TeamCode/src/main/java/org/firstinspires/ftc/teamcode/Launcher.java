@@ -30,7 +30,7 @@ public class Launcher {
         Launcher2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Launcher2.setDirection(DcMotor.Direction.FORWARD);
 
-        CarouselServo = hwMap.get(DcMotor.class, "Launcher1");
+        CarouselServo = hwMap.get(DcMotor.class, "CarouselServo");
         CarouselServo.setDirection(DcMotorSimple.Direction.FORWARD);
         CarouselServo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -48,12 +48,17 @@ public class Launcher {
     }
     //This is the function to launch the Pollen
     public void LaunchPollen() {
-        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
         intake.intake();
         CarouselServo.setPower(-1);
         //Launcher2.setPower(-1);
     }
+
+    public void SpoolUp() {
+        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        //Launcher2.setPower(-1);
+    }
+
     //This is the function to launch the Nectar
     public void LaunchNectar() {
         Launcher1.setVelocity(TargetSpeedNecter, AngleUnit.DEGREES);
@@ -63,6 +68,7 @@ public class Launcher {
     //This is the function to stop the launcher
     public void LaunchOff() {
         Launcher1.setVelocity(0);
+        CarouselServo.setPower(0);
         //Launcher2.setPower(0);
     }
 
