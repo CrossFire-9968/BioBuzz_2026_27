@@ -41,7 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  */
 @TeleOp(name = "Sensor: GoBilda Pinpoint", group = "Sensor")
 //@Disabled
-public class SensorGoBildaPinpoint extends OpMode {
+public class GoBildaPinpoint extends OpMode {
     // Create an instance of the sensor
     GoBildaPinpointDriver pinpoint;
 

@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //    public ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 //}
 
-public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
+public class RobotTeleop extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
     public Launcher launcher = new Launcher();

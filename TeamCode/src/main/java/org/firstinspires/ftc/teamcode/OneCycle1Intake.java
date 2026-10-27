@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedro;
+package org.firstinspires.ftc.teamcode;
 
 
 import com.pedropathing.api.PoseFactory;
@@ -27,8 +27,7 @@ import static java.util.concurrent.locks.LockSupport.park;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Intake;
-import org.firstinspires.ftc.teamcode.Launcher;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 //@Configurable
 @Autonomous(name = "OneCycle1Intake")
@@ -60,6 +59,9 @@ public class OneCycle1Intake extends OpMode {
     private Pose FlowerIntakeControlPoint = PoseFactory.degrees().of(0, 0, 0);
 
     public double variable = 0;
+
+    public double timeToWaitAfterLaunch = 1000;
+    public double timeToWaitBeforeLaunch = 1000;
 
 
 
@@ -104,7 +106,6 @@ public class OneCycle1Intake extends OpMode {
                 // executed on start
             })
             .setExecute(() -> {
-                telemetry.addData("Intake power", intake.Intake.getPower());
 
                 // executed on execute
             })
@@ -126,7 +127,6 @@ public class OneCycle1Intake extends OpMode {
                 // executed on start
             })
             .setExecute(() -> {
-                telemetry.addData("Intake power", intake.Intake.getPower());
 
                 // executed on execute
             })
@@ -136,7 +136,6 @@ public class OneCycle1Intake extends OpMode {
             // return false;
             //})
             .setEnd(endCondition -> {
-                telemetry.addLine("INTAKE END: " + endCondition);
                 // executed on end
             });
             //.requiring(/* requirements */)
@@ -149,11 +148,11 @@ public class OneCycle1Intake extends OpMode {
             .setStart(() -> {
                 telemetry.addLine("Launching");
                 launcher.LaunchPollen();
-                telemetry.addLine("INTAKE START2");
+                waitMs(timeToWaitAfterLaunch);
+                launcher.LaunchOff();
                 // executed on start
             })
             .setExecute(() -> {
-                telemetry.addData("Intake power", intake.Intake.getPower());
 
                 // executed on execute
             })
@@ -163,7 +162,50 @@ public class OneCycle1Intake extends OpMode {
             // return false;
             //})
             .setEnd(endCondition -> {
-                telemetry.addLine("INTAKE END: " + endCondition);
+                // executed on end
+            });
+
+    Command spool = Command.build()
+            .setStart(() -> {
+
+                launcher.SpoolUp();
+
+                // executed on start
+            })
+            .setExecute(() -> {
+
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+
+                // executed on end
+            });
+
+    Command spool2 = Command.build()
+            .setStart(() -> {
+                waitMs(timeToWaitBeforeLaunch);
+                launcher.SpoolUp();
+
+                // executed on start
+            })
+            .setExecute(() -> {
+
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+
                 // executed on end
             });
 
@@ -244,22 +286,21 @@ public class OneCycle1Intake extends OpMode {
             return sequential(
 
                     sequential(
-                            launch,
-                            stopLaunch
-                    ),
-
+                    spool2,
+                    launch
+                            ),
 
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
                             setIntake
                     ),
 
+                    spool,
                     follow(follower, CycleAfterIntake()),
 
-                    sequential(
-                            launch,
-                            stopLaunch
-                    ),
+                    launch,
+
+
 
                     //follow(follower, CycleThenIntakeGarden()),
 
