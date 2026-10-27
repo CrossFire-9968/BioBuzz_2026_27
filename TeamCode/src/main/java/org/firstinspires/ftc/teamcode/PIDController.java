@@ -58,7 +58,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 @TeleOp(name = "PIDController", group = "Robot")
 //@Disabled
-public class PIDController extends OpMode {
+public class PIDController {
 
 //    RobotHiveDistanceCalculation robotHiveDistanceCalculation = new RobotHiveDistanceCalculation();
 
@@ -77,8 +77,8 @@ public class PIDController extends OpMode {
     static Pose robotPose = follower.pose();
 
     public void init(HardwareMap hwMap) {
-        Launcher1 = hardwareMap.get(DcMotorEx.class, "Launcher1");
-        Launcher2 = hardwareMap.get(DcMotorEx.class, "Launcher2");
+        Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
+        Launcher2 = hwMap.get(DcMotorEx.class, "Launcher2");
 
         Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         Launcher2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -126,9 +126,9 @@ public class PIDController extends OpMode {
 
         //telemetry.addData("Motor Speed Setpoint (DegPerSec):", "%.01f", TargetSpeed_DegPerSec);
         //telemetry.addData("Shooter1 velocity (DegPerSec):","%.01f", Launcher1.getVelocity(AngleUnit.DEGREES));
-        telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Launcher2.getVelocity(AngleUnit.DEGREES));
-        telemetry.addData("Distance To Hive (Inches):", "%.01f", RobotToHiveDistance(robotPose.x(), robotPose.y()));
-
-        telemetry.update();
+//        telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Launcher2.getVelocity(AngleUnit.DEGREES));
+//        telemetry.addData("Distance To Hive (Inches):", "%.01f", RobotToHiveDistance(robotPose.x(), robotPose.y()));
+//
+//        telemetry.update();
     }
   }
