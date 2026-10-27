@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -75,8 +76,7 @@ public class PIDController extends OpMode {
     private static Follower follower;
     static Pose robotPose = follower.pose();
 
-    @Override
-    public void init() {
+    public void init(HardwareMap hwMap) {
         Launcher1 = hardwareMap.get(DcMotorEx.class, "Launcher1");
         Launcher2 = hardwareMap.get(DcMotorEx.class, "Launcher2");
 
@@ -95,20 +95,18 @@ public class PIDController extends OpMode {
 
 
     }
-
-    @Override
-    public void loop() {
+    public void PIDOuttake() {
 
 
 
         //Change target speed during test runs
-        if (gamepad1.dpadLeftWasPressed()) {
-            TargetSpeed_DegPerSec -= 5;
-        } else if (gamepad1.dpadRightWasPressed()) {
-            TargetSpeed_DegPerSec += 5;
-        } else if (gamepad1.dpadDownWasPressed()) {
-            TargetSpeed_DegPerSec = 0;
-        }
+//        if (gamepad1.dpadLeftWasPressed()) {
+//            TargetSpeed_DegPerSec -= 5;
+//        } else if (gamepad1.dpadRightWasPressed()) {
+//            TargetSpeed_DegPerSec += 5;
+//        } else if (gamepad1.dpadDownWasPressed()) {
+//            TargetSpeed_DegPerSec = 0;
+//        }
 
 
         //Driving speed control motor
