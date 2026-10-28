@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
 
 public class Intake
 {
@@ -10,9 +12,9 @@ public class Intake
     public DcMotor Intake;
    // public DcMotor Intake2;
 
-    public DcMotor IntakeServo1;
+    public Servo IntakeServo1;
 
-    public DcMotor IntakeServo2;
+    public Servo IntakeServo2;
 
 
     public void init(HardwareMap hwMap)
@@ -21,13 +23,9 @@ public class Intake
         Intake.setDirection(DcMotorSimple.Direction.FORWARD);
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        IntakeServo1 = hwMap.get(DcMotor.class, "IntakeServo1");
-        IntakeServo1.setDirection(DcMotorSimple.Direction.FORWARD);
-        IntakeServo1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        IntakeServo2 = hwMap.get(Servo.class, "IntakeServo2");
 
-        IntakeServo2 = hwMap.get(DcMotor.class, "IntakeServo2");
-        IntakeServo2.setDirection(DcMotorSimple.Direction.FORWARD);
-        IntakeServo2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        IntakeServo1 = hwMap.get(Servo.class, "IntakeServo1");
 
 
         //Intake2 = hwMap.get(DcMotor.class, "Intake2");
@@ -42,8 +40,10 @@ public class Intake
     }
     public void intake() {
         Intake.setPower(-1);
-        IntakeServo1.setPower(-1);
-        IntakeServo2.setPower(-1);
+        IntakeServo1.setDirection(Servo.Direction.FORWARD);
+        IntakeServo1.setPosition(1);
+        IntakeServo2.setDirection(Servo.Direction.FORWARD);
+        IntakeServo2.setPosition(1);
         //Intake2.setPower(-1);
     }
     public void outake() {
@@ -53,8 +53,8 @@ public class Intake
     public void stoptake() {
         
         Intake.setPower(0);
-        IntakeServo1.setPower(0);
-        IntakeServo2.setPower(0);
+        IntakeServo1.setPosition(0);
+        IntakeServo2.setPosition(0);
        // Intake2.setPower(0);
     }
 
