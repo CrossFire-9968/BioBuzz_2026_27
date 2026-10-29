@@ -65,6 +65,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class RobotTeleop extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
+
+    public PIDController pidcontroller = new PIDController();
     public Launcher launcher = new Launcher();
 
     // This declares the five motors needed
@@ -159,7 +161,7 @@ public class RobotTeleop extends OpMode {
         }
 
         if (gamepad2.left_bumper) {
-            launcher.SpoolUp();
+            pidcontroller.PIDOuttake();
 
             if (gamepad2.right_bumper) {
                 launcher.LaunchPollen();

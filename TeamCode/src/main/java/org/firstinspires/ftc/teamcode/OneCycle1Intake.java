@@ -33,6 +33,8 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @Autonomous(name = "OneCycle1Intake")
 public class OneCycle1Intake extends OpMode {
 
+    public PIDController pidcontroller = new PIDController();
+
     public Launcher launcher = new Launcher();
 
     public Intake intake = new Intake();
@@ -168,7 +170,7 @@ public class OneCycle1Intake extends OpMode {
     Command spool = Command.build()
             .setStart(() -> {
 
-                launcher.SpoolUp();
+                pidcontroller.PIDOuttake();
 
                 // executed on start
             })
@@ -190,7 +192,7 @@ public class OneCycle1Intake extends OpMode {
     Command spool2 = Command.build()
             .setStart(() -> {
                 waitMs(timeToWaitBeforeLaunch);
-                launcher.SpoolUp();
+                pidcontroller.PIDOuttake();
 
                 // executed on start
             })

@@ -63,7 +63,7 @@ public class PIDController {
 //    RobotHiveDistanceCalculation robotHiveDistanceCalculation = new RobotHiveDistanceCalculation();
 
     DcMotorEx Launcher1;
-    DcMotorEx Launcher2;
+    //DcMotorEx Launcher2;
 
     public static final double NEW_P = 1;
     public static final double NEW_I = 1;
@@ -78,10 +78,10 @@ public class PIDController {
 
     public void init(HardwareMap hwMap) {
         Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
-        Launcher2 = hwMap.get(DcMotorEx.class, "Launcher2");
+        //Launcher2 = hwMap.get(DcMotorEx.class, "Launcher2");
 
         Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        Launcher2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //Launcher2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         //Get coefficients for the RUN_USING_ENCODER RunMode.
         //PIDFCoefficients pidfOrig = Launcher1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -110,8 +110,8 @@ public class PIDController {
 
 
         //Driving speed control motor
-        Launcher2.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
-        Launcher2.setDirection(DcMotorEx.Direction.REVERSE);
+        Launcher1.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorEx.Direction.REVERSE);
         //Launcher2.setPower(-0.6);
 
 
