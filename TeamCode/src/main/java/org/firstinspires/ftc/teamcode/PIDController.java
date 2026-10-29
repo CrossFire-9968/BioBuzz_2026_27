@@ -58,7 +58,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  */
 @TeleOp(name = "PIDController", group = "Robot")
-//@Disabled
+@Disabled
 public class PIDController {
 
 //    RobotHiveDistanceCalculation robotHiveDistanceCalculation = new RobotHiveDistanceCalculation();
