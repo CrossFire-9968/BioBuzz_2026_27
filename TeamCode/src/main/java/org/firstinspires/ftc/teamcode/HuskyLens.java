@@ -32,10 +32,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.pedro.OneCycle1Intake;
 
 import java.util.concurrent.TimeUnit;
 
@@ -58,17 +61,18 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
-//@Disabled
-public class HuskyLens extends LinearOpMode {
+@Disabled
+public class SensorHuskyLens extends LinearOpMode {
+    public OneCycle1Intake onecycle1intake = new OneCycle1Intake();
 
     private final int READ_PERIOD = 1;
 
-    private com.qualcomm.hardware.dfrobot.HuskyLens huskyLens;
+    private HuskyLens huskyLens;
 
     @Override
     public void runOpMode()
     {
-        huskyLens = hardwareMap.get(com.qualcomm.hardware.dfrobot.HuskyLens.class, "huskylens");
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
 
         /*
          * This sample rate limits the reads solely to allow a user time to observe
@@ -111,7 +115,7 @@ public class HuskyLens extends LinearOpMode {
          *
          * Other algorithm choices for FTC might be: OBJECT_RECOGNITION, COLOR_RECOGNITION or OBJECT_CLASSIFICATION.
          */
-        huskyLens.selectAlgorithm(com.qualcomm.hardware.dfrobot.HuskyLens.Algorithm.TAG_RECOGNITION);
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
         telemetry.update();
         waitForStart();
@@ -137,7 +141,7 @@ public class HuskyLens extends LinearOpMode {
              *
              * Returns an empty array if no objects are seen.
              */
-            com.qualcomm.hardware.dfrobot.HuskyLens.Block[] blocks = huskyLens.blocks();
+            HuskyLens.Block[] blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
             for (int i = 0; i < blocks.length; i++) {
                 telemetry.addData("Block", blocks[i].toString());
