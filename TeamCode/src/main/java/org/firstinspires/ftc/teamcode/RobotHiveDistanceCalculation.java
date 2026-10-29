@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+//package org.firstinspires.ftc.teamcode;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
-
-import org.firstinspires.ftc.teamcode.pedro.OneCycle1Intake;
+/*import org.firstinspires.ftc.teamcode.pedro.OneCycle1Intake;
 
 
 public class RobotHiveDistanceCalculation {
@@ -38,7 +37,7 @@ public class RobotHiveDistanceCalculation {
         the robot and the hive.
 
         Will find a way to make interchangeable variables depending on where we shoot.
-        */
+
 
             double legA = Math.abs(XVariable - RobotX);
             double legB = Math.abs(YVariable - RobotY);
@@ -46,3 +45,4 @@ public class RobotHiveDistanceCalculation {
             return Math.sqrt(sideC * sideC + HiveHeight * HiveHeight);
         }
     }
+    */

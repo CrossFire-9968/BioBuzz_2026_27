@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com. qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -14,22 +12,34 @@ public class Launcher {
 
     public Intake intake = new Intake();
 
-   // public DcMotorEx Launcher1;
-    //public DcMotorEx Launcher2;
-    double TargetSpeedPollen = 165.0;
+    public DcMotorEx Launcher1;
+    public DcMotorEx Launcher2;
+    double TargetSpeedPollen = 80;
     double TargetSpeedNecter = 165.0;
 
     public CRServo CarouselServo;
 
+    public CRServo IntakeServo1;
+
+    public CRServo IntakeServo2;
+
     //
     public void init(HardwareMap hwMap)
     {
-        //Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
-        //Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //Launcher1.setDirection(DcMotor.Direction.REVERSE);
+        Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
+        Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        Launcher1.setDirection(DcMotor.Direction.REVERSE);
 
         CarouselServo = hwMap.get(CRServo.class, "CarouselServo");
         CarouselServo.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        IntakeServo1 = hwMap.get(CRServo.class, "IntakeServo1");
+        IntakeServo1.setDirection(CRServo.Direction.FORWARD);
+
+        IntakeServo2 = hwMap.get(CRServo.class, "IntakeServo2");
+        IntakeServo2.setDirection(CRServo.Direction.FORWARD);
+
+
 
 
 
@@ -42,35 +52,50 @@ public class Launcher {
 
     //Manually turn on the launcher
     public void LauncherSpeed(double speed) {
-        //Launcher1.setVelocity(speed, AngleUnit.DEGREES);
-        //Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        Launcher1.setVelocity(speed, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
         //Launcher2.setPower(power);
     }
     //This is the function to launch the Pollen
     public void LaunchPollen() {
-        intake.intake();
         CarouselServo.setPower(1);
+        IntakeServo1.setPower(-1);
+        IntakeServo2.setPower(-1);
+        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         //Launcher2.setPower(-1);
     }
 
+    public void SpoolUpAndLaunch() {
+        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        if (Launcher1.getVelocity(AngleUnit.DEGREES) > TargetSpeedPollen){
+            CarouselServo.setPower(1);
+            IntakeServo1.setPower(-1);
+            IntakeServo2.setPower(-1);
+        }
+
+    }
+
     public void SpoolUp() {
-        //Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
-        //Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
-        //Launcher2.setPower(-1);
+        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     //This is the function to launch the Nectar
     public void LaunchNectar() {
-        //Launcher1.setVelocity(TargetSpeedNecter, AngleUnit.DEGREES);
-        //Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        Launcher1.setVelocity(TargetSpeedNecter, AngleUnit.DEGREES);
+        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
         //Launcher2.setPower(1);
     }
     //This is the function to stop the launcher
     public void LaunchOff() {
-        //Launcher1.setVelocity(0);
+        Launcher1.setVelocity(0);
         CarouselServo.setPower(0);
+        IntakeServo1.setPower(0);
+        IntakeServo2.setPower(0);
         //Launcher2.setPower(0);
     }
 

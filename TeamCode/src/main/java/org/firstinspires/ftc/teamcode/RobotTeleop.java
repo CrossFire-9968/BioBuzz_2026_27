@@ -51,7 +51,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@TeleOp(name = "RobotTeleop", group = "Robot")
 //@Disabled
 
 //public class Manual extends OpMode {
@@ -66,7 +66,7 @@ public class RobotTeleop extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
 
-    public PIDController pidcontroller = new PIDController();
+    //public PIDController pidcontroller = new PIDController();
     public Launcher launcher = new Launcher();
 
     // This declares the five motors needed
@@ -161,11 +161,8 @@ public class RobotTeleop extends OpMode {
         }
 
         if (gamepad2.left_bumper) {
-            pidcontroller.PIDOuttake();
+            launcher.SpoolUpAndLaunch();
 
-            if (gamepad2.right_bumper) {
-                launcher.LaunchPollen();
-            }
         }
         else {
             launcher.LaunchOff();

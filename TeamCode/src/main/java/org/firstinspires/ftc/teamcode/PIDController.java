@@ -28,7 +28,7 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.RobotHiveDistanceCalculation.RobotToHiveDistance;
+//import static org.firstinspires.ftc.teamcode.RobotHiveDistanceCalculation.RobotToHiveDistance;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -56,12 +56,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "PIDController", group = "Robot")
+//@TeleOp(name = "PIDController", group = "Robot")
 //@Disabled
-public class PIDController {
+//public class PIDController {
 
 //    RobotHiveDistanceCalculation robotHiveDistanceCalculation = new RobotHiveDistanceCalculation();
-
+/*
     DcMotorEx Launcher1;
     //DcMotorEx Launcher2;
 
@@ -132,3 +132,5 @@ public class PIDController {
 //        telemetry.update();
     }
   }
+
+ */
