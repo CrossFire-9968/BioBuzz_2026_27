@@ -28,6 +28,7 @@
  */
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.teamcode.RobotHiveDistanceCalculation.RobotToHiveDistance;
 
 import com.pedropathing.follower.Follower;
@@ -104,8 +105,6 @@ public class PIDController {
 //            TargetSpeed_DegPerSec -= 5;
 //        } else if (gamepad1.dpadRightWasPressed()) {
 //            TargetSpeed_DegPerSec += 5;
-//        } else if (gamepad1.dpadDownWasPressed()) {
-//            TargetSpeed_DegPerSec = 0;
 //        }
 
 
@@ -130,5 +129,11 @@ public class PIDController {
 //        telemetry.addData("Distance To Hive (Inches):", "%.01f", RobotToHiveDistance(robotPose.x(), robotPose.y()));
 //
 //        telemetry.update();
+    }
+
+    public void stopMotor() {
+        if (gamepad1.dpadDownWasPressed()) {
+            TargetSpeed_DegPerSec = 0;
+        }
     }
   }
