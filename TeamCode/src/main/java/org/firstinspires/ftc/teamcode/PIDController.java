@@ -132,8 +132,6 @@ public class PIDController {
     }
 
     public void stopMotor() {
-        if (gamepad1.dpadDownWasPressed()) {
-            TargetSpeed_DegPerSec = 0;
-        }
+        Launcher2.setVelocity(0, AngleUnit.DEGREES);
     }
   }
