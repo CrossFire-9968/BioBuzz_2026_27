@@ -14,8 +14,8 @@ public class Launcher {
 
     public Intake intake = new Intake();
 
-    public DcMotorEx Launcher1;
-    public DcMotorEx Launcher2;
+    public DcMotor Launcher1;
+    public DcMotor Launcher2;
     double TargetSpeedPollen = 5;
 
     double FireSpeed = -0.05;
@@ -30,8 +30,8 @@ public class Launcher {
     //
     public void init(HardwareMap hwMap)
     {
-        Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
-        Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        Launcher1 = hwMap.get(DcMotor.class, "Launcher1");
+        Launcher1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Launcher1.setDirection(DcMotor.Direction.REVERSE);
 
         CarouselServo = hwMap.get(CRServo.class, "CarouselServo");
@@ -56,7 +56,8 @@ public class Launcher {
 
     //Manually turn on the launcher
     public void LauncherSpeed(double speed) {
-        Launcher1.setVelocity(speed, AngleUnit.DEGREES);
+//        Launcher1.setVelocity(speed, AngleUnit.DEGREES);
+//        Launcher1.setPower(FireSpeed);
 
         //Launcher2.setPower(power);
     }
@@ -96,10 +97,10 @@ public class Launcher {
     }
     //This is the function to stop the launcher
     public void LaunchOff() {
-        Launcher1.setVelocity(0);
+        Launcher1.setPower(0);
         CarouselServo.setPower(0);
-        IntakeServo1.setPower(0);
-        IntakeServo2.setPower(0);
+        //IntakeServo1.setPower(0);
+        //IntakeServo2.setPower(0);
         //Launcher2.setPower(0);
     }
 

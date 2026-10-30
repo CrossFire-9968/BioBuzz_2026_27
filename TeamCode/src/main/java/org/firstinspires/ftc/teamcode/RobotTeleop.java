@@ -152,6 +152,8 @@ public class RobotTeleop extends OpMode {
         //    servoArm.toHome();
         //}
         // If you press right bumper the intake turns on
+
+
         if (gamepad2.triangle) {
             intake.intake();
         }
