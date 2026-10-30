@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -14,7 +16,9 @@ public class Launcher {
 
     public DcMotorEx Launcher1;
     public DcMotorEx Launcher2;
-    double TargetSpeedPollen = 80;
+    double TargetSpeedPollen = 5;
+
+    double FireSpeed = -0.05;
     double TargetSpeedNecter = 165.0;
 
     public CRServo CarouselServo;
@@ -53,41 +57,41 @@ public class Launcher {
     //Manually turn on the launcher
     public void LauncherSpeed(double speed) {
         Launcher1.setVelocity(speed, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+
         //Launcher2.setPower(power);
     }
     //This is the function to launch the Pollen
     public void LaunchPollen() {
         CarouselServo.setPower(1);
         IntakeServo1.setPower(-1);
-        IntakeServo2.setPower(-1);
-        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        IntakeServo2.setPower(1);
+        Launcher1.setPower(FireSpeed);
+
 
 
         //Launcher2.setPower(-1);
     }
 
     public void SpoolUpAndLaunch() {
-        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
-        if (Launcher1.getVelocity(AngleUnit.DEGREES) > TargetSpeedPollen){
-            CarouselServo.setPower(1);
-            IntakeServo1.setPower(-1);
-            IntakeServo2.setPower(-1);
-        }
 
+
+        Launcher1.setPower(FireSpeed);
+
+        //if (Launcher1.getVelocity(AngleUnit.DEGREES) > TargetSpeedPollen){
+
+        //}
+        //return Launcher1.getVelocity(AngleUnit.DEGREES);
     }
 
     public void SpoolUp() {
-        Launcher1.setVelocity(TargetSpeedPollen, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        Launcher1.setPower(FireSpeed);
+
     }
 
     //This is the function to launch the Nectar
     public void LaunchNectar() {
-        Launcher1.setVelocity(TargetSpeedNecter, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorSimple.Direction.FORWARD);
+        Launcher1.setPower(FireSpeed);
+
         //Launcher2.setPower(1);
     }
     //This is the function to stop the launcher

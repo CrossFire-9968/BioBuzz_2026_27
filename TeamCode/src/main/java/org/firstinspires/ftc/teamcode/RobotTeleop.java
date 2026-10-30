@@ -69,6 +69,8 @@ public class RobotTeleop extends OpMode {
     //public PIDController pidcontroller = new PIDController();
     public Launcher launcher = new Launcher();
 
+    double Myspeed = 0;
+
     // This declares the five motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
@@ -130,6 +132,7 @@ public class RobotTeleop extends OpMode {
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
 
+
         // If you press the up dpad, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
         if (gamepad1.dpad_up) {
@@ -161,7 +164,13 @@ public class RobotTeleop extends OpMode {
         }
 
         if (gamepad2.left_bumper) {
-            launcher.SpoolUpAndLaunch();
+           launcher.SpoolUpAndLaunch();
+            //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
+            if (gamepad2.right_bumper) {
+                launcher.LaunchPollen();
+            }
+                launcher.SpoolUpAndLaunch();
+                //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
 
         }
         else {
@@ -169,6 +178,7 @@ public class RobotTeleop extends OpMode {
         }
 
     }
+
 
 
     // This routine drives the robot field relative
