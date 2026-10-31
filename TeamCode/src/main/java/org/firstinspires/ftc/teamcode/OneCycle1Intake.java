@@ -149,9 +149,14 @@ public class OneCycle1Intake extends OpMode {
     Command launch = Command.build()
             .setStart(() -> {
                 telemetry.addLine("Launching");
-                launcher.LaunchPollen();
-                waitMs(timeToWaitAfterLaunch);
+                intake.intake();
+                //launcher.LaunchPollenAuto();
+                //launcher.LaunchPollenAuto();
+                //launcher.LaunchPollenAuto();
+                //launcher.LaunchPollenAuto();
+                //waitMs(timeToWaitAfterLaunch);
                 launcher.LaunchOff();
+                intake.stoptake();
                 // executed on start
             })
             .setExecute(() -> {
@@ -191,8 +196,9 @@ public class OneCycle1Intake extends OpMode {
 
     Command spool2 = Command.build()
             .setStart(() -> {
-                waitMs(timeToWaitBeforeLaunch);
                 launcher.SpoolUp();
+                waitMs(timeToWaitBeforeLaunch);
+
 
                 // executed on start
             })

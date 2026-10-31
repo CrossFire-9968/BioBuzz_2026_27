@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,7 +22,7 @@ public class LauncherTest {
     private final double t2;
     private final double t3;
 
-    private double FireSpeed = 0.5;
+    private double FireSpeed = 0.52;
 
     private final double CarouselPos1 = 0.25;
     private final double CarouselPos2 = 0.4;
@@ -116,6 +118,36 @@ public class LauncherTest {
         }
     }
 
+//    public void LaunchPollenAuto() {
+//
+//
+//                IntakeServo1.setPower(-1);
+//                IntakeServo2.setPower(1);
+//                waitMs(1000);
+//
+//                CarouselServo.setPosition(CarouselPos1);
+//
+//
+//
+//                IntakeServo1.setPower(0);
+//                IntakeServo2.setPower(0);
+//                waitMs(1000);
+//                CarouselServo.setPosition(CarouselPos2);
+//
+//
+//
+//                IntakeServo1.setPower(0);
+//                IntakeServo2.setPower(0);
+//                waitMs(2000);
+//                CarouselServo.setPosition(CarouselPos1);
+//
+//    }
+
+    public void RunServoWheels() {
+        IntakeServo1.setPower(-1);
+        IntakeServo2.setPower(1);
+    }
+
     public void SpoolUp() {
         Launcher1.setPower(FireSpeed);
     }
@@ -137,13 +169,16 @@ public class LauncherTest {
 
         CarouselServo.setPosition(CarouselPos1);
 
-        currentState = State.ServoWheels;
-        stateTime = 0;
-
-        lastLoopTime = System.nanoTime();
+//        currentState = State.ServoWheels;
+//        stateTime = 0;
+//
+//        lastLoopTime = System.nanoTime();
     }
 
+
     public void stop() {
-        LaunchOff();
+
+
+    LaunchOff();
     }
 }

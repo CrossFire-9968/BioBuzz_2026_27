@@ -69,8 +69,6 @@ public class RobotTeleop extends OpMode {
     //public PIDController pidcontroller = new PIDController();
     public LauncherTest launcher = new LauncherTest(1,1,2);
 
-    double Myspeed = 0;
-
     // This declares the five motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
@@ -132,7 +130,6 @@ public class RobotTeleop extends OpMode {
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
 
-
         // If you press the up dpad, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
         if (gamepad1.dpad_up) {
@@ -152,35 +149,28 @@ public class RobotTeleop extends OpMode {
         //    servoArm.toHome();
         //}
         // If you press right bumper the intake turns on
-
-
         if (gamepad2.triangle) {
             intake.intake();
-        }
-        else if (gamepad2.square) {
-            intake.outake();
+            launcher.RunServoWheels();
         }
         else {
-//            intake.intakeSpeed(0);
+            intake.intakeSpeed(0);
             intake.stoptake();
         }
-
+        if (gamepad2.square) {
+        intake.outake();
+        }
         if (gamepad2.left_bumper) {
-           launcher.SpoolUpAndLaunch();
-            //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
+            launcher.SpoolUpAndLaunch();
             if (gamepad2.right_bumper) {
                 launcher.LaunchPollen();
             }
-                launcher.SpoolUpAndLaunch();
-                //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
-
         }
         else {
             launcher.LaunchOff();
         }
 
     }
-
 
 
     // This routine drives the robot field relative
@@ -211,7 +201,7 @@ public class RobotTeleop extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1.0;
-        double maxSpeed = 1.0;  // make this slower for outreaches
+        double maxSpeed = .5;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
