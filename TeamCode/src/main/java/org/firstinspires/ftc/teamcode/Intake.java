@@ -13,9 +13,9 @@ public class Intake
     public DcMotor Intake;
    // public DcMotor Intake2;
 
-    public CRServo IntakeServo1;
-
-    public CRServo IntakeServo2;
+//    public CRServo IntakeServo1;
+//
+//    public CRServo IntakeServo2;
 
 
     public void init(HardwareMap hwMap)
@@ -24,11 +24,11 @@ public class Intake
         Intake.setDirection(DcMotorSimple.Direction.FORWARD);
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        IntakeServo1 = hwMap.get(CRServo.class, "IntakeServo1");
-        IntakeServo1.setDirection(CRServo.Direction.FORWARD);
-
-        IntakeServo2 = hwMap.get(CRServo.class, "IntakeServo2");
-        IntakeServo2.setDirection(CRServo.Direction.FORWARD);
+//        IntakeServo1 = hwMap.get(CRServo.class, "IntakeServo1");
+//        IntakeServo1.setDirection(CRServo.Direction.FORWARD);
+//
+//        IntakeServo2 = hwMap.get(CRServo.class, "IntakeServo2");
+//        IntakeServo2.setDirection(CRServo.Direction.FORWARD);
 
 
 
@@ -45,8 +45,8 @@ public class Intake
     }
     public void intake() {
         Intake.setPower(1);
-        IntakeServo1.setPower(-1);
-        IntakeServo2.setPower(1);
+//        IntakeServo1.setPower(-1);
+//        IntakeServo2.setPower(1);
 
         //Intake2.setPower(-1);
     }
@@ -57,8 +57,8 @@ public class Intake
     public void stoptake() {
         
         Intake.setPower(0);
-        IntakeServo1.setPower(0);
-        IntakeServo2.setPower(0);
+//        IntakeServo1.setPower(0);
+//        IntakeServo2.setPower(0);
 
        // Intake2.setPower(0);
     }

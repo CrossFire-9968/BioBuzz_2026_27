@@ -67,7 +67,7 @@ public class RobotTeleop extends OpMode {
     public Intake intake = new Intake();
 
     //public PIDController pidcontroller = new PIDController();
-    public Launcher launcher = new Launcher();
+    public LauncherTest launcher = new LauncherTest(1,1,2);
 
     double Myspeed = 0;
 
@@ -211,7 +211,7 @@ public class RobotTeleop extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1.0;
-        double maxSpeed = .5;  // make this slower for outreaches
+        double maxSpeed = 1.0;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
