@@ -20,7 +20,7 @@ public class LauncherTest {
     private final double t2;
     private final double t3;
 
-    private double FireSpeed = 0.7;
+    private double FireSpeed = 0.5;
 
     private final double CarouselPos1 = 0.25;
     private final double CarouselPos2 = 0.4;

@@ -35,7 +35,7 @@ public class OneCycle1Intake extends OpMode {
 
     //public PIDController pidcontroller = new PIDController();
 
-    public Launcher launcher = new Launcher();
+    public LauncherTest launcher = new LauncherTest(1,1,2);
 
     public Intake intake = new Intake();
     // Initialize poses
@@ -383,6 +383,7 @@ public class OneCycle1Intake extends OpMode {
         follower = Constants.create(hardwareMap);
 
         intake.init(hardwareMap);
+        launcher.init(hardwareMap);
 
 
         // Log completed initialization to Panels and driver station (custom log function)
