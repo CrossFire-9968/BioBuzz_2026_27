@@ -13,21 +13,30 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 //@Configurable
 @Autonomous(name = "AutoV2")
 public class AutoV2 extends OpMode {
 
-    //Establish classes:
+// Establishes classes:
     //public PIDController pidcontroller = new PIDController();
     public LauncherTest launcher = new LauncherTest(1,1,2);
     public Intake intake = new Intake();
 
 
+    // Establishes state machine:
+    public enum CycleState {
+        Cycle1,
+        Cycle2,
+        Cycle3
+    }
+    public CycleState cycleState = CycleState.Cycle1;
 
 
 // Naming Conventions:
@@ -78,12 +87,48 @@ public class AutoV2 extends OpMode {
     private Pose NLZLaunchPoseSecondary_LZLaunchPosePrimary_CP = poseFactory.of(61.8373, 20.0262, 90);
     private Pose NLZLaunchPosePrimary_LZLaunchPoseSecondary_CP = poseFactory.of(29.0404, 32.3673, 90);
 
+
     // Copy and paste for new pose (convenient)
     //private Pose  = poseFactory.of();
 
 
 
 
+//Paths: Defining the actual interpolations from position to positon.
+  // Leaving start positions:
+    // NLZ:
+    Path NLZstartPosePrimary_NLZLaunchPosePrimary(){
+        return line(NLZstartPosePrimary,NLZLaunchPosePrimary).linear(NLZstartPosePrimary,NLZLaunchPosePrimary);
+    }
+    Path NLZstartPosePrimary_NLZLaunchPoseSecondary(){
+        return line(NLZstartPosePrimary,NLZLaunchPoseSecondary).linear(NLZstartPosePrimary,NLZLaunchPoseSecondary);
+    }
+    Path NLZstartPoseSecondary_NLZLaunchPosePrimary(){
+        return line(NLZstartPoseSecondary,NLZLaunchPosePrimary).linear(NLZstartPoseSecondary,NLZLaunchPosePrimary);
+    }
+    Path NLZstartPoseSecondary_NLZLaunchPoseSecondary(){
+        return line(NLZstartPoseSecondary,NLZLaunchPoseSecondary).linear(NLZstartPoseSecondary,NLZLaunchPoseSecondary);
+    }
+
+    // Leaving start positions:
+    // LZ:
+    Path LZstartPosePrimary_LZLaunchPosePrimary(){
+        return line(LZstartPosePrimary,LZLaunchPosePrimary).linear(LZstartPosePrimary,LZLaunchPosePrimary);
+    }
+    Path LZstartPosePrimary_LZLaunchPoseSecondary(){
+        return line(LZstartPosePrimary,LZLaunchPoseSecondary).linear(LZstartPosePrimary,LZLaunchPoseSecondary);
+    }
+    Path LZstartPoseSecondary_LZLaunchPosePrimary(){
+        return line(LZstartPoseSecondary,LZLaunchPosePrimary).linear(LZstartPoseSecondary,LZLaunchPosePrimary);
+    }
+    Path LZstartPoseSecondary_LZLaunchPoseSecondary(){
+        return line(LZstartPoseSecondary,LZLaunchPoseSecondary).linear(LZstartPoseSecondary,LZLaunchPoseSecondary);
+    }
+
+
+
+
+//General Variables;
     // Numeric variables:
     public double timeToWaitAfterLaunch = 1000;
     public double timeToWaitBeforeLaunch = 1000;
@@ -91,15 +136,24 @@ public class AutoV2 extends OpMode {
 
     // Set enums so that we can select Position:
     public enum Alliance {HiveUp, HiveDown, UNKNOWN}
-    private enum AutoStartLocation {Red, Blue, UNKNOWN}
+    public enum AutoStartLocation {Red, Blue, UNKNOWN}
+    public enum StartPose {Primary,Secondary,Unknown}
+    public enum LaunchPose {Primary,Secondary,Unknown}
+
+
+    // Establish variables to interface with the enums:
+    public Alliance alliance = Alliance.UNKNOWN;
+    public AutoStartLocation location = AutoStartLocation.UNKNOWN;
+    public StartPose startpose = StartPose.Unknown;
+    public LaunchPose launchpose = LaunchPose.Unknown;
 
 
     // Misc:
-    public Alliance alliance = Alliance.UNKNOWN;
-    public static AutoStartLocation location = AutoStartLocation.UNKNOWN;
     boolean runBuild = false;
-    String allianceSelected = "";
+    public static String allianceSelected = "";
     public static String locationSelected = "";
+    public static String startposeSelected = "";
+    public static String launchposeSelected = "";
     private Follower follower;
 
 
@@ -250,9 +304,12 @@ public class AutoV2 extends OpMode {
 // AutoRoutine: combines path following and action commands into a cohesive auto.
     private Command autoRoutine() {
         if (alliance == Alliance.HiveUp) {
-            return sequential(
+            switch (cycleState){
+                case Cycle1:
+                    return sequential(
 
-            );
+                    );
+            }
         }
 
 
@@ -382,16 +439,51 @@ public class AutoV2 extends OpMode {
                 allianceSelected = "";
                 locationSelected = "";
             }
+        }
 
+        // =========================
+        // SELECT START POSE
+        // =========================
+
+
+         else if (startpose == StartPose.Unknown) {
+            telemetry.addLine("Start Pose Selected: " + startposeSelected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+            if (gamepad1.dpad_left) {
+                startpose = StartPose.Primary;
+                startposeSelected = "Primary";
+                telemetry.addLine(startposeSelected);
+
+            } else if (gamepad1.dpad_right) {
+                startpose = StartPose.Secondary;
+                startposeSelected = "Secondary";
+                telemetry.addLine(startposeSelected);
+
+            } else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+            }
             // Selection is complete.
             // Tell the next init_loop() cycle to build everything.
-
-            if (alliance != Alliance.UNKNOWN &&
-                    location != AutoStartLocation.UNKNOWN) {
+            if (alliance != AutoV2.Alliance.UNKNOWN &&
+                    location != AutoV2.AutoStartLocation.UNKNOWN) {
                 telemetry.addLine("runbuild about to run");
                 runBuild = true;
+
             }
         }
+
+
+//ADD LAUNCHPOSE INITIALIZATION!!!
+
+
 
 
         // =========================
