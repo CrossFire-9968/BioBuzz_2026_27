@@ -250,7 +250,7 @@ public class AutoV2 extends OpMode {
     private Command autoRoutine() {
         if (alliance == Alliance.HiveUp) {
             return sequential(
-
+            follower.follow();
             );
         }
 
