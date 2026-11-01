@@ -5,6 +5,7 @@ import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.hold;
 
 import com.pedropathing.api.PoseFactory;
@@ -250,7 +251,7 @@ public class AutoV2 extends OpMode {
     private Command autoRoutine() {
         if (alliance == Alliance.HiveUp) {
             return sequential(
-            follower.follow();
+
             );
         }
 
