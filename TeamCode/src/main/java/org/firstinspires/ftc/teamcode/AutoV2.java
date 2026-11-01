@@ -27,7 +27,15 @@ public class AutoV2 extends OpMode {
     public Intake intake = new Intake();
 
 
-    // Initialize poses
+
+
+// Naming Conventions:
+    // LZ: The side of the field containing the "loading zone".
+    // NLZ: The side of the field not containing the "loading zone".
+    // CP: Control point.
+
+// Poses:
+    // Initialize poses:
     public Constants constants = new Constants();
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
@@ -96,10 +104,7 @@ public class AutoV2 extends OpMode {
 
 
 
-
-
-
-    // Pedro commands:
+// Pedro commands:
 //    Command setIntake = Command.build()
 //            .setStart(() -> {
 //                telemetry.addLine("INTAKE START");
@@ -240,21 +245,8 @@ public class AutoV2 extends OpMode {
 
 
 
-// Establish paths: these lines create the interpolations from coordinate-to-coordinate,
-// also interpolating heading at the same time.
 
-
-
-
-
-
-
-
-
-
-
-
-
+// AutoRoutine: combines path following and action commands into a cohesive auto.
     private Command autoRoutine() {
         if (alliance == Alliance.HiveUp) {
             return sequential(
@@ -275,7 +267,7 @@ public class AutoV2 extends OpMode {
 
 
 
-
+// Init: Runs the init sequence.
     @Override
     public void init() {
 
@@ -286,7 +278,6 @@ public class AutoV2 extends OpMode {
         intake.init(hardwareMap);
         launcher.init(hardwareMap);
 
-
         // Log completed initialization to Panels and driver station (custom log function)
         log("Status", "Initialized");
         telemetry.update(); // Update driver station after logging
@@ -294,23 +285,25 @@ public class AutoV2 extends OpMode {
     }
 
 
+
     private void buildPaths() {
-
         // build paths
-
     }
 
 
+
+
+// Start: Makes sure pedro starts correctly configured.
     @Override
     public void start() {
-
-        // This makes sure Pedro starts from the selected preset start pose
         follower.setPose(NLZstartPosePrimary);
-
         schedule(autoRoutine());
     }
 
 
+
+
+// Loop: Updates stuff continuously.
     @Override
     public void loop() {
 
@@ -329,7 +322,7 @@ public class AutoV2 extends OpMode {
 
 
 
-    // Runs the selection in init:
+// Init Loop: Runs the selection in init.
     @Override
     public void init_loop() {
 
@@ -338,31 +331,25 @@ public class AutoV2 extends OpMode {
         // Clear the previous menu display
         telemetry.clearAll();
 
-
         // =========================
         // SELECT ALLIANCE
         // =========================
 
         if (alliance == Alliance.UNKNOWN) {
-
-
             telemetry.addLine("Select Position");
             telemetry.addLine("");
             telemetry.addLine("Dpad Up: HiveUp");
             telemetry.addLine("Dpad Down: HiveDown");
 
             if (gamepad1.dpad_up) {
-
                 alliance = Alliance.HiveUp;
                 allianceSelected = "HiveUp";
                 telemetry.addLine(allianceSelected);
 
             } else if (gamepad1.dpad_down) {
-
                 alliance = Alliance.HiveDown;
                 allianceSelected = "HiveDown";
                 telemetry.addLine(allianceSelected);
-
             }
         }
 
@@ -371,46 +358,37 @@ public class AutoV2 extends OpMode {
         // SELECT START LOCATION
         // =========================
 
-        else if (location == AutoStartLocation.UNKNOWN) {
 
+        else if (location == AutoStartLocation.UNKNOWN) {
             telemetry.addLine("Alliance Selected: " + allianceSelected);
             telemetry.addLine("");
             telemetry.addLine("Circle: Start Over");
             telemetry.addLine(String.valueOf(gamepad1));
 
             if (gamepad1.dpad_left) {
-
                 location = AutoStartLocation.Red;
                 locationSelected = "Red";
                 telemetry.addLine(locationSelected);
 
             } else if (gamepad1.dpad_right) {
-
                 location = AutoStartLocation.Blue;
                 locationSelected = "Blue";
                 telemetry.addLine(locationSelected);
 
             } else if (gamepad1.circle) {
-
                 alliance = Alliance.UNKNOWN;
                 location = AutoStartLocation.UNKNOWN;
-
                 allianceSelected = "";
                 locationSelected = "";
-
             }
-
 
             // Selection is complete.
             // Tell the next init_loop() cycle to build everything.
 
             if (alliance != Alliance.UNKNOWN &&
                     location != AutoStartLocation.UNKNOWN) {
-
                 telemetry.addLine("runbuild about to run");
-
                 runBuild = true;
-
             }
         }
 
@@ -419,8 +397,8 @@ public class AutoV2 extends OpMode {
         // SELECTION COMPLETE
         // =========================
 
-        else {
 
+        else {
             telemetry.addLine("Alliance Selected: " + allianceSelected);
             telemetry.addLine("Location Selected: " + locationSelected);
             telemetry.addLine("");
@@ -429,37 +407,26 @@ public class AutoV2 extends OpMode {
 
             // Only rebuild once
             if (runBuild) {
-
                 telemetry.addLine("ran loadPreset");
-
                 follower = Constants.create(hardwareMap);
-
                 buildPaths();
-
                 follower.setPose(NLZstartPosePrimary);
-
                 runBuild = false;
-
             }
 
 
             // Reset selection
             if (gamepad1.circle) {
-
                 alliance = Alliance.UNKNOWN;
                 location = AutoStartLocation.UNKNOWN;
-
                 allianceSelected = "";
                 locationSelected = "";
-
                 // Make sure the next completed selection rebuilds everything
                 runBuild = true;
-
             }
 
 
             if (!runBuild) {
-
                 telemetry.addLine("");
                 telemetry.addLine("====================");
                 telemetry.addLine("READY FOR PLAY");
@@ -468,9 +435,7 @@ public class AutoV2 extends OpMode {
 
                 // Pedro telemetry
                 if (follower != null) {
-
                     telemetry.addLine("");
-
                     telemetry.addData(
                             "X",
                             "%.2f",
@@ -525,7 +490,7 @@ public class AutoV2 extends OpMode {
         }
 
 
-        // Send everything above to the Driver Station
+        // Sends everything above to the Driver Station
         telemetry.update();
     }
 
@@ -545,28 +510,21 @@ public class AutoV2 extends OpMode {
     private void log(String caption, Object... text) {
 
         if (text.length == 1) {
-
             telemetry.addData(caption, text[0]);
             //panelsTelemetry.debug(caption + ": " + text[0]);
 
         } else if (text.length >= 2) {
-
             StringBuilder message = new StringBuilder();
 
             for (int i = 0; i < text.length; i++) {
-
                 message.append(text[i]);
 
                 if (i < text.length - 1) {
-
                     message.append(" ");
-
                 }
             }
-
             telemetry.addData(caption, message.toString());
             //panelsTelemetry.debug(caption + ": " + message);
-
         }
     }
 }
