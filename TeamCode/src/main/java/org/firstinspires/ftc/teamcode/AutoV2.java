@@ -14,6 +14,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.pedropathing.paths.curves.Curve;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -24,9 +25,9 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @Autonomous(name = "AutoV2")
 public class AutoV2 extends OpMode {
 
-// Establishes classes:
+    // Establishes classes:
     //public PIDController pidcontroller = new PIDController();
-    public LauncherTest launcher = new LauncherTest(1,1,2);
+    public LauncherTest launcher = new LauncherTest(1, 1, 2);
     public Intake intake = new Intake();
 
 
@@ -36,6 +37,7 @@ public class AutoV2 extends OpMode {
         Cycle2,
         Cycle3
     }
+
     public CycleState cycleState = CycleState.Cycle1;
 
 
@@ -44,7 +46,7 @@ public class AutoV2 extends OpMode {
     // NLZ: The side of the field not containing the "loading zone".
     // CP: Control point.
 
-// Poses:
+    // Poses:
     // Initialize poses:
     public Constants constants = new Constants();
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -59,7 +61,7 @@ public class AutoV2 extends OpMode {
 
     // NLZ specific poses:
     private Pose HPintake = poseFactory.of(7.5, 15, 180);
-    private Pose NLZFlower  = poseFactory.of(10.3708, 46.3227, 180);
+    private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
     private Pose NLZLaunchPosePrimary = poseFactory.of(58.7005, 17.6739, 90);
 
@@ -71,8 +73,7 @@ public class AutoV2 extends OpMode {
 
 
     // General poses:
-    private Pose Park =  poseFactory.of(9, 98, -89.1655);
-
+    private Pose Park = poseFactory.of(9, 98, -89.1655);
 
 
     // Control points:
@@ -80,8 +81,9 @@ public class AutoV2 extends OpMode {
     private Pose startPoseCP = poseFactory.of(5.7094, 73.2003, 180);
     private Pose LZLaunchPosePrimary_LZFlower_CP = poseFactory.of(45.1712, 110.954, 90);
     private Pose LZLaunchPoseSecondary_LZFlower_CP = poseFactory.of(46.9151, 111.7013, 90);
-    private Pose NLZLaunchPosePrimary_NLZFlower_CP  = poseFactory.of(27.982, 22.7656, 180);
+    private Pose NLZLaunchPosePrimary_NLZFlower_CP = poseFactory.of(27.982, 22.7656, 180);
     private Pose NLZLaunchPoseSecondary_NLZFlower_CP = poseFactory.of(36.7012, 40.9513, 180);
+    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 3.7692, 180);
     private Pose NLZLaunchPoseSecondary_HPintake_CP = poseFactory.of(34.9573, 5.8255, 180);
     private Pose NLZLaunchPoseSecondary_LZLaunchPoseSecondary_CP = poseFactory.of(8.0774, 70.0668, 90);
     private Pose NLZLaunchPoseSecondary_LZLaunchPosePrimary_CP = poseFactory.of(61.8373, 20.0262, 90);
@@ -92,43 +94,55 @@ public class AutoV2 extends OpMode {
     //private Pose  = poseFactory.of();
 
 
-
-
-//Paths: Defining the actual interpolations from position to positon.
-  // Leaving start positions:
+    //Paths: Defining the actual interpolations from position to positon.
+    // Leaving start positions:
     // NLZ:
-    Path NLZstartPosePrimary_NLZLaunchPosePrimary(){
-        return line(NLZstartPosePrimary,NLZLaunchPosePrimary).linear(NLZstartPosePrimary,NLZLaunchPosePrimary);
+    Path NLZstartPosePrimary_NLZLaunchPosePrimary() {
+        return line(NLZstartPosePrimary, NLZLaunchPosePrimary).linear(NLZstartPosePrimary, NLZLaunchPosePrimary);
     }
-    Path NLZstartPosePrimary_NLZLaunchPoseSecondary(){
-        return line(NLZstartPosePrimary,NLZLaunchPoseSecondary).linear(NLZstartPosePrimary,NLZLaunchPoseSecondary);
+
+    Path NLZstartPosePrimary_NLZLaunchPoseSecondary() {
+        return line(NLZstartPosePrimary, NLZLaunchPoseSecondary).linear(NLZstartPosePrimary, NLZLaunchPoseSecondary);
     }
-    Path NLZstartPoseSecondary_NLZLaunchPosePrimary(){
-        return line(NLZstartPoseSecondary,NLZLaunchPosePrimary).linear(NLZstartPoseSecondary,NLZLaunchPosePrimary);
+
+    Path NLZstartPoseSecondary_NLZLaunchPosePrimary() {
+        return line(NLZstartPoseSecondary, NLZLaunchPosePrimary).linear(NLZstartPoseSecondary, NLZLaunchPosePrimary);
     }
-    Path NLZstartPoseSecondary_NLZLaunchPoseSecondary(){
-        return line(NLZstartPoseSecondary,NLZLaunchPoseSecondary).linear(NLZstartPoseSecondary,NLZLaunchPoseSecondary);
+
+    Path NLZstartPoseSecondary_NLZLaunchPoseSecondary() {
+        return line(NLZstartPoseSecondary, NLZLaunchPoseSecondary).linear(NLZstartPoseSecondary, NLZLaunchPoseSecondary);
     }
 
     // Leaving start positions:
     // LZ:
-    Path LZstartPosePrimary_LZLaunchPosePrimary(){
-        return line(LZstartPosePrimary,LZLaunchPosePrimary).linear(LZstartPosePrimary,LZLaunchPosePrimary);
+    Path LZstartPosePrimary_LZLaunchPosePrimary() {
+        return line(LZstartPosePrimary, LZLaunchPosePrimary).linear(LZstartPosePrimary, LZLaunchPosePrimary);
     }
-    Path LZstartPosePrimary_LZLaunchPoseSecondary(){
-        return line(LZstartPosePrimary,LZLaunchPoseSecondary).linear(LZstartPosePrimary,LZLaunchPoseSecondary);
+
+    Path LZstartPosePrimary_LZLaunchPoseSecondary() {
+        return line(LZstartPosePrimary, LZLaunchPoseSecondary).linear(LZstartPosePrimary, LZLaunchPoseSecondary);
     }
-    Path LZstartPoseSecondary_LZLaunchPosePrimary(){
-        return line(LZstartPoseSecondary,LZLaunchPosePrimary).linear(LZstartPoseSecondary,LZLaunchPosePrimary);
+
+    Path LZstartPoseSecondary_LZLaunchPosePrimary() {
+        return line(LZstartPoseSecondary, LZLaunchPosePrimary).linear(LZstartPoseSecondary, LZLaunchPosePrimary);
     }
-    Path LZstartPoseSecondary_LZLaunchPoseSecondary(){
-        return line(LZstartPoseSecondary,LZLaunchPoseSecondary).linear(LZstartPoseSecondary,LZLaunchPoseSecondary);
+
+    Path LZstartPoseSecondary_LZLaunchPoseSecondary() {
+        return line(LZstartPoseSecondary, LZLaunchPoseSecondary).linear(LZstartPoseSecondary, LZLaunchPoseSecondary);
+    }
+
+
+
+    Path NLZLaunchPosePrimary_HPIntake() {
+        return curve(NLZLaunchPosePrimary, NLZLaunchPosePrimary_HPintake_CP ,LZLaunchPoseSecondary).linear(LZstartPoseSecondary, LZLaunchPoseSecondary);
     }
 
 
 
 
-//General Variables;
+
+
+    //General Variables;
     // Numeric variables:
     public double timeToWaitAfterLaunch = 1000;
     public double timeToWaitBeforeLaunch = 1000;
@@ -136,9 +150,12 @@ public class AutoV2 extends OpMode {
 
     // Set enums so that we can select Position:
     public enum Alliance {HiveUp, HiveDown, UNKNOWN}
+
     public enum AutoStartLocation {Red, Blue, UNKNOWN}
-    public enum StartPose {Primary,Secondary,Unknown}
-    public enum LaunchPose {Primary,Secondary,Unknown}
+
+    public enum StartPose {Primary, Secondary, Unknown}
+
+    public enum LaunchPose {Primary, Secondary, Unknown}
 
 
     // Establish variables to interface with the enums:
@@ -155,8 +172,6 @@ public class AutoV2 extends OpMode {
     public static String startposeSelected = "";
     public static String launchposeSelected = "";
     private Follower follower;
-
-
 
 
 // Pedro commands:
@@ -299,12 +314,10 @@ public class AutoV2 extends OpMode {
     //.setPriority(/* priority */);
 
 
-
-
-// AutoRoutine: combines path following and action commands into a cohesive auto.
+    // AutoRoutine: combines path following and action commands into a cohesive auto.
     private Command autoRoutine() {
         if (alliance == Alliance.HiveUp) {
-            switch (cycleState){
+            switch (cycleState) {
                 case Cycle1:
                     return sequential(
 
@@ -314,7 +327,7 @@ public class AutoV2 extends OpMode {
 
 
         if (alliance == Alliance.HiveDown) {
-           return sequential(
+            return sequential(
             );
         }
         telemetry.addLine("Alliance not set");
@@ -323,9 +336,7 @@ public class AutoV2 extends OpMode {
     }
 
 
-
-
-// Init: Runs the init sequence.
+    // Init: Runs the init sequence.
     @Override
     public void init() {
 
@@ -343,15 +354,12 @@ public class AutoV2 extends OpMode {
     }
 
 
-
     private void buildPaths() {
         // build paths
     }
 
 
-
-
-// Start: Makes sure pedro starts correctly configured.
+    // Start: Makes sure pedro starts correctly configured.
     @Override
     public void start() {
         follower.setPose(NLZstartPosePrimary);
@@ -359,9 +367,7 @@ public class AutoV2 extends OpMode {
     }
 
 
-
-
-// Loop: Updates stuff continuously.
+    // Loop: Updates stuff continuously.
     @Override
     public void loop() {
 
@@ -378,20 +384,18 @@ public class AutoV2 extends OpMode {
     }
 
 
-
-
-// Init Loop: Runs the selection in init.
+    // Init Loop: Runs the selection in init.
     @Override
     public void init_loop() {
-
         super.init_loop();
-
         // Clear the previous menu display
         telemetry.clearAll();
+
 
         // =========================
         // SELECT ALLIANCE
         // =========================
+
 
         if (alliance == Alliance.UNKNOWN) {
             telemetry.addLine("Select Position");
@@ -408,6 +412,10 @@ public class AutoV2 extends OpMode {
                 alliance = Alliance.HiveDown;
                 allianceSelected = "HiveDown";
                 telemetry.addLine(allianceSelected);
+            } else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                allianceSelected = "";
+                runBuild = false;
             }
         }
 
@@ -438,15 +446,17 @@ public class AutoV2 extends OpMode {
                 location = AutoStartLocation.UNKNOWN;
                 allianceSelected = "";
                 locationSelected = "";
+                runBuild = false;
             }
         }
+
 
         // =========================
         // SELECT START POSE
         // =========================
 
 
-         else if (startpose == StartPose.Unknown) {
+        else if (startpose == StartPose.Unknown) {
             telemetry.addLine("Start Pose Selected: " + startposeSelected);
             telemetry.addLine("");
             telemetry.addLine("Circle: Start Over");
@@ -469,70 +479,55 @@ public class AutoV2 extends OpMode {
                 allianceSelected = "";
                 locationSelected = "";
                 startposeSelected = "";
-            }
-            // Selection is complete.
-            // Tell the next init_loop() cycle to build everything.
-
-            }
-
-        else if (launchpose == LaunchPose.Unknown) {
-            telemetry.addLine("Start Pose Selected: " + startposeSelected);
-            telemetry.addLine("");
-            telemetry.addLine("Circle: Start Over");
-            telemetry.addLine(String.valueOf(gamepad1));
-
-            if (gamepad1.dpad_left) {
-                startpose = StartPose.Primary;
-                startposeSelected = "Primary";
-                telemetry.addLine(startposeSelected);
-
-            } else if (gamepad1.dpad_right) {
-                startpose = StartPose.Secondary;
-                startposeSelected = "Secondary";
-                telemetry.addLine(startposeSelected);
-
-            } else if (gamepad1.circle) {
-                alliance = Alliance.UNKNOWN;
-                location = AutoStartLocation.UNKNOWN;
-                startpose = StartPose.Unknown;
-                allianceSelected = "";
-                locationSelected = "";
-                startposeSelected = "";
-            }
-            // Selection is complete.
-            // Tell the next init_loop() cycle to build everything.
-
-        }
-        }
-
-        if (alliance != Alliance.UNKNOWN && location != AutoStartLocation.UNKNOWN && launchpose != LaunchPose.Unknown && startpose != StartPose.Unknown) {
-            telemetry.addLine("runbuild about to run");
-            runBuild = true;
-
-//ADD LAUNCHPOSE INITIALIZATION!!!
-
-
-
-
-        // =========================
-        // SELECTION COMPLETE
-        // =========================
-
-
-        else {
-            telemetry.addLine("Alliance Selected: " + allianceSelected);
-            telemetry.addLine("Location Selected: " + locationSelected);
-            telemetry.addLine("");
-            telemetry.addLine("Circle: Start Over");
-
-
-            // Only rebuild once
-            if (runBuild) {
-                telemetry.addLine("ran loadPreset");
-                follower = Constants.create(hardwareMap);
-                buildPaths();
-                follower.setPose(NLZstartPosePrimary);
                 runBuild = false;
+            }
+
+
+            // Selection is complete.
+            // Tell the next init_loop() cycle to build everything.
+
+
+        } else if (launchpose == LaunchPose.Unknown) {
+            telemetry.addLine("Launch Pose Selected: " + launchposeSelected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+            if (gamepad1.dpad_left) {
+                launchpose = LaunchPose.Primary;
+                launchposeSelected = "Primary";
+                telemetry.addLine(launchposeSelected);
+
+            } else if (gamepad1.dpad_right) {
+                launchpose = LaunchPose.Secondary;
+                launchposeSelected = "Secondary";
+                telemetry.addLine(launchposeSelected);
+
+            } else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+                launchposeSelected = "";
+                runBuild = false;
+            }
+        } else {
+            if (alliance != Alliance.UNKNOWN &&
+                    location != AutoStartLocation.UNKNOWN &&
+                    launchpose != LaunchPose.Unknown &&
+                    startpose != StartPose.Unknown) {
+
+                if (!runBuild) {
+                    telemetry.addLine("Building autonomous paths");
+
+                    buildPaths();
+                    follower.setPose(NLZstartPosePrimary);
+
+                    runBuild = true;
+                }
             }
 
 
@@ -540,14 +535,19 @@ public class AutoV2 extends OpMode {
             if (gamepad1.circle) {
                 alliance = Alliance.UNKNOWN;
                 location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+
                 allianceSelected = "";
                 locationSelected = "";
-                // Make sure the next completed selection rebuilds everything
-                runBuild = true;
+                startposeSelected = "";
+                launchposeSelected = "";
+
+                runBuild = false;
             }
 
 
-            if (!runBuild) {
+            if (runBuild) {
                 telemetry.addLine("");
                 telemetry.addLine("====================");
                 telemetry.addLine("READY FOR PLAY");
@@ -616,11 +616,9 @@ public class AutoV2 extends OpMode {
     }
 
 
-
-
-
     // State machine handling the yeeting of elements in autonomous
     // Assumes yeet position is always the same throughout autonomous
+
 
     //public void setPathState(int pState) {
     //pathState = pState;
@@ -628,6 +626,8 @@ public class AutoV2 extends OpMode {
 
 
     // Custom logging function to support telemetry and Panels
+
+
     private void log(String caption, Object... text) {
 
         if (text.length == 1) {
