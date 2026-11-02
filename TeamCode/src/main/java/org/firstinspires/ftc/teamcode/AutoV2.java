@@ -472,14 +472,42 @@ public class AutoV2 extends OpMode {
             }
             // Selection is complete.
             // Tell the next init_loop() cycle to build everything.
-            if (alliance != AutoV2.Alliance.UNKNOWN &&
-                    location != AutoV2.AutoStartLocation.UNKNOWN) {
-                telemetry.addLine("runbuild about to run");
-                runBuild = true;
 
             }
+
+        else if (launchpose == LaunchPose.Unknown) {
+            telemetry.addLine("Start Pose Selected: " + startposeSelected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+            if (gamepad1.dpad_left) {
+                startpose = StartPose.Primary;
+                startposeSelected = "Primary";
+                telemetry.addLine(startposeSelected);
+
+            } else if (gamepad1.dpad_right) {
+                startpose = StartPose.Secondary;
+                startposeSelected = "Secondary";
+                telemetry.addLine(startposeSelected);
+
+            } else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+            }
+            // Selection is complete.
+            // Tell the next init_loop() cycle to build everything.
+
+        }
         }
 
+        if (alliance != Alliance.UNKNOWN && location != AutoStartLocation.UNKNOWN && launchpose != LaunchPose.Unknown && startpose != StartPose.Unknown) {
+            telemetry.addLine("runbuild about to run");
+            runBuild = true;
 
 //ADD LAUNCHPOSE INITIALIZATION!!!
 
