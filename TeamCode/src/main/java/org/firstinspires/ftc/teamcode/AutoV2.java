@@ -15,6 +15,7 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.curves.Curve;
+import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -80,8 +81,12 @@ public class AutoV2 extends OpMode {
     private Pose ParkCP = poseFactory.of(3, 7, -90);
     private Pose startPoseCP = poseFactory.of(5.7094, 73.2003, 180);
     private Pose LZLaunchPosePrimary_LZFlower_CP = poseFactory.of(45.1712, 110.954, 90);
+    private Pose LZLaunchPosePrimary_HPIntake_CP = poseFactory.of(68.7279, 0, 180);
+    private Pose LZLaunchPosePrimary_NLZFlower_CP1 = poseFactory.of(10.2343, 118.8719, 270);
+    private Pose LZLaunchPosePrimary_NLZFlower_CP2 = poseFactory.of(47.9496, 38.7858, 180);
     private Pose LZLaunchPoseSecondary_LZFlower_CP = poseFactory.of(46.9151, 111.7013, 90);
     private Pose NLZLaunchPosePrimary_NLZFlower_CP = poseFactory.of(27.982, 22.7656, 180);
+    private Pose NLZLaunchPosePrimary_LZFlower_CP = poseFactory.of(62.98, 101.3146, 90);
     private Pose NLZLaunchPoseSecondary_NLZFlower_CP = poseFactory.of(36.7012, 40.9513, 180);
     private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 3.7692, 180);
     private Pose NLZLaunchPoseSecondary_HPintake_CP = poseFactory.of(34.9573, 5.8255, 180);
@@ -132,10 +137,57 @@ public class AutoV2 extends OpMode {
     }
 
 
-
+    //NLZ Cycles:
+        //Primary:
+            //Intakes:
     Path NLZLaunchPosePrimary_HPIntake() {
-        return curve(NLZLaunchPosePrimary, NLZLaunchPosePrimary_HPintake_CP ,LZLaunchPoseSecondary).linear(LZstartPoseSecondary, LZLaunchPoseSecondary);
+        return curve(NLZLaunchPosePrimary, NLZLaunchPosePrimary_HPintake_CP, HPintake).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(NLZLaunchPosePrimary, NLZLaunchPosePrimary_HPintake_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_HPintake_CP ,HPintake)));
     }
+    Path NLZLaunchPosePrimary_NLZFlower() {
+        return curve(NLZLaunchPosePrimary, NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(NLZLaunchPosePrimary, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower)));
+    }
+    Path NLZLaunchPosePrimary_LZFlower() {
+        return curve(NLZLaunchPosePrimary, NLZLaunchPosePrimary_NLZFlower_CP, LZFlower).linear(NLZLaunchPosePrimary, LZFlower);
+    }
+
+
+            //Returns:
+    Path HPIntake_NLZLaunchPosePrimary() {
+        return curve(HPintake, NLZLaunchPosePrimary_HPintake_CP, NLZLaunchPosePrimary).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(HPintake, NLZLaunchPosePrimary_HPintake_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_HPintake_CP, NLZLaunchPosePrimary)));
+    }
+    Path NLZFlower_NLZLaunchPosePrimary() {
+        return curve(NLZFlower, NLZLaunchPosePrimary_NLZFlower_CP,NLZLaunchPosePrimary).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(NLZFlower, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP,NLZLaunchPosePrimary)));
+    }
+    Path LZFlower_NLZLaunchPosePrimary() {
+        return curve(LZFlower, NLZLaunchPosePrimary_NLZFlower_CP,NLZLaunchPosePrimary).linear(LZFlower,NLZLaunchPosePrimary);
+    }
+
+
+    //LZ Cycles:
+        //Primary:
+            //Intakes:
+    Path LZLaunchPosePrimary_HPIntake() {
+        return curve(LZLaunchPosePrimary, LZLaunchPosePrimary_HPIntake_CP, HPintake).heading(Interpolator.piecewise().until(0.75,Interpolator.linear((LZLaunchPosePrimary, LZLaunchPosePrimary_HPIntake_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_HPIntake_CP, HPintake)));
+    }
+    Path LZLaunchPosePrimary_NLZFlower() {
+        return curve(LZLaunchPosePrimary,LZLaunchPosePrimary_NLZFlower_CP1,LZLaunchPosePrimary_NLZFlower_CP2 , NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LZLaunchPosePrimary,LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, LZLaunchPosePrimary_NLZFlower_CP2)));
+    }
+    Path LZLaunchPosePrimary_LZFlower() {
+        return curve(LZLaunchPosePrimary, LZLaunchPosePrimary_LZFlower_CP, LZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear((LZLaunchPosePrimary, LZLaunchPosePrimary_LZFlower_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_LZFlower_CP, LZFlower)));
+    }
+
+
+    //Returns:
+    Path HPIntake_LZLaunchPosePrimary() {
+        return curve(HPintake, LZLaunchPosePrimary_HPIntake_CP, LZLaunchPosePrimary).heading(Interpolator.piecewise().until(0.25,Interpolator.linear((HPintake, LZLaunchPosePrimary_HPIntake_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_HPIntake_CP, LZLaunchPosePrimary)));
+    }
+    Path NLZFlower_LZLaunchPosePrimary() {
+        return curve(NLZFlower, LZLaunchPosePrimary_NLZFlower_CP2, LZLaunchPosePrimary_NLZFlower_CP1, LZLaunchPosePrimary).heading(Interpolator.piecewise().until(0.5,Interpolator.linear((LZLaunchPosePrimary_NLZFlower_CP2, LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, LZLaunchPosePrimary)));
+    }
+    Path LZFlower_LZLaunchPosePrimary() {
+        return curve(LZFlower, LZLaunchPosePrimary_LZFlower_CP, LZLaunchPosePrimary).heading(Interpolator.piecewise().until(0.5,Interpolator.linear((LZFlower, LZLaunchPosePrimary_LZFlower_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_LZFlower_CP, LZLaunchPosePrimary)));
+    }
+
 
 
 
