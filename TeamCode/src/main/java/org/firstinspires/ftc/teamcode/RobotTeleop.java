@@ -67,7 +67,7 @@ public class RobotTeleop extends OpMode {
     public Intake intake = new Intake();
 
     //public PIDController pidcontroller = new PIDController();
-    public LauncherTest launcher = new LauncherTest(1,1,2);
+    public LauncherTest launcher = new LauncherTest(1,.5,1);
 
     // This declares the five motors needed
     DcMotor frontLeftDrive;
@@ -201,7 +201,7 @@ public class RobotTeleop extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1.0;
-        double maxSpeed = .5;  // make this slower for outreaches
+        double maxSpeed = 1.0;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should

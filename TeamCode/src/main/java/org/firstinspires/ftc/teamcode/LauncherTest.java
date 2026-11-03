@@ -22,9 +22,9 @@ public class LauncherTest {
     private final double t2;
     private final double t3;
 
-    private double FireSpeed = 0.52;
+    private double FireSpeed = 0.518;
 
-    private final double CarouselPos1 = 0.25;
+    private final double CarouselPos1 = 0.20;
     private final double CarouselPos2 = 0.4;
 
     public enum State {
