@@ -28,13 +28,9 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.teamcode.RobotHiveDistanceCalculation.RobotToHiveDistance;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -66,9 +62,9 @@ public class PIDController {
     DcMotorEx Launcher1;
     DcMotorEx Launcher2;
 
-    public static final double NEW_P = 1;
-    public static final double NEW_I = 1;
-    public static final double NEW_D = 0;
+    public static final double kp = 1;
+    public static final double ki = 1;
+    public static final double kd = 0;
     public static final double NEW_F = 0;
 
     //Nectar target speed. Adjust for pollen.
@@ -88,7 +84,7 @@ public class PIDController {
         //PIDFCoefficients pidfOrig = Launcher1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Change coefficients using methods included with DcMotorEx class.
-        PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, NEW_F);
         Launcher1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
 
         //telemetry.setAutoClear(false);
