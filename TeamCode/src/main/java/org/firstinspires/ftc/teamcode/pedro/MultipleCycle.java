@@ -52,7 +52,7 @@ public class MultipleCycle extends OpMode {
 
     //private TelemetryManager panelsTelemetry; // Panels telemetry
 
-// Add robot Master states
+    // Add robot Master states
     private enum masterStateEnum {}
 
     private enum masterSideState {BLUE, RED}
@@ -60,16 +60,16 @@ public class MultipleCycle extends OpMode {
     private masterStateEnum masterState;
     private masterStateEnum MotifPose;
 
-// Establish paths: these lines create the interpolations from coordinate-to-coordinate,
+    // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
 // also interpolating heading at the same time.
-Path Cycle() {
-    return line(startPose, launchPose).linear(startPose, launchPose);
-}
-Path approachIntake() {
-    return line(launchPose, HPIntakeApproach).linear(launchPose, HPIntakeApproach);
-}
+    Path Cycle() {
+        return line(startPose, launchPose).linear(startPose, launchPose);
+    }
+    Path approachIntake() {
+        return line(launchPose, HPIntakeApproach).linear(launchPose, HPIntakeApproach);
+    }
     Path intakeFromHP() {
-    return line(HPIntakeApproach, HPintake).linear(HPIntakeApproach, HPintake);
+        return line(HPIntakeApproach, HPintake).linear(HPIntakeApproach, HPintake);
     }
 
     Path Cycle2() {
@@ -85,7 +85,7 @@ Path approachIntake() {
     }
 
     Path parkInSpot() {
-    return line(HPintake, Park).linear(HPintake, Park);
+        return line(HPintake, Park).linear(HPintake, Park);
     }
 
     private Command autoRoutine() {
@@ -115,39 +115,39 @@ Path approachIntake() {
 
         }
         if (alliance == Alliance.RED && location == AutoStartLocation.GOAL) {
-             final Pose startPose = poseFactory.of(56, 8, 90);
-             final Pose launchPose = poseFactory.of(56.318, 29.9584, 90);
-             final Pose HPIntakeApproach = poseFactory.of(6.6719, 13.6764, 18.1575);
-             final Pose HPintake = poseFactory.of(6.4966, 3.1921, 89.0422);
-             final Pose Flower1 = poseFactory.of(5.2112, 46.7966, 0);
-             final Pose Park = poseFactory.of(4.9708, 107.9449, -89.1655);
+            final Pose startPose = poseFactory.of(56, 8, 90);
+            final Pose launchPose = poseFactory.of(56.318, 29.9584, 90);
+            final Pose HPIntakeApproach = poseFactory.of(6.6719, 13.6764, 18.1575);
+            final Pose HPintake = poseFactory.of(6.4966, 3.1921, 89.0422);
+            final Pose Flower1 = poseFactory.of(5.2112, 46.7966, 0);
+            final Pose Park = poseFactory.of(4.9708, 107.9449, -89.1655);
 
 
 
         }
 
         if (alliance == Alliance.RED && location == AutoStartLocation.POINT) {
-           //add coordinates here
+            //add coordinates here
         }
 
 
         if (alliance == Alliance.BLUE && location == AutoStartLocation.POINT) {
-           //add coordinates here
+            //add coordinates here
         }
     }
     @Override
     public void init() {
 
-            Scheduler.reset();
+        Scheduler.reset();
 
-            follower = Constants.create(hardwareMap);
+        follower = Constants.create(hardwareMap);
 
 
         // Log completed initialization to Panels and driver station (custom log function)
         log("Status", "Initialized");
         telemetry.update(); // Update driver station after logging
 
-        }
+    }
 
 
     private void buildPaths() {
@@ -266,7 +266,7 @@ Path approachIntake() {
 
                 buildPaths();
 
-               // follower.setStartingPose(startPose);
+                // follower.setStartingPose(startPose);
 
                 runBuild = false;
             }
@@ -329,8 +329,8 @@ Path approachIntake() {
     // State machine handling the yeeting of elements in autonomous
 // Assumes yeet position is always the same throughout autonomous
 
-        //public void setPathState(int pState) {
-        //pathState = pState;
+    //public void setPathState(int pState) {
+    //pathState = pState;
     //}
 
 
