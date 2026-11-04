@@ -8,11 +8,11 @@ public class OpModeStorage {
 
 
     // Where Auto started
-    public static Pose autonomousStartPose = new Pose(0, 0, 0);
+    public static Pose startPose = new Pose(0, 0, 0);
 
 
     // Where Auto ended
-    public static Pose autonomousEndPose = new Pose(0, 0, 0);
+    public static Pose Park = new Pose(0, 0, 0);
 
 
 }

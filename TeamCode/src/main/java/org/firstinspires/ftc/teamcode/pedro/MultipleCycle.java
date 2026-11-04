@@ -356,6 +356,7 @@ public class MultipleCycle extends OpMode {
 
     @Override
     public void stop() {
-        OpModeStorage.autonomousEndPose = follower.pose(); //saves your position in that file
+        OpModeStorage.startPose = follower.pose(); //saves your position in that file
+        OpModeStorage.Park = follower.pose();
     }
 }

@@ -37,7 +37,7 @@ public class TeleopPPTest2 extends OpMode {
 
 
         // Start TeleOp localization from where Auto ended
-        follower.setPose(OpModeStorage.autonomousEndPose);
+        follower.setPose(OpModeStorage.Park);
     }
 
 
@@ -63,7 +63,7 @@ public class TeleopPPTest2 extends OpMode {
 
 
             // Get where Auto originally started
-            Pose autoStartPose = OpModeStorage.autonomousStartPose;
+            Pose autoStartPose = OpModeStorage.startPose;
 
 
             // Create a path from current position to Auto start
@@ -142,13 +142,13 @@ public class TeleopPPTest2 extends OpMode {
 
         telemetry.addData(
                 "Auto Start X",
-                OpModeStorage.autonomousStartPose.x()
+                OpModeStorage.startPose.x()
         );
 
 
         telemetry.addData(
                 "Auto Start Y",
-                OpModeStorage.autonomousStartPose.y()
+                OpModeStorage.startPose.y()
         );
 
 
