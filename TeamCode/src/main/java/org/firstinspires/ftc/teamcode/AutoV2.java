@@ -39,6 +39,15 @@ public class AutoV2 extends OpMode {
         Cycle3
     }
 
+    public enum AutoSegment {
+        LeavePark,
+        Launch,
+        IntakeHP,
+        IntakeNLZFlower,
+        IntakeLZFlower,
+        Park
+    }
+
     public CycleState cycleState = CycleState.Cycle1;
 
 
@@ -258,12 +267,16 @@ public class AutoV2 extends OpMode {
 
     // Set enums so that we can select Position:
     public enum Alliance {HiveUp, HiveDown, UNKNOWN}
-
     public enum AutoStartLocation {Red, Blue, UNKNOWN}
-
     public enum StartPose {Primary, Secondary, Unknown}
-
     public enum LaunchPose {Primary, Secondary, Unknown}
+    public enum HumanPlayerIntake {UNUSED,USED}
+    public enum CloseFlowerIntake {UNUSED,USED}
+    public enum FarFlowerIntake {UNUSED,USED}
+    public enum IntakeState {ElementsContained, NoElements}
+
+
+
 
 
     // Establish variables to interface with the enums:
@@ -271,6 +284,10 @@ public class AutoV2 extends OpMode {
     public AutoStartLocation location = AutoStartLocation.UNKNOWN;
     public StartPose startpose = StartPose.Unknown;
     public LaunchPose launchpose = LaunchPose.Unknown;
+    public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNUSED;
+    public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNUSED;
+    public CloseFlowerIntake farFlowerIntake = CloseFlowerIntake.UNUSED;
+    public IntakeState intakeState = IntakeState.NoElements;
 
 
     // Misc:
