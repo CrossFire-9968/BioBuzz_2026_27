@@ -70,26 +70,63 @@ public class AutoV2 extends OpMode {
 
     private void decideNextIntake() {
         //AdvanceAmount is instead of the AprilTag output
-        if (advanceAmount == 1) {
-            if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
-                changeSegment(AutoSegment.IntakeHP);
-            }
-           else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
-                changeSegment(AutoSegment.IntakeNLZFlower);
+        if (cycleState == CycleState.Cycle1) {
+            if (advanceAmount == 1) {
+                if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeHP);
+                } else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeNLZFlower);
 
+                } else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeLZFlower);
+                } else {
+                    changeSegment(AutoSegment.Park);
+                }
+            } else {
+                changeSegment(AutoSegment.SwitchSide);
             }
-           else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
-                changeSegment(AutoSegment.IntakeLZFlower);
+        }
+
+
+        else if (cycleState == CycleState.Cycle2) {
+            if (advanceAmount == 1) {
+                if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeLZFlower);
+                }
+                else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeNLZFlower);
+                }
+                else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeHP);
+                }
+                else {
+                    changeSegment(AutoSegment.Park);
+                }
+            } else {
+                changeCycle(CycleState.Cycle3, AutoSegment.SwitchSide);
             }
-           else{
+        }
+
+
+        else if (cycleState == CycleState.Cycle3) {
+            if (advanceAmount == 1) {
+                if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeNLZFlower);
+                }
+                else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeLZFlower);
+                }
+                else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                    changeSegment(AutoSegment.IntakeHP);
+                }
+                else {
+                    changeSegment(AutoSegment.Park);
+                }
+            } else {
                 changeSegment(AutoSegment.Park);
             }
         }
-        else {
-            changeCycle(CycleState.Cycle2, AutoSegment.Launch);
-        }
     }
-
 
     // Establishes state machine:
     public enum CycleState {
@@ -104,6 +141,7 @@ public class AutoV2 extends OpMode {
         IntakeHP,
         IntakeNLZFlower,
         IntakeLZFlower,
+        SwitchSide,
         Park
     }
 
@@ -238,11 +276,14 @@ public class AutoV2 extends OpMode {
     Path NLZLaunchingPose_Park() {
         return curve(LaunchingPose,ParkCP,Park).heading(Interpolator.piecewise().until(0.75,Interpolator.linear(LaunchingPose,ParkCP)).until(1,Interpolator.linear(ParkCP, Park)));
     }
+    Path LZLaunchingPose_Park() {
+        return line(LaunchingPose,Park).linear(LaunchingPose,Park);
+    }
 
 
     //Switch Sides:
     Path SwitchSides() {
-        return line(LaunchingPose, LaunchingPose).linear(LaunchingPose, LaunchingPose);
+        return line(LaunchingPose, LaunchingPose2).linear(LaunchingPose, LaunchingPose2);
     }
 
 
@@ -321,12 +362,12 @@ public class AutoV2 extends OpMode {
             switch (cycleState) {
                 case Cycle1:
                     switch (autoSegment) {
-                        case LeavePark:
+                            case LeavePark:
                             return sequential(
                                     follow(follower, StartingPose_LaunchingPose()),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
-                        case Launch:
+                            case Launch:
                             return sequential(
                                     //check atag
                                     //launch
@@ -334,7 +375,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> decideNextIntake())
                             );
 
-                        case IntakeHP:
+                            case IntakeHP:
                             return sequential(
                                     setIntake,
                                     follow(follower, NLZLaunchingPose_HPIntake()),
@@ -344,7 +385,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
-                        case IntakeNLZFlower:
+                            case IntakeNLZFlower:
                             return sequential(
                                     //FlowerIntake Down
                                     follow(follower, NLZLaunchingPose_NLZFlower()),
@@ -355,7 +396,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
-                        case IntakeLZFlower:
+                            case IntakeLZFlower:
                             return sequential(
                                     //FlowerIntake Down
                                     follow(follower, NLZLaunchingPose_LZFlower()),
@@ -366,14 +407,118 @@ public class AutoV2 extends OpMode {
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
-                        case Park:
+                            case SwitchSide:
+                            return sequential(
+                                    follow(follower, SwitchSides()),
+                                    instant(() -> swapLaunchingPoses()),
+                                    instant(()-> changeCycle(CycleState.Cycle2, AutoSegment.Launch))
+                                    );
+
+                            case Park:
                             return sequential(
                                     follow(follower, NLZLaunchingPose_Park())
                             );
 
                     }
+                    break;
+
+
                 case Cycle2:
-                    swapLaunchingPoses();
+                    switch (autoSegment) {
+                        case Launch:
+                            return sequential(
+                                    //check atag
+                                    //launch
+                                    //check atag
+                                    instant(() -> decideNextIntake())
+                            );
+                            case IntakeLZFlower:
+                            return sequential(
+                                    //FlowerIntake Down
+                                    follow(follower, LZLaunchingPose_LZFlower()),
+                                    setIntakeFlower,
+                                    follow(follower, LZFlower_LZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffLZFlowerIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+                            case IntakeNLZFlower:
+                            return sequential(
+                                    //FlowerIntake Down
+                                    follow(follower, LZLaunchingPose_NLZFlower()),
+                                    setIntakeFlower,
+                                    follow(follower, NLZFlower_LZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffNLZFlowerIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+                            case IntakeHP:
+                            return sequential(
+                                    setIntake,
+                                    follow(follower, LZLaunchingPose_HPIntake()),
+                                    follow(follower, HPIntake_LZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffHPIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+                            case Park:
+                            return sequential(
+                                    follow(follower, LZLaunchingPose_Park())
+                            );
+                            case SwitchSide:
+                            return sequential(
+                                    follow(follower, SwitchSides()),
+                                    instant(() -> swapLaunchingPoses()),
+                                    instant(()-> changeCycle(CycleState.Cycle2, AutoSegment.Launch))
+                            );
+                    }
+                    break;
+
+
+                case Cycle3:
+                    switch (autoSegment) {
+                        case Launch:
+                            return sequential(
+                                    //check atag
+                                    //launch
+                                    //check atag
+                                    instant(() -> decideNextIntake())
+                            );
+                        case IntakeLZFlower:
+                            return sequential(
+                                    //FlowerIntake Down
+                                    follow(follower, NLZLaunchingPose_LZFlower()),
+                                    setIntakeFlower,
+                                    follow(follower, LZFlower_NLZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffLZFlowerIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+                        case IntakeNLZFlower:
+                            return sequential(
+                                    //FlowerIntake Down
+                                    follow(follower, NLZLaunchingPose_NLZFlower()),
+                                    setIntakeFlower,
+                                    follow(follower, NLZFlower_NLZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffNLZFlowerIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+                        case IntakeHP:
+                            return sequential(
+                                    setIntake,
+                                    follow(follower, NLZLaunchingPose_HPIntake()),
+                                    follow(follower, HPIntake_NLZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffHPIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+                        case Park:
+                            return sequential(
+                                    follow(follower, NLZLaunchingPose_Park())
+                            );
+                    }
+                break;
             }
         }
 
@@ -414,6 +559,17 @@ public class AutoV2 extends OpMode {
     // Start: Makes sure pedro starts correctly configured.
     @Override
     public void start() {
+
+        if (!runBuild ||
+                StartingPose == null ||
+                LaunchingPose == null ||
+                LaunchingPose2 == null) {
+
+            telemetry.addLine("ERROR: Auto setup incomplete!");
+            telemetry.update();
+            return;
+        }
+
         follower.setPose(StartingPose);
 
         activeAutoCommand = autoRoutine();
@@ -428,7 +584,7 @@ public class AutoV2 extends OpMode {
     public void loop() {
 
         follower.update();
-        Pose currentPose = follower.pose();
+        currentPose = follower.pose();
         Scheduler.execute();
 
             if (activeAutoCommand != null &&
@@ -578,22 +734,27 @@ public class AutoV2 extends OpMode {
                 launchpose = LaunchPose.Primary;
                 launchposeSelected = "Primary";
                 telemetry.addLine(launchposeSelected);
-                if(alliance == Alliance.HiveUp)
+                if(alliance == Alliance.HiveUp) {
                     LaunchingPose = NLZLaunchPosePrimary;
-                LaunchingPose2 = LZLaunchPosePrimary;
-                if(alliance == Alliance.HiveDown)
+                    LaunchingPose2 = LZLaunchPosePrimary;
+                }
+                if(alliance == Alliance.HiveDown) {
                     LaunchingPose = LZLaunchPosePrimary;
-                LaunchingPose2 = NLZLaunchPosePrimary;
-            } else if (gamepad1.dpad_right) {
+                    LaunchingPose2 = NLZLaunchPosePrimary;
+                }
+            }
+            else if (gamepad1.dpad_right) {
                 launchpose = LaunchPose.Secondary;
                 launchposeSelected = "Secondary";
                 telemetry.addLine(launchposeSelected);
-                if(alliance == Alliance.HiveUp)
+                if(alliance == Alliance.HiveUp) {
                     LaunchingPose = NLZLaunchPoseSecondary;
-                LaunchingPose2 = LZLaunchPoseSecondary;
-                if(alliance == Alliance.HiveDown)
+                    LaunchingPose2 = LZLaunchPoseSecondary;
+                }
+                if(alliance == Alliance.HiveDown) {
                     LaunchingPose = LZLaunchPoseSecondary;
-                LaunchingPose2 = NLZLaunchPoseSecondary;
+                    LaunchingPose2 = NLZLaunchPoseSecondary;
+                }
             } else if (gamepad1.circle) {
                 alliance = Alliance.UNKNOWN;
                 location = AutoStartLocation.UNKNOWN;
