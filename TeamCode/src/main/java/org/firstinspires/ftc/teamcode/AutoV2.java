@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.hold;
@@ -14,12 +15,10 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.curves.Curve;
 import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import static com.pedropathing.ivy.commands.Commands.instant;
 
@@ -31,9 +30,21 @@ public class AutoV2 extends OpMode {
     //public PIDController pidcontroller = new PIDController();
     public LauncherTest launcher = new LauncherTest(1, 1, 2);
     public Intake intake = new Intake();
-    double advanceamount = 1;
+    double advanceAmount = 1;
+    double IntakeCount = 0;
     private Command activeAutoCommand;
     private boolean nextSegmentRequested = false;
+
+
+    //Swaps Launching Poses
+    private void swapLaunchingPoses() {
+
+        Pose temp = LaunchingPose;
+
+        LaunchingPose = LaunchingPose2;
+
+        LaunchingPose2 = temp;
+    }
 
     //Case change logic
     private void changeSegment(AutoSegment next) {
@@ -47,10 +58,32 @@ public class AutoV2 extends OpMode {
     }
 
 
-    private void decideNextSegment() {
+//    private void decideNextSegment() {
+//
+//        if (advanceAmount == 1) {
+//            changeSegment(AutoSegment.IntakeHP);
+//        }
+//        else {
+//            changeCycle(CycleState.Cycle2, AutoSegment.Launch);
+//        }
+//    }
 
-        if (advanceamount == 1) {
-            changeSegment(AutoSegment.IntakeHP);
+    private void decideNextIntake() {
+        //AdvanceAmount is instead of the AprilTag output
+        if (advanceAmount == 1) {
+            if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                changeSegment(AutoSegment.IntakeHP);
+            }
+           else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
+                changeSegment(AutoSegment.IntakeNLZFlower);
+
+            }
+           else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+                changeSegment(AutoSegment.IntakeLZFlower);
+            }
+           else{
+                changeSegment(AutoSegment.Park);
+            }
         }
         else {
             changeCycle(CycleState.Cycle2, AutoSegment.Launch);
@@ -91,6 +124,7 @@ public class AutoV2 extends OpMode {
 
     private Pose StartingPose = null;
     private Pose LaunchingPose = null;
+    private Pose LaunchingPose2 = null;
 
     // Start poses:
     private Pose NLZstartPosePrimary = poseFactory.of(56, 8, 90);
@@ -107,17 +141,17 @@ public class AutoV2 extends OpMode {
 
 
     // LZ specific poses:
-    private Pose LZLaunchPoseSecondary = poseFactory.of(34.5359, 118.5674, 180);
+    private Pose LZLaunchPoseSecondary = poseFactory.of(34.5359, 118.5674, 270);
     private Pose LZLaunchPosePrimary = poseFactory.of(59.4478, 118.8165, 270);
     private Pose LZFlower = poseFactory.of(46.7427, 132.0198, 90);
 
 
     // General poses:
-    private Pose Park = poseFactory.of(9, 98, -89.1655);
+    private Pose Park = poseFactory.of(9, 98, 270);
 
 
     // Control points:
-    private Pose ParkCP = poseFactory.of(3, 7, -90);
+    private Pose ParkCP = poseFactory.of(3, 7, 270);
     private Pose startPoseCP = poseFactory.of(5.7094, 73.2003, 180);
     private Pose LZLaunchPosePrimary_LZFlower_CP = poseFactory.of(45.1712, 110.954, 90);
     private Pose LZLaunchPosePrimary_HPIntake_CP = poseFactory.of(68.7279, 0, 180);
@@ -141,26 +175,8 @@ public class AutoV2 extends OpMode {
 
 
     //Paths: Defining the actual interpolations from position to positon.
-    // Leaving start positions:
-    // NLZ:
-    Path NLZstartPosePrimary_NLZLaunchPosePrimary() {
-        return line(NLZstartPosePrimary, NLZLaunchPosePrimary).linear(NLZstartPosePrimary, NLZLaunchPosePrimary);
-    }
-
-    Path NLZstartPosePrimary_NLZLaunchPoseSecondary() {
-        return line(NLZstartPosePrimary, NLZLaunchPoseSecondary).linear(NLZstartPosePrimary, NLZLaunchPoseSecondary);
-    }
-
-    Path NLZstartPoseSecondary_NLZLaunchPosePrimary() {
-        return line(NLZstartPoseSecondary, NLZLaunchPosePrimary).linear(NLZstartPoseSecondary, NLZLaunchPosePrimary);
-    }
-
-    Path NLZstartPoseSecondary_NLZLaunchPoseSecondary() {
-        return line(NLZstartPoseSecondary, NLZLaunchPoseSecondary).linear(NLZstartPoseSecondary, NLZLaunchPoseSecondary);
-    }
-
-    // Leaving start positions:
-    // LZ:
+         // Leaving start positions:
+            // Leaving start positions
     Path StartingPose_LaunchingPose() {
         return line(StartingPose, LaunchingPose).linear(StartingPose, LaunchingPose);
     }
@@ -199,7 +215,7 @@ public class AutoV2 extends OpMode {
         return curve(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP, HPintake).heading(Interpolator.piecewise().until(0.75,Interpolator.linear(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_HPIntake_CP, HPintake)));
     }
     Path LZLaunchingPose_NLZFlower() {
-        return curve(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1,LZLaunchPosePrimary_NLZFlower_CP2 , NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, LZLaunchPosePrimary_NLZFlower_CP2)));
+        return curve(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1,LZLaunchPosePrimary_NLZFlower_CP2 , NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, NLZFlower)));
     }
     Path LZLaunchingPose_LZFlower() {
         return curve(LaunchingPose, LZLaunchPosePrimary_LZFlower_CP, LZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose, LZLaunchPosePrimary_LZFlower_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_LZFlower_CP, LZFlower)));
@@ -215,6 +231,18 @@ public class AutoV2 extends OpMode {
     }
     Path LZFlower_LZLaunchingPose() {
         return curve(LZFlower, LZLaunchPosePrimary_LZFlower_CP, LaunchingPose).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LZFlower, LZLaunchPosePrimary_LZFlower_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_LZFlower_CP, LaunchingPose)));
+    }
+
+
+    //Parks:
+    Path NLZLaunchingPose_Park() {
+        return curve(LaunchingPose,ParkCP,Park).heading(Interpolator.piecewise().until(0.75,Interpolator.linear(LaunchingPose,ParkCP)).until(1,Interpolator.linear(ParkCP, Park)));
+    }
+
+
+    //Switch Sides:
+    Path SwitchSides() {
+        return line(LaunchingPose, LaunchingPose).linear(LaunchingPose, LaunchingPose);
     }
 
 
@@ -251,7 +279,7 @@ public class AutoV2 extends OpMode {
     public LaunchPose launchpose = LaunchPose.Unknown;
     public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNUSED;
     public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNUSED;
-    public CloseFlowerIntake farFlowerIntake = CloseFlowerIntake.UNUSED;
+    public FarFlowerIntake farFlowerIntake = FarFlowerIntake.UNUSED;
     public IntakeState intakeState = IntakeState.NoElements;
 
 
@@ -264,147 +292,27 @@ public class AutoV2 extends OpMode {
     private Follower follower;
 
     //Robot's Current pose:
-    Pose currentPose = follower.pose();
+    Pose currentPose;
 
 
 // Pedro commands:
-    Command setIntake = Command.build()
-            .setStart(() -> {
-                telemetry.addLine("INTAKE START");
-                intake.intake();
-                telemetry.addLine("INTAKE START2");
-                // executed on start
-            })
-            .setExecute(() -> {
+    Command setIntake = instant(() ->intake.intake());
 
-                // executed on execute
-            })
-            //.setDone(() -> {
+    Command intakeOff = instant(() ->intake.stoptake());
 
-                // return true to end the command
-               // return false;
-            //})
-            .setEnd(endCondition -> {
+    Command setIntakeFlower = sequential(
+            instant(() -> intake.intake()),
+            waitMs(1500)
+            );
 
-                // executed on end
-            });
 
-    Command intakeOff = Command.build()
-            .setStart(() -> {
-                telemetry.addLine("INTAKE START");
-                intake.stoptake();
-                telemetry.addLine("INTAKE START2");
-                // executed on start
-            })
-            .setExecute(() -> {
+    Command MarkOffHPIntake = instant(() -> humanPlayerIntake = HumanPlayerIntake.USED);
 
-                // executed on execute
-            })
-            //.setDone(() -> {
+    Command MarkOffNLZFlowerIntake = instant(() -> closeFlowerIntake = CloseFlowerIntake.USED);
 
-            // return true to end the command
-            // return false;
-            //})
-            .setEnd(endCondition -> {
-                // executed on end
-            });
-            //.requiring(/* requirements */)
-            //.setInterruptedBehavior(/* interrupted behavior */)
-            //.setBlockedBehavior(/* blocked behavior */)
-            //.setConflictBehavior(/* conflict behavior */)
-            //.setPriority(/* priority */);
-//
-//    Command launch = Command.build()
-//            .setStart(() -> {
-//                telemetry.addLine("Launching");
-//                launcher.LaunchPollen();
-//                waitMs(timeToWaitAfterLaunch);
-//                launcher.LaunchOff();
-//                // executed on start
-//            })
-//            .setExecute(() -> {
-//
-//                // executed on execute
-//            })
-//            //.setDone(() -> {
-//
-//            // return true to end the command
-//            // return false;
-//            //})
-//            .setEnd(endCondition -> {
-//                // executed on end
-//            });
-//
-//    Command spool = Command.build()
-//            .setStart(() -> {
-//
-//               launcher.SpoolUpAndLaunch();
-//
-//                // executed on start
-//            })
-//            .setExecute(() -> {
-//
-//
-//                // executed on execute
-//            })
-//            //.setDone(() -> {
-//
-//            // return true to end the command
-//            // return false;
-//            //})
-//            .setEnd(endCondition -> {
-//
-//                // executed on end
-//            });
-//
-//    Command spool2 = Command.build()
-//            .setStart(() -> {
-//                waitMs(timeToWaitBeforeLaunch);
-//                launcher.SpoolUp();
-//
-//                // executed on start
-//            })
-//            .setExecute(() -> {
-//
-//
-//                // executed on execute
-//            })
-//            //.setDone(() -> {
-//
-//            // return true to end the command
-//            // return false;
-//            //})
-//            .setEnd(endCondition -> {
-//
-//                // executed on end
-//            });
-//
-//    Command stopLaunch = Command.build()
-//            .setStart(() -> {
-//                telemetry.addLine("Launching");
-//                launcher.stop();
-//                telemetry.addLine("INTAKE START2");
-//                // executed on start
-//            })
-//            .setExecute(() -> {
-//                telemetry.addData("Intake power", intake.Intake.getPower());
-//
-//                // executed on execute
-//            })
-//            //.setDone(() -> {
-//
-//            // return true to end the command
-//            // return false;
-//            //})
-//            .setEnd(endCondition -> {
-//                telemetry.addLine("INTAKE END: " + endCondition);
-//                // executed on end
-//            });
-    //.requiring(/* requirements */)
-    //.setInterruptedBehavior(/* interrupted behavior */)
-    //.setBlockedBehavior(/* blocked behavior */)
-    //.setConflictBehavior(/* conflict behavior */)
-    //.setPriority(/* priority */);
+    Command MarkOffLZFlowerIntake = instant(() -> farFlowerIntake = FarFlowerIntake.USED);
+
+
 
 
     // AutoRoutine: combines path following and action commands into a cohesive auto.
@@ -423,7 +331,7 @@ public class AutoV2 extends OpMode {
                                     //check atag
                                     //launch
                                     //check atag
-                                    instant(() -> decideNextSegment())
+                                    instant(() -> decideNextIntake())
                             );
 
                         case IntakeHP:
@@ -432,10 +340,40 @@ public class AutoV2 extends OpMode {
                                     follow(follower, NLZLaunchingPose_HPIntake()),
                                     follow(follower, HPIntake_NLZLaunchingPose()),
                                     intakeOff,
+                                    MarkOffHPIntake,
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
+                        case IntakeNLZFlower:
+                            return sequential(
+                                    //FlowerIntake Down
+                                    follow(follower, NLZLaunchingPose_NLZFlower()),
+                                    setIntakeFlower,
+                                    follow(follower, NLZFlower_NLZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffNLZFlowerIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+
+                        case IntakeLZFlower:
+                            return sequential(
+                                    //FlowerIntake Down
+                                    follow(follower, NLZLaunchingPose_LZFlower()),
+                                    setIntakeFlower,
+                                    follow(follower, LZFlower_NLZLaunchingPose()),
+                                    intakeOff,
+                                    MarkOffLZFlowerIntake,
+                                    instant(() -> changeSegment(AutoSegment.Launch))
+                            );
+
+                        case Park:
+                            return sequential(
+                                    follow(follower, NLZLaunchingPose_Park())
+                            );
+
                     }
+                case Cycle2:
+                    swapLaunchingPoses();
             }
         }
 
@@ -490,6 +428,7 @@ public class AutoV2 extends OpMode {
     public void loop() {
 
         follower.update();
+        Pose currentPose = follower.pose();
         Scheduler.execute();
 
             if (activeAutoCommand != null &&
@@ -641,19 +580,20 @@ public class AutoV2 extends OpMode {
                 telemetry.addLine(launchposeSelected);
                 if(alliance == Alliance.HiveUp)
                     LaunchingPose = NLZLaunchPosePrimary;
+                LaunchingPose2 = LZLaunchPosePrimary;
                 if(alliance == Alliance.HiveDown)
                     LaunchingPose = LZLaunchPosePrimary;
-
+                LaunchingPose2 = NLZLaunchPosePrimary;
             } else if (gamepad1.dpad_right) {
                 launchpose = LaunchPose.Secondary;
                 launchposeSelected = "Secondary";
                 telemetry.addLine(launchposeSelected);
-                LaunchingPose = NLZLaunchPoseSecondary;
                 if(alliance == Alliance.HiveUp)
                     LaunchingPose = NLZLaunchPoseSecondary;
+                LaunchingPose2 = LZLaunchPoseSecondary;
                 if(alliance == Alliance.HiveDown)
                     LaunchingPose = LZLaunchPoseSecondary;
-
+                LaunchingPose2 = NLZLaunchPoseSecondary;
             } else if (gamepad1.circle) {
                 alliance = Alliance.UNKNOWN;
                 location = AutoStartLocation.UNKNOWN;
@@ -676,7 +616,7 @@ public class AutoV2 extends OpMode {
                     telemetry.addLine("Building autonomous paths");
 
                     buildPaths();
-                    follower.setPose(NLZstartPosePrimary);
+                    follower.setPose(StartingPose);
 
                     runBuild = true;
                 }
