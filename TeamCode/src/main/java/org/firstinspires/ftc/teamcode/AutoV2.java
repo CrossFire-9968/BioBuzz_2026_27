@@ -601,7 +601,7 @@ public class AutoV2 extends OpMode {
         follower = Constants.create(hardwareMap);
 
         intake.init(hardwareMap);
-        launcher.init(hardwareMap);
+        //launcher.init(hardwareMap);
 
         // Log completed initialization to Panels and driver station (custom log function)
         log("Status", "Initialized");
@@ -959,5 +959,10 @@ public class AutoV2 extends OpMode {
             telemetry.addData(caption, message.toString());
             //panelsTelemetry.debug(caption + ": " + message);
         }
+    }
+    @Override
+    public void stop() {
+        OpModeStorage.LaunchingPose = follower.pose(); //saves your position in that file
+        OpModeStorage.Park = follower.pose();
     }
 }

@@ -8,7 +8,7 @@ public class OpModeStorage {
 
 
     // Where Auto started
-    public static Pose startPose = new Pose(0, 0, 0);
+    public static Pose LaunchingPose = new Pose(0, 0, 0);
 
 
     // Where Auto ended

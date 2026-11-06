@@ -63,7 +63,7 @@ public class TeleopPPTest2 extends OpMode {
 
 
             // Get where Auto originally started
-            Pose autoStartPose = OpModeStorage.startPose;
+            Pose autoStartPose = OpModeStorage.LaunchingPose;
 
 
             // Create a path from current position to Auto start
@@ -142,13 +142,13 @@ public class TeleopPPTest2 extends OpMode {
 
         telemetry.addData(
                 "Auto Start X",
-                OpModeStorage.startPose.x()
+                OpModeStorage.LaunchingPose.x()
         );
 
 
         telemetry.addData(
                 "Auto Start Y",
-                OpModeStorage.startPose.y()
+                OpModeStorage.LaunchingPose.y()
         );
 
 
