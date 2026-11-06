@@ -29,7 +29,7 @@ public class LauncherTest {
     private final double t3;
 
     //FireSpeed is in Degrees per second
-    private double FireSpeed = 100;
+    public double FireSpeed = 155;
 
     private final double CarouselPos1 = 0.25;
     private final double CarouselPos2 = 0.4;
