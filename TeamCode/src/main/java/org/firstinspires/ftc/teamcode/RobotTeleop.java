@@ -51,7 +51,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-//@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@TeleOp(name = "RobotTeleop", group = "Robot")
 //@Disabled
 
 //public class Manual extends OpMode {
@@ -61,10 +61,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //    public PrisimColor led = new PrisimColor();
 //    public ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
 //}
-/*
-public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
+
+public class RobotTeleop extends OpMode {
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
+
+    //public PIDController pidcontroller = new PIDController();
+    public LauncherTest launcher = new LauncherTest(1,1,2);
+
+    double Myspeed = 0;
 
     // This declares the five motors needed
     DcMotor frontLeftDrive;
@@ -78,8 +83,9 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
 
     @Override
     public void init() {
-        servoArm.init(hardwareMap);
+        //servoArm.init(hardwareMap);
         intake.init(hardwareMap);
+        launcher.init(hardwareMap);
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, "Motor_LF");
         frontRightDrive = hardwareMap.get(DcMotor.class, "Motor_RF");
@@ -126,9 +132,10 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
 
-        // If you press the A button, then you reset the Yaw to be zero from the way
+
+        // If you press the up dpad, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
-        if (gamepad1.a) {
+        if (gamepad1.dpad_up) {
             imu.resetYaw();
         }
         // If you press x, you get a drive from the point of view of the robot
@@ -139,25 +146,42 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
         // If you press y, servo extends and then retracts on release
-        if (gamepad1.y) {
-            servoArm.deployedPosition();
-        } else {
-            servoArm.toHome();
-        }
-       // If you press X the intake turns on
-        if (gamepad1.right_bumper) {
-//            intake.intakeSpeed(-1);
+        //if (gamepad1.y) {
+        //    servoArm.deployedPosition();
+        //} else {
+        //    servoArm.toHome();
+        //}
+        // If you press right bumper the intake turns on
+
+
+        if (gamepad2.triangle) {
             intake.intake();
-;       }
-        else if (gamepad1.left_bumper) {
-//            intake.intakeSpeed(1);
+        }
+        else if (gamepad2.square) {
             intake.outake();
         }
         else {
 //            intake.intakeSpeed(0);
             intake.stoptake();
         }
+
+        if (gamepad2.left_bumper) {
+           launcher.SpoolUpAndLaunch();
+            //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
+            if (gamepad2.right_bumper) {
+                launcher.LaunchPollen();
+            }
+                launcher.SpoolUpAndLaunch();
+                //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
+
+        }
+        else {
+            launcher.LaunchOff();
+        }
+
     }
+
+
 
     // This routine drives the robot field relative
     private void driveFieldRelative(double forward, double right, double rotate) {
@@ -187,7 +211,7 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         double backLeftPower = forward - right + rotate;
 
         double maxPower = 1.0;
-        double maxSpeed = .5;  // make this slower for outreaches
+        double maxSpeed = 1.0;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
         // It allows us to keep all of the motors in proportion to what they should
@@ -206,4 +230,3 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
 }
-*/

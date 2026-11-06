@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedro;
+package org.firstinspires.ftc.teamcode;
 
 
 import com.pedropathing.api.PoseFactory;
@@ -6,7 +6,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.qualcomm.hardware.ams.AMSColorSensor;
+import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
@@ -27,19 +27,25 @@ import static java.util.concurrent.locks.LockSupport.park;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Intake;
-import org.firstinspires.ftc.teamcode.OpModeStorage;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 //@Configurable
 @Autonomous(name = "OneCycle1Intake")
 public class OneCycle1Intake extends OpMode {
 
+    //public PIDController pidcontroller = new PIDController();
+
+    public LauncherTest launcher = new LauncherTest(1,1,2);
+
     public Intake intake = new Intake();
     // Initialize poses
     public Constants constants = new Constants();
+
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private Pose startPose = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose startPoseControlPoint = PoseFactory.degrees().of(0, 0, 0);
     private Pose launchPose = PoseFactory.degrees().of(0, 0, 0);
 
     //private Pose HPIntakeApproach = PoseFactory.degrees().of(0,0,0);
@@ -56,18 +62,21 @@ public class OneCycle1Intake extends OpMode {
 
     public double variable = 0;
 
+    public double timeToWaitAfterLaunch = 1000;
+    public double timeToWaitBeforeLaunch = 1000;
+
 
 
     //set Enum so that we can select Position
-    private enum Alliance {BLUE, RED, UNKNOWN}
+    public enum Alliance {HiveUp, HiveDown, UNKNOWN}
     //set Enum so that we can select Position
-    private enum AutoStartLocation {GOAL, POINT, UNKNOWN}
+    private enum AutoStartLocation {Red, Blue, UNKNOWN}
 
-    Alliance alliance = Alliance.UNKNOWN;
-    AutoStartLocation location = AutoStartLocation.UNKNOWN;
+    public Alliance alliance = Alliance.UNKNOWN;
+    public static AutoStartLocation location = AutoStartLocation.UNKNOWN;
     boolean runBuild = false;
     String allianceSelected = "";
-    String locationSelected = "";
+    public static String locationSelected = "";
 
     // Other Variables
     //public Yeeter yeeter = new Yeeter();
@@ -99,6 +108,117 @@ public class OneCycle1Intake extends OpMode {
                 // executed on start
             })
             .setExecute(() -> {
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+                // return true to end the command
+               // return false;
+            //})
+            .setEnd(endCondition -> {
+
+                // executed on end
+            });
+
+    Command intakeOff = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("INTAKE START");
+                intake.stoptake();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                // executed on end
+            });
+            //.requiring(/* requirements */)
+            //.setInterruptedBehavior(/* interrupted behavior */)
+            //.setBlockedBehavior(/* blocked behavior */)
+            //.setConflictBehavior(/* conflict behavior */)
+            //.setPriority(/* priority */);
+
+    Command launch = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("Launching");
+                launcher.LaunchPollen();
+                waitMs(timeToWaitAfterLaunch);
+                launcher.LaunchOff();
+                // executed on start
+            })
+            .setExecute(() -> {
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                // executed on end
+            });
+
+    Command spool = Command.build()
+            .setStart(() -> {
+
+               launcher.SpoolUpAndLaunch();
+
+                // executed on start
+            })
+            .setExecute(() -> {
+
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+
+                // executed on end
+            });
+
+    Command spool2 = Command.build()
+            .setStart(() -> {
+                waitMs(timeToWaitBeforeLaunch);
+                launcher.SpoolUp();
+
+                // executed on start
+            })
+            .setExecute(() -> {
+
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+
+                // executed on end
+            });
+
+    Command stopLaunch = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("Launching");
+                launcher.stop();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
                 telemetry.addData("Intake power", intake.Intake.getPower());
 
                 // executed on execute
@@ -110,7 +230,6 @@ public class OneCycle1Intake extends OpMode {
             //})
             .setEnd(endCondition -> {
                 telemetry.addLine("INTAKE END: " + endCondition);
-                intake.stoptake();
                 // executed on end
             });
     //.requiring(/* requirements */)
@@ -124,8 +243,12 @@ public class OneCycle1Intake extends OpMode {
 // Establish paths: these lines create the interpolations from coordinate-to-coordinate,
 // also interpolating heading at the same time.
 
+    //Path CycleThenIntakeGarden() {
+    //    return curve(startPose, startPoseControlPoint, HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
+    //}
+
     Path CycleThenIntakeGarden() {
-        return line(startPose, HPintake).linear(startPose, HPintake);
+        return line(startPose,HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
     }
 
     // Path approachIntake() {
@@ -137,11 +260,15 @@ public class OneCycle1Intake extends OpMode {
     //}
 
     Path parkInSpot() {
-        return curve(HPintake, ParkControlPoint, Park).linear(HPintake, Park);
+        return curve(startPose, ParkControlPoint, Park).linear(startPose, Park);
     }
 
     Path CycleThenApproachFlower() {
         return curve(startPose, FlowerIntakeControlPoint, FlowerIntake).linear(startPose, FlowerIntake);
+    }
+
+    Path CycleAfterIntake() {
+        return line(FlowerIntake, startPose).linear(FlowerIntake, startPose);
     }
 
     Path FlowerIntake() {
@@ -154,18 +281,28 @@ public class OneCycle1Intake extends OpMode {
         return line(FlowerIntakeRotate, startPose).linear(FlowerIntakeRotate, startPose);
     }
 
-    // Tested commenting out the if statement, which made it run, so the issue is either
+// Tested commenting out the if statement, which made it run, so the issue is either
     //most likely with the alliance not selecting or the if structure
     private Command autoRoutine() {
-        if (alliance == Alliance.BLUE) {
+        if (alliance == Alliance.HiveUp) {
             return sequential(
 
-                    setIntake,
+                    sequential(
+                    spool2,
+                    launch
+                            ),
 
                     deadline(
                             follow(follower, CycleThenIntakeGarden()),
                             setIntake
                     ),
+
+                    spool,
+                    follow(follower, CycleAfterIntake()),
+
+                    launch,
+
+
 
                     //follow(follower, CycleThenIntakeGarden()),
 
@@ -173,21 +310,29 @@ public class OneCycle1Intake extends OpMode {
 
                     //follow(follower, intakeFromHP()),
 
-                    follow(follower, parkInSpot())
+
+                    sequential(
+                            intakeOff,
+                            follow(follower, parkInSpot())
+
+                    )
+
+
+
             );
         }
 
-        if (alliance == Alliance.RED) {
-            return sequential(
+        if (alliance == Alliance.HiveDown) {
+           return sequential(
 
                     follow(follower, CycleThenApproachFlower()),
 
-                    instant(() -> hold(follower).schedule()),
+                   instant(() -> hold(follower).schedule()),
 
-                    waitMs(10000),
+                   waitMs(10000),
 
 
-                    follow(follower, FlowerIntake()),
+                   follow(follower, FlowerIntake()),
 
 
 
@@ -205,18 +350,19 @@ public class OneCycle1Intake extends OpMode {
 
     private void loadPreset(Alliance alliance, AutoStartLocation location) {
 
-        if (alliance == Alliance.BLUE) {
-            startPose = poseFactory.of(56, 8, 180);
-            HPintake = poseFactory.of(8, 8, 180);
-            Park = poseFactory.of(9, 90, -89.1655);
-            ParkControlPoint = poseFactory.of(30, 40, -89.1655);
+        if (alliance == Alliance.HiveUp) {
+            startPose = poseFactory.of(56, 8, 90);
+            startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 180);
+            HPintake = poseFactory.of(7.5, 15, 180);
+            Park = poseFactory.of(9, 98, -89.1655);
+            ParkControlPoint = poseFactory.of(3, 7, -90);
             //FlowerIntake = poseFactory.of(56, 8, 180);
             //FlowerIntakeRotate = poseFactory.of(56, 8, 180);
             //launchPose = poseFactory.of(56, 8, 180);
             //startPose = poseFactory.of(56, 8, 180);
         }
 
-        if (alliance == Alliance.RED) {
+        if (alliance == Alliance.HiveDown) {
             startPose = poseFactory.of(80.8022, 8.636, 90);
             FlowerIntakeControlPoint = poseFactory.of(76.8989, 30.4281, 0);
             FlowerIntake = poseFactory.of(85,30, -105);
@@ -225,19 +371,6 @@ public class OneCycle1Intake extends OpMode {
             //ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
             //Park = poseFactory.of(9, 90, -89.1655);
             //ParkControlPoint = poseFactory.of(30, 40, -89.1655);
-        }
-
-        if (alliance == Alliance.RED && location == AutoStartLocation.POINT) {
-
-            //add coordinates here
-
-        }
-
-
-        if (alliance == Alliance.BLUE && location == AutoStartLocation.POINT) {
-
-            //add coordinates here
-
         }
     }
 
@@ -250,6 +383,7 @@ public class OneCycle1Intake extends OpMode {
         follower = Constants.create(hardwareMap);
 
         intake.init(hardwareMap);
+        launcher.init(hardwareMap);
 
 
         // Log completed initialization to Panels and driver station (custom log function)
@@ -311,21 +445,21 @@ public class OneCycle1Intake extends OpMode {
         if (alliance == Alliance.UNKNOWN) {
 
 
-            telemetry.addLine("Select Alliance");
+            telemetry.addLine("Select Position");
             telemetry.addLine("");
-            telemetry.addLine("Dpad Up: Blue");
-            telemetry.addLine("Dpad Down: Red");
+            telemetry.addLine("Dpad Up: HiveUp");
+            telemetry.addLine("Dpad Down: HiveDown");
 
             if (gamepad1.dpad_up) {
 
-                alliance = Alliance.BLUE;
-                allianceSelected = "BLUE";
+                alliance = Alliance.HiveUp;
+                allianceSelected = "HiveUp";
                 telemetry.addLine(allianceSelected);
 
             } else if (gamepad1.dpad_down) {
 
-                alliance = Alliance.RED;
-                allianceSelected = "RED";
+                alliance = Alliance.HiveDown;
+                allianceSelected = "HiveDown";
                 telemetry.addLine(allianceSelected);
 
             }
@@ -340,23 +474,19 @@ public class OneCycle1Intake extends OpMode {
 
             telemetry.addLine("Alliance Selected: " + allianceSelected);
             telemetry.addLine("");
-            telemetry.addLine("Select Start Location");
-            telemetry.addLine("Dpad Left: Goal");
-            telemetry.addLine("Dpad Right: Point");
-            telemetry.addLine("");
             telemetry.addLine("Circle: Start Over");
             telemetry.addLine(String.valueOf(gamepad1));
 
             if (gamepad1.dpad_left) {
 
-                location = AutoStartLocation.GOAL;
-                locationSelected = "GOAL";
+                location = AutoStartLocation.Red;
+                locationSelected = "Red";
                 telemetry.addLine(locationSelected);
 
             } else if (gamepad1.dpad_right) {
 
-                location = AutoStartLocation.POINT;
-                locationSelected = "POINT";
+                location = AutoStartLocation.Blue;
+                locationSelected = "Blue";
                 telemetry.addLine(locationSelected);
 
             } else if (gamepad1.circle) {
@@ -376,7 +506,7 @@ public class OneCycle1Intake extends OpMode {
             if (alliance != Alliance.UNKNOWN &&
                     location != AutoStartLocation.UNKNOWN) {
 
-                telemetry.addLine("run build about to run");
+                telemetry.addLine("runbuild about to run");
 
                 runBuild = true;
 
@@ -539,13 +669,5 @@ public class OneCycle1Intake extends OpMode {
             //panelsTelemetry.debug(caption + ": " + message);
 
         }
-    }
-    // in your autonomous
-
-
-    @Override
-    public void stop() {
-        OpModeStorage.startPose = follower.pose(); //saves your position in that file
-        OpModeStorage.Park = follower.pose();
     }
 }
