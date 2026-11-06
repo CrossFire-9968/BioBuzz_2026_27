@@ -103,7 +103,7 @@ public class AutoV2 extends OpMode {
                     changeSegment(AutoSegment.Park);
                 }
             } else {
-                changeCycle(CycleState.Cycle3, AutoSegment.SwitchSide);
+                changeSegment(AutoSegment.SwitchSide);
             }
         }
 
@@ -124,6 +124,49 @@ public class AutoV2 extends OpMode {
                 }
             } else {
                 changeSegment(AutoSegment.Park);
+            }
+        }
+    }
+
+
+    private void decideIntakeOrLaunchAfterSideSwitch(CycleState nextCycle) {
+
+        // If we already have balls, launch immediately.
+        if (intakeState == IntakeState.ElementsContained) {
+
+            changeCycle(nextCycle, AutoSegment.Launch);
+            return;
+        }
+
+        // Otherwise, we need to find an available intake.
+        if (nextCycle == CycleState.Cycle2) {
+
+            if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeLZFlower);
+
+            } else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeNLZFlower);
+
+            } else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeHP);
+
+            } else {
+                changeCycle(nextCycle, AutoSegment.Park);
+            }
+
+        } else if (nextCycle == CycleState.Cycle3) {
+
+            if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeNLZFlower);
+
+            } else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeLZFlower);
+
+            } else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeHP);
+
+            } else {
+                changeCycle(nextCycle, AutoSegment.Park);
             }
         }
     }
@@ -230,7 +273,7 @@ public class AutoV2 extends OpMode {
         return curve(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower)));
     }
     Path NLZLaunchingPose_LZFlower() {
-        return curve(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP, LZFlower).linear(LaunchingPose, LZFlower);
+        return curve(LaunchingPose, NLZLaunchPosePrimary_LZFlower_CP, LZFlower).linear(LaunchingPose, LZFlower);
     }
 
 
@@ -242,7 +285,7 @@ public class AutoV2 extends OpMode {
         return curve(NLZFlower, NLZLaunchPosePrimary_NLZFlower_CP,LaunchingPose).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(NLZFlower, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP,LaunchingPose)));
     }
     Path LZFlower_NLZLaunchingPose() {
-        return curve(LZFlower, NLZLaunchPosePrimary_NLZFlower_CP,LaunchingPose).linear(LZFlower,LaunchingPose);
+        return curve(LZFlower, NLZLaunchPosePrimary_LZFlower_CP,LaunchingPose).linear(LZFlower,LaunchingPose);
     }
 
 
@@ -321,7 +364,7 @@ public class AutoV2 extends OpMode {
     public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNUSED;
     public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNUSED;
     public FarFlowerIntake farFlowerIntake = FarFlowerIntake.UNUSED;
-    public IntakeState intakeState = IntakeState.NoElements;
+    public IntakeState intakeState = IntakeState.ElementsContained;
 
 
     // Misc:
@@ -372,6 +415,7 @@ public class AutoV2 extends OpMode {
                                     //check atag
                                     //launch
                                     //check atag
+                                    instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
 
@@ -382,6 +426,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, HPIntake_NLZLaunchingPose()),
                                     intakeOff,
                                     MarkOffHPIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
@@ -393,6 +438,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, NLZFlower_NLZLaunchingPose()),
                                     intakeOff,
                                     MarkOffNLZFlowerIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
@@ -404,6 +450,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, LZFlower_NLZLaunchingPose()),
                                     intakeOff,
                                     MarkOffLZFlowerIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
@@ -411,8 +458,10 @@ public class AutoV2 extends OpMode {
                             return sequential(
                                     follow(follower, SwitchSides()),
                                     instant(() -> swapLaunchingPoses()),
-                                    instant(()-> changeCycle(CycleState.Cycle2, AutoSegment.Launch))
-                                    );
+                                    instant(() -> decideIntakeOrLaunchAfterSideSwitch(
+                                            CycleState.Cycle2
+                                    ))
+                            );
 
                             case Park:
                             return sequential(
@@ -430,6 +479,7 @@ public class AutoV2 extends OpMode {
                                     //check atag
                                     //launch
                                     //check atag
+                                    instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
                             case IntakeLZFlower:
@@ -440,6 +490,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, LZFlower_LZLaunchingPose()),
                                     intakeOff,
                                     MarkOffLZFlowerIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
                             case IntakeNLZFlower:
@@ -450,6 +501,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, NLZFlower_LZLaunchingPose()),
                                     intakeOff,
                                     MarkOffNLZFlowerIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
                             case IntakeHP:
@@ -459,6 +511,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, HPIntake_LZLaunchingPose()),
                                     intakeOff,
                                     MarkOffHPIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
                             case Park:
@@ -469,7 +522,9 @@ public class AutoV2 extends OpMode {
                             return sequential(
                                     follow(follower, SwitchSides()),
                                     instant(() -> swapLaunchingPoses()),
-                                    instant(()-> changeCycle(CycleState.Cycle2, AutoSegment.Launch))
+                                    instant(() -> decideIntakeOrLaunchAfterSideSwitch(
+                                            CycleState.Cycle3
+                                    ))
                             );
                     }
                     break;
@@ -482,6 +537,7 @@ public class AutoV2 extends OpMode {
                                     //check atag
                                     //launch
                                     //check atag
+                                    instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
                         case IntakeLZFlower:
@@ -492,6 +548,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, LZFlower_NLZLaunchingPose()),
                                     intakeOff,
                                     MarkOffLZFlowerIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
                         case IntakeNLZFlower:
@@ -502,6 +559,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, NLZFlower_NLZLaunchingPose()),
                                     intakeOff,
                                     MarkOffNLZFlowerIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
                         case IntakeHP:
@@ -511,6 +569,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, HPIntake_NLZLaunchingPose()),
                                     intakeOff,
                                     MarkOffHPIntake,
+                                    instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
                         case Park:
