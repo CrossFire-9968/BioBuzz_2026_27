@@ -347,9 +347,9 @@ public class AutoV2 extends OpMode {
     public enum AutoStartLocation {Red, Blue, UNKNOWN}
     public enum StartPose {Primary, Secondary, Unknown}
     public enum LaunchPose {Primary, Secondary, Unknown}
-    public enum HumanPlayerIntake {UNUSED,USED}
-    public enum CloseFlowerIntake {UNUSED,USED}
-    public enum FarFlowerIntake {UNUSED,USED}
+    public enum HumanPlayerIntake {UNUSED,USED,UNKNOWN}
+    public enum CloseFlowerIntake {UNUSED,USED,UNKNOWN}
+    public enum FarFlowerIntake {UNUSED,USED,UNKNOWN}
     public enum IntakeState {ElementsContained, NoElements}
 
 
@@ -361,9 +361,9 @@ public class AutoV2 extends OpMode {
     public AutoStartLocation location = AutoStartLocation.UNKNOWN;
     public StartPose startpose = StartPose.Unknown;
     public LaunchPose launchpose = LaunchPose.Unknown;
-    public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNUSED;
-    public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNUSED;
-    public FarFlowerIntake farFlowerIntake = FarFlowerIntake.UNUSED;
+    public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+    public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+    public FarFlowerIntake farFlowerIntake = FarFlowerIntake.UNKNOWN;
     public IntakeState intakeState = IntakeState.ElementsContained;
 
 
@@ -373,6 +373,10 @@ public class AutoV2 extends OpMode {
     public static String locationSelected = "";
     public static String startposeSelected = "";
     public static String launchposeSelected = "";
+    public static String humanplayerintakeselected = "";
+    public static String closeflowerintakeselected = "";
+    public static String farflowerintakeselected = "";
+
     private Follower follower;
 
     //Robot's Current pose:
@@ -746,8 +750,8 @@ public class AutoV2 extends OpMode {
 
         else if (startpose == StartPose.Unknown) {
             telemetry.addLine("Select Starting Pose");
-            telemetry.addLine("Dpad Left: Primary");
-            telemetry.addLine("Dpad Right: Secondary");
+            telemetry.addLine("Dpad Up: Primary");
+            telemetry.addLine("Dpad Down: Secondary");
             telemetry.addLine("");
             telemetry.addLine("Alliance: " + allianceSelected);
             telemetry.addLine("Location: " + locationSelected);
@@ -755,7 +759,7 @@ public class AutoV2 extends OpMode {
             telemetry.addLine("Circle: Start Over");
             telemetry.addLine(String.valueOf(gamepad1));
 
-            if (gamepad1.dpad_left) {
+            if (gamepad1.dpad_up) {
                 startpose = StartPose.Primary;
                 startposeSelected = "Primary";
                 telemetry.addLine(startposeSelected);
@@ -764,7 +768,7 @@ public class AutoV2 extends OpMode {
                 if(alliance == Alliance.HiveDown)
                     StartingPose = LZstartPosePrimary;
 
-            } else if (gamepad1.dpad_right) {
+            } else if (gamepad1.dpad_down) {
                 startpose = StartPose.Secondary;
                 startposeSelected = "Secondary";
                 telemetry.addLine(startposeSelected);
@@ -793,7 +797,7 @@ public class AutoV2 extends OpMode {
             telemetry.addLine("Dpad Left: Primary");
             telemetry.addLine("Dpad Right: Secondary");
             telemetry.addLine("");
-            telemetry.addLine("Start Pose: " + startposeSelected);
+            telemetry.addLine("Launch Pose: " + launchposeSelected);
             telemetry.addLine("");
             telemetry.addLine("Circle: Start Over");
             telemetry.addLine(String.valueOf(gamepad1));
@@ -834,12 +838,134 @@ public class AutoV2 extends OpMode {
                 launchposeSelected = "";
                 runBuild = false;
             }
-        } else {
+            }
+
+             else if (humanPlayerIntake == HumanPlayerIntake.UNKNOWN) {
+                telemetry.addLine("Mark Human Player Intake");
+                telemetry.addLine("Dpad Up: Use");
+                telemetry.addLine("Dpad Down: Don't Use");
+                telemetry.addLine("");
+                telemetry.addLine("Intake Usage: " + humanplayerintakeselected);
+                telemetry.addLine("");
+                telemetry.addLine("Circle: Start Over");
+                telemetry.addLine(String.valueOf(gamepad1));
+
+                if (gamepad1.dpad_up) {
+                    humanPlayerIntake = HumanPlayerIntake.UNUSED;
+                    humanplayerintakeselected = "Open";
+                    telemetry.addLine(humanplayerintakeselected);
+                }
+                if (gamepad1.dpad_down) {
+                    humanPlayerIntake = HumanPlayerIntake.USED;
+                    humanplayerintakeselected = "Closed";
+                    telemetry.addLine(humanplayerintakeselected);
+                }
+              else if (gamepad1.circle) {
+                    alliance = Alliance.UNKNOWN;
+                    location = AutoStartLocation.UNKNOWN;
+                    startpose = StartPose.Unknown;
+                    launchpose = LaunchPose.Unknown;
+                    humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                    allianceSelected = "";
+                    locationSelected = "";
+                    startposeSelected = "";
+                    launchposeSelected = "";
+                    humanplayerintakeselected = "";
+                    runBuild = false;
+                }
+            }
+
+        else if (closeFlowerIntake == CloseFlowerIntake.UNKNOWN) {
+            telemetry.addLine("Mark Close Flower Intake");
+            telemetry.addLine("Dpad Left: Use");
+            telemetry.addLine("Dpad Right: Don't Use");
+            telemetry.addLine("");
+            telemetry.addLine("Intake Usage: " + closeflowerintakeselected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+
+            if (gamepad1.dpad_left) {
+                closeFlowerIntake = CloseFlowerIntake.UNUSED;
+                closeflowerintakeselected = "Open";
+                telemetry.addLine(closeflowerintakeselected);
+            }
+
+            if (gamepad1.dpad_right) {
+                closeFlowerIntake = CloseFlowerIntake.USED;
+                closeflowerintakeselected = "Closed";
+                telemetry.addLine(closeflowerintakeselected);
+            }
+
+            else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+                launchposeSelected = "";
+                humanplayerintakeselected = "";
+                closeflowerintakeselected = "";
+                runBuild = false;
+            }
+        }
+
+        else if (farFlowerIntake == FarFlowerIntake.UNKNOWN) {
+            telemetry.addLine("Mark Far Flower Intake");
+            telemetry.addLine("Dpad Up: Use");
+            telemetry.addLine("Dpad Down: Don't Use");
+            telemetry.addLine("");
+            telemetry.addLine("Intake Usage: " + farflowerintakeselected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+
+            if (gamepad1.dpad_up) {
+                farFlowerIntake = FarFlowerIntake.UNUSED;
+                farflowerintakeselected = "Open";
+                telemetry.addLine(farflowerintakeselected);
+            }
+
+            if (gamepad1.dpad_down) {
+                farFlowerIntake = FarFlowerIntake.USED;
+                farflowerintakeselected = "Closed";
+                telemetry.addLine(farflowerintakeselected);
+            }
+
+            else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+                farFlowerIntake = FarFlowerIntake.UNKNOWN;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+                launchposeSelected = "";
+                humanplayerintakeselected = "";
+                closeflowerintakeselected = "";
+                farflowerintakeselected = "";
+                runBuild = false;
+            }
+        }
+
+
+
+
+        else {
 
             if (alliance != Alliance.UNKNOWN &&
                     location != AutoStartLocation.UNKNOWN &&
                     launchpose != LaunchPose.Unknown &&
-                    startpose != StartPose.Unknown) {
+                    startpose != StartPose.Unknown && humanPlayerIntake != HumanPlayerIntake.UNKNOWN && closeFlowerIntake != CloseFlowerIntake.UNKNOWN && farFlowerIntake != FarFlowerIntake.UNKNOWN) {
 
                 if (!runBuild) {
                     telemetry.addLine("Building autonomous paths");
@@ -878,11 +1004,18 @@ public class AutoV2 extends OpMode {
                 location = AutoStartLocation.UNKNOWN;
                 startpose = StartPose.Unknown;
                 launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+                farFlowerIntake = FarFlowerIntake.UNKNOWN;
+
 
                 allianceSelected = "";
                 locationSelected = "";
                 startposeSelected = "";
                 launchposeSelected = "";
+                humanplayerintakeselected = "";
+                closeflowerintakeselected = "";
+                farflowerintakeselected = "";
 
                 runBuild = false;
             }
@@ -953,10 +1086,16 @@ public class AutoV2 extends OpMode {
 
 
         // Sends everything above to the Driver Station
+        telemetry.addData("Selected Section", location);
+        telemetry.addData("Selected Alliance", alliance);
         telemetry.addData("Selected Start Pose", startpose);
         telemetry.addData("Selected Launch Pose", launchpose);
+        telemetry.addData("Human Player Intake State", humanPlayerIntake);
+        telemetry.addData("Close Flower Intake State", closeFlowerIntake);
+        telemetry.addData("Far Flower Intake State", farFlowerIntake);
         telemetry.update();
     }
+
 
 
     // State machine handling the yeeting of elements in autonomous
