@@ -28,12 +28,9 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-//import static org.firstinspires.ftc.teamcode.RobotHiveDistanceCalculation.RobotToHiveDistance;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -56,18 +53,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-//@TeleOp(name = "PIDController", group = "Robot")
-//@Disabled
-//public class PIDController {
+@TeleOp(name = "PIDController", group = "Robot")
+@Disabled
+public class PIDController {
 
 //    RobotHiveDistanceCalculation robotHiveDistanceCalculation = new RobotHiveDistanceCalculation();
-/*
-    DcMotorEx Launcher1;
-    //DcMotorEx Launcher2;
 
-    public static final double NEW_P = 1;
-    public static final double NEW_I = 1;
-    public static final double NEW_D = 0;
+    DcMotorEx Launcher1;
+    DcMotorEx Launcher2;
+
+    public static final double kp = 1;
+    public static final double ki = 1;
+    public static final double kd = 0;
     public static final double NEW_F = 0;
 
     //Nectar target speed. Adjust for pollen.
@@ -78,16 +75,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
     public void init(HardwareMap hwMap) {
         Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
-        //Launcher2 = hwMap.get(DcMotorEx.class, "Launcher2");
+        Launcher2 = hwMap.get(DcMotorEx.class, "Launcher2");
 
         Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //Launcher2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        Launcher2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         //Get coefficients for the RUN_USING_ENCODER RunMode.
         //PIDFCoefficients pidfOrig = Launcher1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Change coefficients using methods included with DcMotorEx class.
-        PIDFCoefficients pidfNew = new PIDFCoefficients(NEW_P, NEW_I, NEW_D, NEW_F);
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, NEW_F);
         Launcher1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
 
         //telemetry.setAutoClear(false);
@@ -104,14 +101,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //            TargetSpeed_DegPerSec -= 5;
 //        } else if (gamepad1.dpadRightWasPressed()) {
 //            TargetSpeed_DegPerSec += 5;
-//        } else if (gamepad1.dpadDownWasPressed()) {
-//            TargetSpeed_DegPerSec = 0;
 //        }
 
 
         //Driving speed control motor
-        Launcher1.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
-        Launcher1.setDirection(DcMotorEx.Direction.REVERSE);
+        Launcher2.setVelocity(TargetSpeed_DegPerSec, AngleUnit.DEGREES);
+        Launcher2.setDirection(DcMotorEx.Direction.REVERSE);
         //Launcher2.setPower(-0.6);
 
 
@@ -131,6 +126,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //
 //        telemetry.update();
     }
-  }
 
- */
+    public void stopMotor() {
+        Launcher2.setVelocity(0, AngleUnit.DEGREES);
+    }
+  }
