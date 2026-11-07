@@ -293,7 +293,7 @@ public class AutoV2 extends OpMode {
     //Primary:
     //Intakes:
     Path LZLaunchingPose_HPIntake() {
-        return curve(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP, HPintake).heading(Interpolator.piecewise().until(0.75,Interpolator.linear(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_HPIntake_CP, HPintake)));
+        return line(LaunchingPose, HPintake).linear(LaunchingPose, HPintake);
     }
     Path LZLaunchingPose_NLZFlower() {
         return curve(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1,LZLaunchPosePrimary_NLZFlower_CP2 , NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, NLZFlower)));
