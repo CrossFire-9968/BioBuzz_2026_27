@@ -20,16 +20,17 @@ public class LauncherTest {
     public CRServo IntakeServo1;
     public CRServo IntakeServo2;
 
-    public static final double kp = 1;
-    public static final double ki = 1;
-    public static final double kd = 0;
+    public double kp = 5.5;
+    public double ki = 3.3;
+    public double kd = 0;
 
     private final double t1;
     private final double t2;
     private final double t3;
 
     //FireSpeed is in Degrees per second
-    public double FireSpeed = 155;
+    public double FireSpeed = 163;
+    //155 is a good FireSpeed for swapped robot/forward spin.
 
     private final double CarouselPos1 = 0.25;
     private final double CarouselPos2 = 0.4;
@@ -58,8 +59,7 @@ public class LauncherTest {
         Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         Launcher1.setDirection(DcMotorEx.Direction.REVERSE);
 
-        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, 0.0);
-        Launcher1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
+        setPID();
 
         CarouselServo = hwMap.get(Servo.class, "CarouselServo");
 
@@ -70,6 +70,11 @@ public class LauncherTest {
         IntakeServo2.setDirection(CRServo.Direction.FORWARD);
 
         lastLoopTime = System.nanoTime();
+    }
+
+    public void setPID() {
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, 0.0);
+        Launcher1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
     }
 
     public void LaunchPollen() {
