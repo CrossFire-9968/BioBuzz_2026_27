@@ -91,8 +91,11 @@ public class TeleopPPTest2 extends OpMode {
 
             double distance = Math.hypot(dx, dy);
 
-            if (distance < .5) {
+            if (distance < 1.5) {
                 returningToStart = false;
+            }
+            if (gamepad1.squareWasPressed() && returningToStart){
+                returningToStart=false;
             }
         }
         // Only allow manual driving when NOT returning
