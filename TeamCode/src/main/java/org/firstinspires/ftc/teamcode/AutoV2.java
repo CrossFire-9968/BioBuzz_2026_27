@@ -208,14 +208,14 @@ public class AutoV2 extends OpMode {
     private Pose LaunchingPose2 = null;
 
     // Start poses:
-    private Pose NLZstartPosePrimary = poseFactory.of(56, 8, 90);
+    private Pose NLZstartPosePrimary = poseFactory.of(56, 0, 90);
     private Pose NLZstartPoseSecondary = poseFactory.of(33.9378, 8.7899, 90);
     private Pose LZstartPosePrimary = poseFactory.of(58.62, 133.2152, 270);
     private Pose LZstartPoseSecondary = poseFactory.of(33.4306, 133.0461, 270);
 
 
     // NLZ specific poses:
-    private Pose HPintake = poseFactory.of(7.5, 15, 180);
+    private Pose HPintake = poseFactory.of(11.3642, 9.3267, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
     private Pose NLZLaunchPosePrimary = poseFactory.of(58.7005, 17.6739, 90);
@@ -242,7 +242,7 @@ public class AutoV2 extends OpMode {
     private Pose NLZLaunchPosePrimary_NLZFlower_CP = poseFactory.of(27.982, 22.7656, 180);
     private Pose NLZLaunchPosePrimary_LZFlower_CP = poseFactory.of(62.98, 101.3146, 90);
     private Pose NLZLaunchPoseSecondary_NLZFlower_CP = poseFactory.of(36.7012, 40.9513, 180);
-    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 3.7692, 180);
+    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 10, 180);
     private Pose LZLaunchPoseSecondary_HPIntake_CP = poseFactory.of(40.6105, 3.2279, 180);
     private Pose LZLaunchPoseSecondary_NLZFlower_CP1 = poseFactory.of(38.2093, 45.4206, 90);
     private Pose NLZLaunchPoseSecondary_HPintake_CP = poseFactory.of(34.9573, 5.8255, 180);
@@ -256,18 +256,18 @@ public class AutoV2 extends OpMode {
 
 
     //Paths: Defining the actual interpolations from position to positon.
-         // Leaving start positions:
-            // Leaving start positions
+    // Leaving start positions:
+    // Leaving start positions
     Path StartingPose_LaunchingPose() {
         return line(StartingPose, LaunchingPose).linear(StartingPose, LaunchingPose);
     }
 
 
     //NLZ Cycles:
-        //Primary:
-            //Intakes:
+    //Primary:
+    //Intakes:
     Path NLZLaunchingPose_HPIntake() {
-        return line(LaunchingPose, HPintake).linear(LaunchingPose, HPintake);
+        return curve(LaunchingPose, NLZLaunchPosePrimary_HPintake_CP, HPintake).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose, NLZLaunchPosePrimary_HPintake_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_HPintake_CP ,HPintake)));
     }
     Path NLZLaunchingPose_NLZFlower() {
         return curve(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower)));
@@ -277,9 +277,9 @@ public class AutoV2 extends OpMode {
     }
 
 
-            //Returns:
+    //Returns:
     Path HPIntake_NLZLaunchingPose() {
-        return curve(HPintake, NLZLaunchPosePrimary_HPintake_CP, LaunchingPose).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(HPintake, NLZLaunchPosePrimary_HPintake_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_HPintake_CP, LaunchingPose)));
+        return line(HPintake, LaunchingPose).linear(HPintake,LaunchingPose);
     }
     Path NLZFlower_NLZLaunchingPose() {
         return curve(NLZFlower, NLZLaunchPosePrimary_NLZFlower_CP,LaunchingPose).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(NLZFlower, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP,LaunchingPose)));
@@ -290,10 +290,10 @@ public class AutoV2 extends OpMode {
 
 
     //LZ Cycles:
-        //Primary:
-            //Intakes:
+    //Primary:
+    //Intakes:
     Path LZLaunchingPose_HPIntake() {
-        return curve(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP, HPintake).heading(Interpolator.piecewise().until(0.75,Interpolator.linear(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP)).until(1,Interpolator.linear(LZLaunchPosePrimary_HPIntake_CP, HPintake)));
+        return line(LaunchingPose, HPintake).linear(LaunchingPose, HPintake);
     }
     Path LZLaunchingPose_NLZFlower() {
         return curve(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1,LZLaunchPosePrimary_NLZFlower_CP2 , NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, NLZFlower)));
@@ -347,9 +347,9 @@ public class AutoV2 extends OpMode {
     public enum AutoStartLocation {Red, Blue, UNKNOWN}
     public enum StartPose {Primary, Secondary, Unknown}
     public enum LaunchPose {Primary, Secondary, Unknown}
-    public enum HumanPlayerIntake {UNUSED,USED}
-    public enum CloseFlowerIntake {UNUSED,USED}
-    public enum FarFlowerIntake {UNUSED,USED}
+    public enum HumanPlayerIntake {UNUSED,USED,UNKNOWN}
+    public enum CloseFlowerIntake {UNUSED,USED,UNKNOWN}
+    public enum FarFlowerIntake {UNUSED,USED,UNKNOWN}
     public enum IntakeState {ElementsContained, NoElements}
 
 
@@ -361,9 +361,9 @@ public class AutoV2 extends OpMode {
     public AutoStartLocation location = AutoStartLocation.UNKNOWN;
     public StartPose startpose = StartPose.Unknown;
     public LaunchPose launchpose = LaunchPose.Unknown;
-    public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNUSED;
-    public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNUSED;
-    public FarFlowerIntake farFlowerIntake = FarFlowerIntake.UNUSED;
+    public HumanPlayerIntake humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+    public CloseFlowerIntake closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+    public FarFlowerIntake farFlowerIntake = FarFlowerIntake.UNKNOWN;
     public IntakeState intakeState = IntakeState.ElementsContained;
 
 
@@ -373,13 +373,17 @@ public class AutoV2 extends OpMode {
     public static String locationSelected = "";
     public static String startposeSelected = "";
     public static String launchposeSelected = "";
+    public static String humanplayerintakeselected = "";
+    public static String closeflowerintakeselected = "";
+    public static String farflowerintakeselected = "";
+
     private Follower follower;
 
     //Robot's Current pose:
     Pose currentPose;
 
 
-// Pedro commands:
+    // Pedro commands:
     Command setIntake = instant(() ->intake.intake());
 
     Command intakeOff = instant(() ->intake.stoptake());
@@ -387,7 +391,7 @@ public class AutoV2 extends OpMode {
     Command setIntakeFlower = sequential(
             instant(() -> intake.intake()),
             waitMs(1500)
-            );
+    );
 
 
     Command MarkOffHPIntake = instant(() -> humanPlayerIntake = HumanPlayerIntake.USED);
@@ -405,12 +409,12 @@ public class AutoV2 extends OpMode {
             switch (cycleState) {
                 case Cycle1:
                     switch (autoSegment) {
-                            case LeavePark:
+                        case LeavePark:
                             return sequential(
                                     follow(follower, StartingPose_LaunchingPose()),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
-                            case Launch:
+                        case Launch:
                             return sequential(
                                     //check atag
                                     //launch
@@ -419,7 +423,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> decideNextIntake())
                             );
 
-                            case IntakeHP:
+                        case IntakeHP:
                             return sequential(
                                     setIntake,
                                     follow(follower, NLZLaunchingPose_HPIntake()),
@@ -430,7 +434,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
-                            case IntakeNLZFlower:
+                        case IntakeNLZFlower:
                             return sequential(
                                     //FlowerIntake Down
                                     follow(follower, NLZLaunchingPose_NLZFlower()),
@@ -442,7 +446,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
-                            case IntakeLZFlower:
+                        case IntakeLZFlower:
                             return sequential(
                                     //FlowerIntake Down
                                     follow(follower, NLZLaunchingPose_LZFlower()),
@@ -454,7 +458,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
 
-                            case SwitchSide:
+                        case SwitchSide:
                             return sequential(
                                     follow(follower, SwitchSides()),
                                     instant(() -> swapLaunchingPoses()),
@@ -463,7 +467,7 @@ public class AutoV2 extends OpMode {
                                     ))
                             );
 
-                            case Park:
+                        case Park:
                             return sequential(
                                     follow(follower, NLZLaunchingPose_Park())
                             );
@@ -482,7 +486,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
-                            case IntakeLZFlower:
+                        case IntakeLZFlower:
                             return sequential(
                                     //FlowerIntake Down
                                     follow(follower, LZLaunchingPose_LZFlower()),
@@ -493,7 +497,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
-                            case IntakeNLZFlower:
+                        case IntakeNLZFlower:
                             return sequential(
                                     //FlowerIntake Down
                                     follow(follower, LZLaunchingPose_NLZFlower()),
@@ -504,7 +508,7 @@ public class AutoV2 extends OpMode {
                                     instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
-                            case IntakeHP:
+                        case IntakeHP:
                             return sequential(
                                     setIntake,
                                     follow(follower, LZLaunchingPose_HPIntake()),
@@ -514,11 +518,11 @@ public class AutoV2 extends OpMode {
                                     instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(() -> changeSegment(AutoSegment.Launch))
                             );
-                            case Park:
+                        case Park:
                             return sequential(
                                     follow(follower, LZLaunchingPose_Park())
                             );
-                            case SwitchSide:
+                        case SwitchSide:
                             return sequential(
                                     follow(follower, SwitchSides()),
                                     instant(() -> swapLaunchingPoses()),
@@ -577,7 +581,7 @@ public class AutoV2 extends OpMode {
                                     follow(follower, NLZLaunchingPose_Park())
                             );
                     }
-                break;
+                    break;
             }
         }
 
@@ -601,7 +605,7 @@ public class AutoV2 extends OpMode {
         follower = Constants.create(hardwareMap);
 
         intake.init(hardwareMap);
-        launcher.init(hardwareMap);
+        //launcher.init(hardwareMap);
 
         // Log completed initialization to Panels and driver station (custom log function)
         log("Status", "Initialized");
@@ -646,21 +650,21 @@ public class AutoV2 extends OpMode {
         currentPose = follower.pose();
         Scheduler.execute();
 
-            if (activeAutoCommand != null &&
-                    !Scheduler.isScheduled(activeAutoCommand)) {
+        if (activeAutoCommand != null &&
+                !Scheduler.isScheduled(activeAutoCommand)) {
 
-                activeAutoCommand = null;
+            activeAutoCommand = null;
 
-                if (nextSegmentRequested) {
-                    nextSegmentRequested = false;
+            if (nextSegmentRequested) {
+                nextSegmentRequested = false;
 
-                    activeAutoCommand = autoRoutine();
+                activeAutoCommand = autoRoutine();
 
-                    if (activeAutoCommand != null) {
-                        schedule(activeAutoCommand);
-                    }
+                if (activeAutoCommand != null) {
+                    schedule(activeAutoCommand);
                 }
             }
+        }
 
         // add your other methods needed in the loop here
         //telemetryData.addData("X", follower.pose().x());
@@ -745,12 +749,17 @@ public class AutoV2 extends OpMode {
 
 
         else if (startpose == StartPose.Unknown) {
-            telemetry.addLine("Start Pose Selected: " + startposeSelected);
+            telemetry.addLine("Select Starting Pose");
+            telemetry.addLine("Dpad Up: Primary");
+            telemetry.addLine("Dpad Down: Secondary");
+            telemetry.addLine("");
+            telemetry.addLine("Alliance: " + allianceSelected);
+            telemetry.addLine("Location: " + locationSelected);
             telemetry.addLine("");
             telemetry.addLine("Circle: Start Over");
             telemetry.addLine(String.valueOf(gamepad1));
 
-            if (gamepad1.dpad_left) {
+            if (gamepad1.dpad_up) {
                 startpose = StartPose.Primary;
                 startposeSelected = "Primary";
                 telemetry.addLine(startposeSelected);
@@ -759,7 +768,7 @@ public class AutoV2 extends OpMode {
                 if(alliance == Alliance.HiveDown)
                     StartingPose = LZstartPosePrimary;
 
-            } else if (gamepad1.dpad_right) {
+            } else if (gamepad1.dpad_down) {
                 startpose = StartPose.Secondary;
                 startposeSelected = "Secondary";
                 telemetry.addLine(startposeSelected);
@@ -784,7 +793,11 @@ public class AutoV2 extends OpMode {
 
 
         } else if (launchpose == LaunchPose.Unknown) {
-            telemetry.addLine("Launch Pose Selected: " + launchposeSelected);
+            telemetry.addLine("Select Launching Pose");
+            telemetry.addLine("Dpad Left: Primary");
+            telemetry.addLine("Dpad Right: Secondary");
+            telemetry.addLine("");
+            telemetry.addLine("Launch Pose: " + launchposeSelected);
             telemetry.addLine("");
             telemetry.addLine("Circle: Start Over");
             telemetry.addLine(String.valueOf(gamepad1));
@@ -825,15 +838,157 @@ public class AutoV2 extends OpMode {
                 launchposeSelected = "";
                 runBuild = false;
             }
-        } else {
+            }
+
+             else if (humanPlayerIntake == HumanPlayerIntake.UNKNOWN) {
+                telemetry.addLine("Mark Human Player Intake");
+                telemetry.addLine("Dpad Up: Use");
+                telemetry.addLine("Dpad Down: Don't Use");
+                telemetry.addLine("");
+                telemetry.addLine("Intake Usage: " + humanplayerintakeselected);
+                telemetry.addLine("");
+                telemetry.addLine("Circle: Start Over");
+                telemetry.addLine(String.valueOf(gamepad1));
+
+                if (gamepad1.dpad_up) {
+                    humanPlayerIntake = HumanPlayerIntake.UNUSED;
+                    humanplayerintakeselected = "Open";
+                    telemetry.addLine(humanplayerintakeselected);
+                }
+                if (gamepad1.dpad_down) {
+                    humanPlayerIntake = HumanPlayerIntake.USED;
+                    humanplayerintakeselected = "Closed";
+                    telemetry.addLine(humanplayerintakeselected);
+                }
+              else if (gamepad1.circle) {
+                    alliance = Alliance.UNKNOWN;
+                    location = AutoStartLocation.UNKNOWN;
+                    startpose = StartPose.Unknown;
+                    launchpose = LaunchPose.Unknown;
+                    humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                    allianceSelected = "";
+                    locationSelected = "";
+                    startposeSelected = "";
+                    launchposeSelected = "";
+                    humanplayerintakeselected = "";
+                    runBuild = false;
+                }
+            }
+
+        else if (closeFlowerIntake == CloseFlowerIntake.UNKNOWN) {
+            telemetry.addLine("Mark Close Flower Intake");
+            telemetry.addLine("Dpad Left: Use");
+            telemetry.addLine("Dpad Right: Don't Use");
+            telemetry.addLine("");
+            telemetry.addLine("Intake Usage: " + closeflowerintakeselected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+
+            if (gamepad1.dpad_left) {
+                closeFlowerIntake = CloseFlowerIntake.UNUSED;
+                closeflowerintakeselected = "Open";
+                telemetry.addLine(closeflowerintakeselected);
+            }
+
+            if (gamepad1.dpad_right) {
+                closeFlowerIntake = CloseFlowerIntake.USED;
+                closeflowerintakeselected = "Closed";
+                telemetry.addLine(closeflowerintakeselected);
+            }
+
+            else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+                launchposeSelected = "";
+                humanplayerintakeselected = "";
+                closeflowerintakeselected = "";
+                runBuild = false;
+            }
+        }
+
+        else if (farFlowerIntake == FarFlowerIntake.UNKNOWN) {
+            telemetry.addLine("Mark Far Flower Intake");
+            telemetry.addLine("Dpad Up: Use");
+            telemetry.addLine("Dpad Down: Don't Use");
+            telemetry.addLine("");
+            telemetry.addLine("Intake Usage: " + farflowerintakeselected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+
+            if (gamepad1.dpad_up) {
+                farFlowerIntake = FarFlowerIntake.UNUSED;
+                farflowerintakeselected = "Open";
+                telemetry.addLine(farflowerintakeselected);
+            }
+
+            if (gamepad1.dpad_down) {
+                farFlowerIntake = FarFlowerIntake.USED;
+                farflowerintakeselected = "Closed";
+                telemetry.addLine(farflowerintakeselected);
+            }
+
+            else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+                farFlowerIntake = FarFlowerIntake.UNKNOWN;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+                launchposeSelected = "";
+                humanplayerintakeselected = "";
+                closeflowerintakeselected = "";
+                farflowerintakeselected = "";
+                runBuild = false;
+            }
+        }
+
+
+
+
+        else {
 
             if (alliance != Alliance.UNKNOWN &&
                     location != AutoStartLocation.UNKNOWN &&
                     launchpose != LaunchPose.Unknown &&
-                    startpose != StartPose.Unknown) {
+                    startpose != StartPose.Unknown && humanPlayerIntake != HumanPlayerIntake.UNKNOWN && closeFlowerIntake != CloseFlowerIntake.UNKNOWN && farFlowerIntake != FarFlowerIntake.UNKNOWN) {
 
                 if (!runBuild) {
                     telemetry.addLine("Building autonomous paths");
+                    telemetry.addLine("");
+
+// Display all selected settings
+                    telemetry.addData("Alliance", allianceSelected);
+                    telemetry.addData("Location", locationSelected);
+                    telemetry.addData("Starting Pose", startposeSelected);
+                    telemetry.addData("Launching Pose", launchposeSelected);
+
+                    telemetry.addLine("");
+
+// Display the actual pose coordinates
+                    if (StartingPose != null) {
+                        telemetry.addData("Start X", StartingPose.x());
+                        telemetry.addData("Start Y", StartingPose.y());
+                    }
+
+                    if (LaunchingPose != null) {
+                        telemetry.addData("Launch X", LaunchingPose.x());
+                        telemetry.addData("Launch Y", LaunchingPose.y());
+                    }
 
                     buildPaths();
                     follower.setPose(StartingPose);
@@ -849,11 +1004,18 @@ public class AutoV2 extends OpMode {
                 location = AutoStartLocation.UNKNOWN;
                 startpose = StartPose.Unknown;
                 launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                closeFlowerIntake = CloseFlowerIntake.UNKNOWN;
+                farFlowerIntake = FarFlowerIntake.UNKNOWN;
+
 
                 allianceSelected = "";
                 locationSelected = "";
                 startposeSelected = "";
                 launchposeSelected = "";
+                humanplayerintakeselected = "";
+                closeflowerintakeselected = "";
+                farflowerintakeselected = "";
 
                 runBuild = false;
             }
@@ -924,8 +1086,16 @@ public class AutoV2 extends OpMode {
 
 
         // Sends everything above to the Driver Station
+        telemetry.addData("Selected Section", location);
+        telemetry.addData("Selected Alliance", alliance);
+        telemetry.addData("Selected Start Pose", startpose);
+        telemetry.addData("Selected Launch Pose", launchpose);
+        telemetry.addData("Human Player Intake State", humanPlayerIntake);
+        telemetry.addData("Close Flower Intake State", closeFlowerIntake);
+        telemetry.addData("Far Flower Intake State", farFlowerIntake);
         telemetry.update();
     }
+
 
 
     // State machine handling the yeeting of elements in autonomous
