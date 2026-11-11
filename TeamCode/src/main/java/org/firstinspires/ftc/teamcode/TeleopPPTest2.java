@@ -30,7 +30,7 @@ public class TeleopPPTest2 extends OpMode {
 
     // This tells us whether the robot is currently returning to Auto start
     private boolean returningToStart = false;
-
+    private boolean returningToLaunch = false;
 
     @Override
     public void init() {
@@ -40,7 +40,7 @@ public class TeleopPPTest2 extends OpMode {
 
 
         // Start TeleOp localization from where Auto ended
-        follower.setPose(OpModeStorage.Park);
+        follower.setPose(OpModeStorage.NewLaunch);
     }
 
 
@@ -75,8 +75,37 @@ public class TeleopPPTest2 extends OpMode {
             } else {
                 telemetry.addLine("Already at Auto start!");
             }
-        }
 
+            // Check whether Triangle was pressed
+            if (gamepad1.xWasPressed() && !returningToLaunch) {
+
+                Pose current2Pose = follower.pose();
+                Pose LaunchPose = OpModeStorage.NewLaunch;
+
+                // Calculate distance to the destination
+                double bx = LaunchPose.x() - current2Pose.x();
+                double by = LaunchPose.y() - current2Pose.y();
+
+                if (Math.hypot(bx, by) > 1.5) {
+
+                    Path returnPath = line(
+                            current2Pose,
+                            LaunchPose
+                    ).linear(
+                            current2Pose,
+                            LaunchPose
+                    );
+
+                    // Schedule Pedro's path-following command
+                    schedule(follow(follower, returnPath));
+
+                    returningToLaunch = true;
+
+                } else {
+                    telemetry.addLine("Already at Auto Launch!");
+                }
+            }
+        }
         // Update localization
         follower.update();
 
@@ -85,6 +114,7 @@ public class TeleopPPTest2 extends OpMode {
         if (returningToStart) {
             Pose currentPose = follower.pose();
             Pose targetPose = OpModeStorage.LaunchingPose;
+
 
             double dx = targetPose.x() - currentPose.x();
             double dy = targetPose.y() - currentPose.y();
@@ -110,7 +140,36 @@ public class TeleopPPTest2 extends OpMode {
 
             follower.manual(powers);
         }
+        Scheduler.execute();
+        if (returningToStart) {
+            Pose currentPose = follower.pose();
+            Pose targetPose = OpModeStorage.LaunchingPose;
 
+
+            double dx = targetPose.x() - currentPose.x();
+            double dy = targetPose.y() - currentPose.y();
+
+            double distance = Math.hypot(dx, dy);
+
+            if (distance < 1.5) {
+                returningToStart = false;
+            }
+            if (gamepad1.squareWasPressed() && returningToStart){
+                returningToStart=false;
+            }
+        }
+        // Only allow manual driving when NOT returning
+        if (!returningToStart) {
+
+            DrivePowers powers = ManualDrive.fieldCentric(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
+                    follower.pose().heading()
+            );
+
+            follower.manual(powers);
+        }
         // Telemetry
         Pose robotPose = follower.pose();
 

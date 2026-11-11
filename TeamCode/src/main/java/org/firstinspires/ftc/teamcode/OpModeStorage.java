@@ -12,7 +12,8 @@ public class OpModeStorage {
 
 
     // Where Auto ended
-    public static Pose Park = new Pose(0, 0, 0);
+    public static Pose NewLaunch = new Pose(22, 22, 45);
 
+//22,22,45
 
 }
