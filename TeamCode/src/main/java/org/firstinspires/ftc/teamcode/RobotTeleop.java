@@ -110,9 +110,9 @@ public class RobotTeleop extends OpMode {
 
         // Production Robot and Outreach Robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
 //        // Outreach Robot
 //        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
