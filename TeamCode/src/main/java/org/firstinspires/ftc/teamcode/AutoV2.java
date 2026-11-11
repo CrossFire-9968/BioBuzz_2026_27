@@ -36,6 +36,14 @@ public class AutoV2 extends OpMode {
     private boolean nextSegmentRequested = false;
 
 
+    //tries to fix path inconsistency
+    private Command followFully(Path path) {
+        return Command.build()
+                .setStart(() -> follower.follow(path))
+                .setDone(() -> !follower.following());
+    }
+
+
     //Swaps Launching Poses
     private void swapLaunchingPoses() {
 
@@ -224,7 +232,7 @@ public class AutoV2 extends OpMode {
     // LZ specific poses:
     private Pose LZLaunchPoseSecondary = poseFactory.of(34.5359, 118.5674, 270);
     private Pose LZLaunchPosePrimary = poseFactory.of(59.4478, 118.8165, 270);
-    private Pose LZFlower = poseFactory.of(46.7427, 132.0198, 90);
+    private Pose LZFlower = poseFactory.of(46.7427, 120, 90);
 
 
     // General poses:
@@ -649,6 +657,7 @@ public class AutoV2 extends OpMode {
         follower.update();
         currentPose = follower.pose();
         Scheduler.execute();
+        telemetry.addData("Pinpoint Heading", Math.toDegrees(follower.pose().heading()));
 
         if (activeAutoCommand != null &&
                 !Scheduler.isScheduled(activeAutoCommand)) {
@@ -838,42 +847,42 @@ public class AutoV2 extends OpMode {
                 launchposeSelected = "";
                 runBuild = false;
             }
-            }
+        }
 
-             else if (humanPlayerIntake == HumanPlayerIntake.UNKNOWN) {
-                telemetry.addLine("Mark Human Player Intake");
-                telemetry.addLine("Dpad Up: Use");
-                telemetry.addLine("Dpad Down: Don't Use");
-                telemetry.addLine("");
-                telemetry.addLine("Intake Usage: " + humanplayerintakeselected);
-                telemetry.addLine("");
-                telemetry.addLine("Circle: Start Over");
-                telemetry.addLine(String.valueOf(gamepad1));
+        else if (humanPlayerIntake == HumanPlayerIntake.UNKNOWN) {
+            telemetry.addLine("Mark Human Player Intake");
+            telemetry.addLine("Dpad Up: Use");
+            telemetry.addLine("Dpad Down: Don't Use");
+            telemetry.addLine("");
+            telemetry.addLine("Intake Usage: " + humanplayerintakeselected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
 
-                if (gamepad1.dpad_up) {
-                    humanPlayerIntake = HumanPlayerIntake.UNUSED;
-                    humanplayerintakeselected = "Open";
-                    telemetry.addLine(humanplayerintakeselected);
-                }
-                if (gamepad1.dpad_down) {
-                    humanPlayerIntake = HumanPlayerIntake.USED;
-                    humanplayerintakeselected = "Closed";
-                    telemetry.addLine(humanplayerintakeselected);
-                }
-              else if (gamepad1.circle) {
-                    alliance = Alliance.UNKNOWN;
-                    location = AutoStartLocation.UNKNOWN;
-                    startpose = StartPose.Unknown;
-                    launchpose = LaunchPose.Unknown;
-                    humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
-                    allianceSelected = "";
-                    locationSelected = "";
-                    startposeSelected = "";
-                    launchposeSelected = "";
-                    humanplayerintakeselected = "";
-                    runBuild = false;
-                }
+            if (gamepad1.dpad_up) {
+                humanPlayerIntake = HumanPlayerIntake.UNUSED;
+                humanplayerintakeselected = "Open";
+                telemetry.addLine(humanplayerintakeselected);
             }
+            if (gamepad1.dpad_down) {
+                humanPlayerIntake = HumanPlayerIntake.USED;
+                humanplayerintakeselected = "Closed";
+                telemetry.addLine(humanplayerintakeselected);
+            }
+            else if (gamepad1.circle) {
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+                startpose = StartPose.Unknown;
+                launchpose = LaunchPose.Unknown;
+                humanPlayerIntake = HumanPlayerIntake.UNKNOWN;
+                allianceSelected = "";
+                locationSelected = "";
+                startposeSelected = "";
+                launchposeSelected = "";
+                humanplayerintakeselected = "";
+                runBuild = false;
+            }
+        }
 
         else if (closeFlowerIntake == CloseFlowerIntake.UNKNOWN) {
             telemetry.addLine("Mark Close Flower Intake");
