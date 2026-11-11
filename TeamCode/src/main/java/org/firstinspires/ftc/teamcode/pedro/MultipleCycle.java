@@ -15,6 +15,8 @@ import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.OpModeStorage;
+
 //@Configurable
 @Autonomous(name = "MultipleCycle")
 public class MultipleCycle extends OpMode {
@@ -351,4 +353,5 @@ public class MultipleCycle extends OpMode {
             //panelsTelemetry.debug(caption + ": " + message);
         }
     }
+
 }

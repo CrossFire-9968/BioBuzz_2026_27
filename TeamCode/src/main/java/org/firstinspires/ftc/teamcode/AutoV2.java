@@ -19,6 +19,7 @@ import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import static com.pedropathing.ivy.commands.Commands.instant;
 
@@ -1138,5 +1139,10 @@ public class AutoV2 extends OpMode {
             telemetry.addData(caption, message.toString());
             //panelsTelemetry.debug(caption + ": " + message);
         }
+    }
+    @Override
+    public void stop() {
+        OpModeStorage.LaunchingPose = follower.pose(); //saves your position in that file
+        OpModeStorage.Park = follower.pose();
     }
 }
