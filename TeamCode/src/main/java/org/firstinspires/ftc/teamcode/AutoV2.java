@@ -31,7 +31,7 @@ public class AutoV2 extends OpMode {
     //public PIDController pidcontroller = new PIDController();
     public LauncherTest launcher = new LauncherTest(1, 1, 2);
     public Intake intake = new Intake();
-    double advanceAmount = 0;
+    double advanceAmount = 1;
     double IntakeCount = 0;
     private Command activeAutoCommand;
     private boolean nextSegmentRequested = false;
@@ -236,9 +236,9 @@ public class AutoV2 extends OpMode {
     private Pose LaunchingPose2 = null;
 
     // Start poses:
-    private Pose NLZstartPosePrimary = poseFactory.of(56, 0, 90);
+    private Pose NLZstartPosePrimary = poseFactory.of(70.7156, 7.558, 0);
     private Pose NLZstartPoseSecondary = poseFactory.of(33.9378, 8.7899, 90);
-    private Pose LZstartPosePrimary = poseFactory.of(58.62, 133.2152, 270);
+    private Pose LZstartPosePrimary = poseFactory.of(72.6809, 27.9969, 180);
     private Pose LZstartPoseSecondary = poseFactory.of(33.4306, 133.0461, 270);
 
 
@@ -246,7 +246,7 @@ public class AutoV2 extends OpMode {
     private Pose HPintake = poseFactory.of(11.3642, 9.3267, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
-    private Pose NLZLaunchPosePrimary = poseFactory.of(22, 22, 135);
+    private Pose NLZLaunchPosePrimary = poseFactory.of(22, 22, 185);
 
 
     // LZ specific poses:
