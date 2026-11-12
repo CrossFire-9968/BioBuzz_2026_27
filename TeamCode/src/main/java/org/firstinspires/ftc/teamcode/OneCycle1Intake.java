@@ -35,7 +35,7 @@ public class OneCycle1Intake extends OpMode {
 
     //public PIDController pidcontroller = new PIDController();
 
-    public LauncherTest launcher = new LauncherTest(1,1,2);
+    public Launcher launcher = new Launcher(1,1,2);
 
     public Intake intake = new Intake();
     // Initialize poses
@@ -192,7 +192,7 @@ public class OneCycle1Intake extends OpMode {
     Command spool2 = Command.build()
             .setStart(() -> {
                 waitMs(timeToWaitBeforeLaunch);
-                launcher.SpoolUp();
+                launcher.SpoolUpAndLaunch();
 
                 // executed on start
             })
@@ -214,7 +214,7 @@ public class OneCycle1Intake extends OpMode {
     Command stopLaunch = Command.build()
             .setStart(() -> {
                 telemetry.addLine("Launching");
-                launcher.stop();
+                launcher.LaunchOff();
                 telemetry.addLine("INTAKE START2");
                 // executed on start
             })
