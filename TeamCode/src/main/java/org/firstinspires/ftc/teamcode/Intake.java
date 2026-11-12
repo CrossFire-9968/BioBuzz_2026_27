@@ -44,7 +44,7 @@ public class Intake
         //Intake2.setPower(power);
     }
     public void intake() {
-        Intake.setPower(1);
+        Intake.setPower(-1);
 //        IntakeServo1.setPower(-1);
 //        IntakeServo2.setPower(1);
 
