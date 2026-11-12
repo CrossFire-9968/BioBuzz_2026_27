@@ -22,8 +22,8 @@ public class LauncherTest {
 
     private double FireSpeed = 0.5;
 
-    private final double CarouselPos1 = 0.25;
-    private final double CarouselPos2 = 0.4;
+    private final double CarouselPos1 = 0;
+    private final double CarouselPos2 = 1;
 
     public enum State {
         ServoWheels,
