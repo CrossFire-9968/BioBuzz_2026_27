@@ -63,11 +63,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //}
 
 public class RobotTeleop extends OpMode {
+    boolean beebot = false;
     public ServoArm servoArm = new ServoArm();
     public Intake intake = new Intake();
 
     //public PIDController pidcontroller = new PIDController();
-    public Launcher launcher = new Launcher(1,1,2);
+    public Launcher launcher = new Launcher(1,0.5,0.5);
 
     double Myspeed = 0;
 
@@ -94,31 +95,27 @@ public class RobotTeleop extends OpMode {
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        // Compitition
+        // Compitition and Beebot
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-
-//        // We set the left motors in reverse which is needed for drive trains where the left
-//        // motors are opposite to the right ones.
-//        // Bee Bot - Nemo
-//        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-//        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
 
         imu = hardwareMap.get(IMU.class, "imu");
 
-        // Production Robot and Outreach Robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection;
 
-//        // Outreach Robot
-//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-//                RevHubOrientationOnRobot.LogoFacingDirection.UP;
-//        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-//                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        if (beebot == false) {
+            // Production Robot
+            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+        }
+        else {
+            // Outreach Robot
+            logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+            usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+        }
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -140,7 +137,7 @@ public class RobotTeleop extends OpMode {
         }
         // If you press x, you get a drive from the point of view of the robot
         // (much like driving an RC vehicle)
-        if (gamepad1.x) {
+        if (gamepad1.square) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
@@ -163,6 +160,15 @@ public class RobotTeleop extends OpMode {
         else {
 //            intake.intakeSpeed(0);
             intake.stoptake();
+
+        }
+        if (beebot == true) {
+            if (gamepad1.right_bumper) {
+                intake.intake();
+            }
+            if (gamepad1.left_bumper) {
+                intake.outake();
+            }
         }
 
         if (gamepad2.left_bumper) {
