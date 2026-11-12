@@ -67,7 +67,7 @@ public class RobotTeleop extends OpMode {
     public Intake intake = new Intake();
 
     //public PIDController pidcontroller = new PIDController();
-    public LauncherTest launcher = new LauncherTest(1,1,2);
+    public Launcher launcher = new Launcher(1,1,2);
 
     double Myspeed = 0;
 

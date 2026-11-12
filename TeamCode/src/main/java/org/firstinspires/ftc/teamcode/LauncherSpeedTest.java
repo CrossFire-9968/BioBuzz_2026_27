@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "LauncherSpeedTest")
 public class LauncherSpeedTest extends OpMode {
 
-    public LauncherTest launcher = new LauncherTest(1, 1, 2);
+    public Launcher launcher = new Launcher(1, 1, 2);
 
     public void init() {
         launcher.init(hardwareMap);

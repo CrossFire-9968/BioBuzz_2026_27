@@ -35,7 +35,7 @@ public class OneCycle1Intake extends OpMode {
 
     //public PIDController pidcontroller = new PIDController();
 
-    public LauncherTest launcher = new LauncherTest(1,1,2);
+    public Launcher launcher = new Launcher(1,1,2);
 
     public Intake intake = new Intake();
     // Initialize poses

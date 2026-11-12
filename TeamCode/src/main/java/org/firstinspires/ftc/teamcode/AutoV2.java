@@ -5,7 +5,6 @@ import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.groups.Groups.sequential;
-import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.ivy.pedro.PedroCommands.hold;
 
 import com.pedropathing.api.PoseFactory;
@@ -14,12 +13,10 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.curves.Curve;
 import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 //@Configurable
@@ -28,7 +25,7 @@ public class AutoV2 extends OpMode {
 
     // Establishes classes:
     //public PIDController pidcontroller = new PIDController();
-    public LauncherTest launcher = new LauncherTest(1, 1, 2);
+    public Launcher launcher = new Launcher(1, 1, 2);
     public Intake intake = new Intake();
 
 
