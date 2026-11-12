@@ -1,0 +1,645 @@
+package org.firstinspires.ftc.teamcode;
+
+
+import static com.pedropathing.api.Paths.curve;
+import static com.pedropathing.api.Paths.line;
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.deadline;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static com.pedropathing.ivy.pedro.PedroCommands.hold;
+
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.interpolator.Interpolator;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.teamcode.pedro.Constants;
+
+//@Configurable
+@Autonomous(name = "Scrim1park")
+public class Scrim1Park extends OpMode {
+
+    //public PIDController pidcontroller = new PIDController();
+
+    public LauncherTest launcher = new LauncherTest(1,1,2);
+
+    public Intake intake = new Intake();
+    // Initialize poses
+    public Constants constants = new Constants();
+
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private Pose startPose = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose startPose2 = PoseFactory.degrees().of(81.3281, 131.17, 270);
+
+    private Pose startPoseControlPoint = PoseFactory.degrees().of(0, 0, 0);
+    private Pose launchPose = PoseFactory.degrees().of(0, 0, 0);
+
+    //private Pose HPIntakeApproach = PoseFactory.degrees().of(0,0,0);
+    private Pose HPintake = PoseFactory.degrees().of(0, 0, 0);
+    private Pose Park = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose Park2 = PoseFactory.degrees().of(136.7443, 35.8459, 0);
+
+    private Pose ParkControlPoint = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose FlowerIntake = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose FlowerIntakeRotate = PoseFactory.degrees().of(0, 0, 0);
+
+    private Pose FlowerIntakeControlPoint = PoseFactory.degrees().of(0, 0, 0);
+
+    public double variable = 0;
+
+    public double timeToWaitAfterLaunch = 1000;
+    public double timeToWaitBeforeLaunch = 1000;
+
+
+
+    //set Enum so that we can select Position
+    public enum Alliance {HiveUp, HiveDown, UNKNOWN}
+    //set Enum so that we can select Position
+    private enum AutoStartLocation {Red, Blue, UNKNOWN}
+
+    public Alliance alliance = Alliance.UNKNOWN;
+    public static AutoStartLocation location = AutoStartLocation.UNKNOWN;
+    boolean runBuild = false;
+    String allianceSelected = "";
+    public static String locationSelected = "";
+
+    // Other Variables
+    //public Yeeter yeeter = new Yeeter();
+
+    // Initialize variables for paths
+    //private PathChain scorePreload;
+
+
+    private Follower follower;
+
+
+    //private TelemetryManager panelsTelemetry; // Panels telemetry
+
+    // Add robot Master states
+    private enum masterStateEnum {}
+
+    private enum masterSideState {BLUE, RED}
+
+    private masterStateEnum masterState;
+    private masterStateEnum MotifPose;
+
+
+
+    Command setIntake = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("INTAKE START");
+                intake.intake();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+
+                // executed on end
+            });
+
+    Command intakeOff = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("INTAKE START");
+                intake.stoptake();
+                telemetry.addLine("INTAKE START2");
+                // executed on start
+            })
+            .setExecute(() -> {
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                // executed on end
+            });
+    //.requiring(/* requirements */)
+    //.setInterruptedBehavior(/* interrupted behavior */)
+    //.setBlockedBehavior(/* blocked behavior */)
+    //.setConflictBehavior(/* conflict behavior */)
+    //.setPriority(/* priority */);
+
+    Command launch = Command.build()
+            .setStart(() -> {
+                telemetry.addLine("Launching");
+                intake.intake();
+                //launcher.LaunchPollenAuto();
+                //launcher.LaunchPollenAuto();
+                //launcher.LaunchPollenAuto();
+                //launcher.LaunchPollenAuto();
+                //waitMs(timeToWaitAfterLaunch);
+                launcher.LaunchOff();
+                intake.stoptake();
+                // executed on start
+            })
+            .setExecute(() -> {
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+                // executed on end
+            });
+
+    Command spool = Command.build()
+            .setStart(() -> {
+
+                launcher.SpoolUpAndLaunch();
+
+                // executed on start
+            })
+            .setExecute(() -> {
+
+
+                // executed on execute
+            })
+            //.setDone(() -> {
+
+            // return true to end the command
+            // return false;
+            //})
+            .setEnd(endCondition -> {
+
+                // executed on end
+            });
+
+//    Command spool2 = Command.build()
+//            .setStart(() -> {
+//                launcher.SpoolUp();
+//                waitMs(timeToWaitBeforeLaunch);
+//
+//
+//                // executed on start
+//            })
+//            .setExecute(() -> {
+//
+//
+//                // executed on execute
+//            })
+//            //.setDone(() -> {
+//
+//            // return true to end the command
+//            // return false;
+//            //})
+//            .setEnd(endCondition -> {
+//
+//                // executed on end
+//            });
+
+//    Command stopLaunch = Command.build()
+//            .setStart(() -> {
+//                telemetry.addLine("Launching");
+//                launcher.stop();
+//                telemetry.addLine("INTAKE START2");
+//                // executed on start
+//            })
+//            .setExecute(() -> {
+//                telemetry.addData("Intake power", intake.Intake.getPower());
+//
+//                // executed on execute
+//            })
+//            //.setDone(() -> {
+//
+//            // return true to end the command
+//            // return false;
+//            //})
+//            .setEnd(endCondition -> {
+//                telemetry.addLine("INTAKE END: " + endCondition);
+//                // executed on end
+//            });
+    //.requiring(/* requirements */)
+    //.setInterruptedBehavior(/* interrupted behavior */)
+    //.setBlockedBehavior(/* blocked behavior */)
+    //.setConflictBehavior(/* conflict behavior */)
+    //.setPriority(/* priority */);
+
+
+
+// Establish paths: these lines create the interpolations from coordinate-to-coordinate,
+// also interpolating heading at the same time.
+
+    //Path CycleThenIntakeGarden() {
+    //    return curve(startPose, startPoseControlPoint, HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
+    //}
+
+    Path CycleThenIntakeGarden() {
+        return line(startPose,HPintake).heading(Interpolator.piecewise().until(0.5064, Interpolator.linear(startPose, startPoseControlPoint)).until(1, Interpolator.linear(startPoseControlPoint, startPoseControlPoint)));
+    }
+
+    // Path approachIntake() {
+    //    return line(launchPose, HPIntakeApproach).linear(launchPose, HPIntakeApproach);
+    //}
+
+    //Path intakeFromHP() {
+    //    return line(HPIntakeApproach, HPintake).linear(HPIntakeApproach, HPintake);
+    //}
+
+    Path parkInSpot() {
+        return curve(startPose, ParkControlPoint, Park).linear(startPose, Park);
+    }
+
+    Path parkAmmediatelyInSpot() {
+        return curve(startPose, ParkControlPoint, Park).linear(startPose, Park);
+    }
+
+    Path CycleThenApproachFlower() {
+        return curve(startPose, FlowerIntakeControlPoint, FlowerIntake).linear(startPose, FlowerIntake);
+    }
+
+    Path CycleAfterIntake() {
+        return line(FlowerIntake, startPose).linear(FlowerIntake, startPose);
+    }
+
+    Path parkAmmediatelyInSpot2() {
+        return curve(startPose2, ParkControlPoint, Park2).linear(startPose2, Park2);
+    }
+
+    Path FlowerIntake() {
+        //Scheduler.schedule(Wait);
+        //Scheduler.execute();
+        return line(FlowerIntake, FlowerIntakeRotate).linear(FlowerIntake, FlowerIntakeRotate);
+    }
+
+    Path SecondCycle() {
+        return line(FlowerIntakeRotate, startPose).linear(FlowerIntakeRotate, startPose);
+    }
+
+    // Tested commenting out the if statement, which made it run, so the issue is either
+    //most likely with the alliance not selecting or the if structure
+    private Command autoRoutine() {
+        if (alliance == Alliance.HiveUp) {
+            return sequential(
+
+
+                    follow(follower, parkAmmediatelyInSpot())
+
+
+            );
+        }
+
+        if (alliance == Alliance.HiveDown) {
+            return sequential(
+                    follow(follower, parkAmmediatelyInSpot2())
+            );
+        }
+        telemetry.addLine("Alliance not set");
+        return null;
+
+    }
+
+
+
+
+
+    private void loadPreset(Alliance alliance, AutoStartLocation location) {
+
+        if (alliance == Alliance.HiveUp) {
+            startPose = poseFactory.of(56, 8, 90);
+            startPoseControlPoint = poseFactory.of(5.7094, 73.2003, 180);
+            HPintake = poseFactory.of(7.5, 15, 180);
+            Park = poseFactory.of(9, 98, -89.1655);
+            ParkControlPoint = poseFactory.of(3, 7, -90);
+            //FlowerIntake = poseFactory.of(56, 8, 180);
+            //FlowerIntakeRotate = poseFactory.of(56, 8, 180);
+            //launchPose = poseFactory.of(56, 8, 180);
+            //startPose = poseFactory.of(56, 8, 180);
+        }
+
+        if (alliance == Alliance.HiveDown) {
+            startPose = poseFactory.of(80.8022, 8.636, 90);
+            FlowerIntakeControlPoint = poseFactory.of(76.8989, 30.4281, 0);
+            FlowerIntake = poseFactory.of(85,30, -105);
+            FlowerIntakeRotate = poseFactory.of(85, 30.3, -90);
+            Park = poseFactory.of(125.1393, 36.7135, -90);
+            //ParkControlPoint = poseFactory.of(103.3831, 43.9169, -45);
+            //Park = poseFactory.of(9, 90, -89.1655);
+            //ParkControlPoint = poseFactory.of(30, 40, -89.1655);
+        }
+    }
+
+
+    @Override
+    public void init() {
+
+        Scheduler.reset();
+
+        follower = Constants.create(hardwareMap);
+
+        intake.init(hardwareMap);
+        launcher.init(hardwareMap);
+
+
+        // Log completed initialization to Panels and driver station (custom log function)
+        log("Status", "Initialized");
+        telemetry.update(); // Update driver station after logging
+
+    }
+
+
+    private void buildPaths() {
+
+        // build paths
+
+    }
+
+
+    @Override
+    public void start() {
+
+        // This makes sure Pedro starts from the selected preset start pose
+        follower.setPose(startPose);
+
+        schedule(autoRoutine());
+    }
+
+
+    @Override
+    public void loop() {
+
+        follower.update();
+        Scheduler.execute();
+
+        // add your other methods needed in the loop here
+        //telemetryData.addData("X", follower.pose().x());
+        //telemetryData.addData("Y", follower.pose().y());
+        //telemetryData.addData("Heading", Math.toDegrees(follower.pose().heading()));
+
+        telemetry.addData("Follower Mode", follower.mode());
+        telemetry.update();
+    }
+
+
+
+
+
+    @Override
+    public void init_loop() {
+
+        super.init_loop();
+
+        // Clear the previous menu display
+        telemetry.clearAll();
+
+
+        // =========================
+        // SELECT ALLIANCE
+        // =========================
+
+        if (alliance == Alliance.UNKNOWN) {
+
+
+            telemetry.addLine("Select Position");
+            telemetry.addLine("");
+            telemetry.addLine("Dpad Up: HiveUp");
+            telemetry.addLine("Dpad Down: HiveDown");
+
+            if (gamepad1.dpad_up) {
+
+                alliance = Alliance.HiveUp;
+                allianceSelected = "HiveUp";
+                telemetry.addLine(allianceSelected);
+
+            } else if (gamepad1.dpad_down) {
+
+                alliance = Alliance.HiveDown;
+                allianceSelected = "HiveDown";
+                telemetry.addLine(allianceSelected);
+
+            }
+        }
+
+
+        // =========================
+        // SELECT START LOCATION
+        // =========================
+
+        else if (location == AutoStartLocation.UNKNOWN) {
+
+            telemetry.addLine("Alliance Selected: " + allianceSelected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+            telemetry.addLine(String.valueOf(gamepad1));
+
+            if (gamepad1.dpad_left) {
+
+                location = AutoStartLocation.Red;
+                locationSelected = "Red";
+                telemetry.addLine(locationSelected);
+
+            } else if (gamepad1.dpad_right) {
+
+                location = AutoStartLocation.Blue;
+                locationSelected = "Blue";
+                telemetry.addLine(locationSelected);
+
+            } else if (gamepad1.circle) {
+
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+
+                allianceSelected = "";
+                locationSelected = "";
+
+            }
+
+
+            // Selection is complete.
+            // Tell the next init_loop() cycle to build everything.
+
+            if (alliance != Alliance.UNKNOWN &&
+                    location != AutoStartLocation.UNKNOWN) {
+
+                telemetry.addLine("runbuild about to run");
+
+                runBuild = true;
+
+            }
+        }
+
+
+        // =========================
+        // SELECTION COMPLETE
+        // =========================
+
+        else {
+
+            telemetry.addLine("Alliance Selected: " + allianceSelected);
+            telemetry.addLine("Location Selected: " + locationSelected);
+            telemetry.addLine("");
+            telemetry.addLine("Circle: Start Over");
+
+
+            // Only rebuild once
+            if (runBuild) {
+
+                loadPreset(alliance, location);
+
+                telemetry.addLine("ran loadPreset");
+
+                follower = Constants.create(hardwareMap);
+
+                buildPaths();
+
+                follower.setPose(startPose);
+
+                runBuild = false;
+
+            }
+
+
+            // Reset selection
+            if (gamepad1.circle) {
+
+                alliance = Alliance.UNKNOWN;
+                location = AutoStartLocation.UNKNOWN;
+
+                allianceSelected = "";
+                locationSelected = "";
+
+                // Make sure the next completed selection rebuilds everything
+                runBuild = true;
+
+            }
+
+
+            if (!runBuild) {
+
+                telemetry.addLine("");
+                telemetry.addLine("====================");
+                telemetry.addLine("READY FOR PLAY");
+                telemetry.addLine("====================");
+
+
+                // Pedro telemetry
+                if (follower != null) {
+
+                    telemetry.addLine("");
+
+                    telemetry.addData(
+                            "X",
+                            "%.2f",
+                            follower.pose().x()
+                    );
+
+                    telemetry.addData(
+                            "Y",
+                            "%.2f",
+                            follower.pose().y()
+                    );
+
+                    telemetry.addData(
+                            "Heading",
+                            "%.1f deg",
+                            Math.toDegrees(
+                                    follower.pose().heading()
+                            )
+                    );
+
+
+                    // DEBUG: show the actual selected preset coordinates
+                    telemetry.addLine("");
+                    telemetry.addLine("Preset Check:");
+
+                    telemetry.addData(
+                            "Start Pose X",
+                            "%.2f",
+                            startPose.x()
+                    );
+
+                    telemetry.addData(
+                            "Start Pose Y",
+                            "%.2f",
+                            startPose.y()
+                    );
+
+                    telemetry.addData(
+                            "Launch Pose X",
+                            "%.2f",
+                            launchPose.x()
+                    );
+
+                    telemetry.addData(
+                            "Launch Pose Y",
+                            "%.2f",
+                            launchPose.y()
+                    );
+
+                }
+            }
+        }
+
+
+        // Send everything above to the Driver Station
+        telemetry.update();
+    }
+
+
+
+
+
+    // State machine handling the yeeting of elements in autonomous
+    // Assumes yeet position is always the same throughout autonomous
+
+    //public void setPathState(int pState) {
+    //pathState = pState;
+    //}
+
+
+    // Custom logging function to support telemetry and Panels
+    private void log(String caption, Object... text) {
+
+        if (text.length == 1) {
+
+            telemetry.addData(caption, text[0]);
+            //panelsTelemetry.debug(caption + ": " + text[0]);
+
+        } else if (text.length >= 2) {
+
+            StringBuilder message = new StringBuilder();
+
+            for (int i = 0; i < text.length; i++) {
+
+                message.append(text[i]);
+
+                if (i < text.length - 1) {
+
+                    message.append(" ");
+
+                }
+            }
+
+            telemetry.addData(caption, message.toString());
+            //panelsTelemetry.debug(caption + ": " + message);
+
+        }
+    }
+}

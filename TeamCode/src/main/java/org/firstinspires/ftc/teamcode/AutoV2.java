@@ -427,6 +427,8 @@ public class AutoV2 extends OpMode {
     );
 
 
+
+
     Command MarkOffHPIntake = instant(() -> humanPlayerIntake = HumanPlayerIntake.USED);
 
     Command MarkOffNLZFlowerIntake = instant(() -> closeFlowerIntake = CloseFlowerIntake.USED);
@@ -449,9 +451,9 @@ public class AutoV2 extends OpMode {
                             );
                         case Launch:
                             return sequential(
-                                    //check atag
-                                    //launch
-                                    //check atag
+                                    setIntake,
+                                    launcher.LaunchPollenAuto(),
+                                    intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
@@ -513,9 +515,9 @@ public class AutoV2 extends OpMode {
                     switch (autoSegment) {
                         case Launch:
                             return sequential(
-                                    //check atag
-                                    //launch
-                                    //check atag
+                                    setIntake,
+                                    launcher.LaunchPollenAuto(),
+                                    intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
@@ -571,9 +573,9 @@ public class AutoV2 extends OpMode {
                     switch (autoSegment) {
                         case Launch:
                             return sequential(
-                                    //check atag
-                                    //launch
-                                    //check atag
+                                    setIntake,
+                                    launcher.LaunchPollenAuto(),
+                                    intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
@@ -638,7 +640,7 @@ public class AutoV2 extends OpMode {
         follower = Constants.create(hardwareMap);
 
         intake.init(hardwareMap);
-        //launcher.init(hardwareMap);
+        launcher.init(hardwareMap);
 
         // Log completed initialization to Panels and driver station (custom log function)
         log("Status", "Initialized");
