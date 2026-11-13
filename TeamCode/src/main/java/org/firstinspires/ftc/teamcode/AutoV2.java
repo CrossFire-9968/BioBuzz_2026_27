@@ -30,6 +30,7 @@ public class AutoV2 extends OpMode {
     // Establishes classes:
     //public PIDController pidcontroller = new PIDController();
     public Launcher launcher = new Launcher(1,0.5,0.5);
+    private String debugStep = "NOT STARTED";
     public Intake intake = new Intake();
     double advanceAmount = 1;
     double IntakeCount = 0;
@@ -271,7 +272,7 @@ public class AutoV2 extends OpMode {
     private Pose NLZLaunchPosePrimary_NLZFlower_CP = poseFactory.of(27.982, 22.7656, 180);
     private Pose NLZLaunchPosePrimary_LZFlower_CP = poseFactory.of(62.98, 101.3146, 90);
     private Pose NLZLaunchPoseSecondary_NLZFlower_CP = poseFactory.of(36.7012, 40.9513, 180);
-    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 13, 180);
+    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 10, 180);
     private Pose LZLaunchPoseSecondary_HPIntake_CP = poseFactory.of(40.6105, 3.2279, 180);
     private Pose LZLaunchPoseSecondary_NLZFlower_CP1 = poseFactory.of(38.2093, 45.4206, 90);
     private Pose NLZLaunchPoseSecondary_HPintake_CP = poseFactory.of(34.9573, 5.8255, 180);
@@ -426,7 +427,8 @@ public class AutoV2 extends OpMode {
             waitMs(1500)
     );
 
-
+    Command spoolUp = instant(() -> launcher.SpoolUpAndLaunch());
+    Command spoolOff = instant(() -> launcher.LaunchOff());
 
 
     Command MarkOffHPIntake = instant(() -> humanPlayerIntake = HumanPlayerIntake.USED);
@@ -446,13 +448,24 @@ public class AutoV2 extends OpMode {
                     switch (autoSegment) {
                         case LeavePark:
                             return sequential(
+                                    instant(() -> debugStep = "SPOOLING"),
+                                    spoolUp,
+
+                                    instant(() -> debugStep = "FOLLOWING FIRST PATH"),
                                     follow(follower, StartingPose_LaunchingPose()),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+
+                                    instant(() -> {
+                                        debugStep = "FIRST PATH COMPLETE";
+                                        changeSegment(AutoSegment.Launch);
+                                    })
                             );
                         case Launch:
                             return sequential(
+                                    instant(() -> debugStep = "LAUNCH ENTERED"),
+                                    instant(() -> follower.stop()),
+                                    waitMs(2000),
                                     setIntake,
-                                    launcher.LaunchPollenAuto(),
+                                    launcher.LaunchPollenAuto(2000),
                                     intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
@@ -504,7 +517,8 @@ public class AutoV2 extends OpMode {
 
                         case Park:
                             return sequential(
-                                    follow(follower, NLZLaunchingPose_Park())
+                                    follow(follower, NLZLaunchingPose_Park()),
+                                    spoolOff
                             );
 
                     }
@@ -516,7 +530,7 @@ public class AutoV2 extends OpMode {
                         case Launch:
                             return sequential(
                                     setIntake,
-                                    launcher.LaunchPollenAuto(),
+                                    launcher.LaunchPollenAuto(2000),
                                     intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
@@ -555,8 +569,10 @@ public class AutoV2 extends OpMode {
                             );
                         case Park:
                             return sequential(
-                                    follow(follower, LZLaunchingPose_Park())
+                                    follow(follower, LZLaunchingPose_Park()),
+                                    spoolOff
                             );
+
                         case SwitchSide:
                             return sequential(
                                     follow(follower, SwitchSides()),
@@ -574,7 +590,7 @@ public class AutoV2 extends OpMode {
                         case Launch:
                             return sequential(
                                     setIntake,
-                                    launcher.LaunchPollenAuto(),
+                                    launcher.LaunchPollenAuto(2000),
                                     intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
@@ -613,7 +629,8 @@ public class AutoV2 extends OpMode {
                             );
                         case Park:
                             return sequential(
-                                    follow(follower, NLZLaunchingPose_Park())
+                                    follow(follower, NLZLaunchingPose_Park()),
+                                    spoolOff
                             );
                     }
                     break;
@@ -706,6 +723,25 @@ public class AutoV2 extends OpMode {
         //telemetryData.addData("X", follower.pose().x());
         //telemetryData.addData("Y", follower.pose().y());
         //telemetryData.addData("Heading", Math.toDegrees(follower.pose().heading()));
+        telemetry.addData("Debug Step", debugStep);
+        telemetry.addData("Segment", autoSegment);
+        telemetry.addData("Follower Mode", follower.mode());
+        telemetry.addData("Following", follower.following());
+
+        telemetry.addData("X", follower.pose().x());
+        telemetry.addData("Y", follower.pose().y());
+        telemetry.addData(
+                "Heading",
+                Math.toDegrees(follower.pose().heading())
+        );
+
+        telemetry.addData(
+                "Distance to Launch",
+                Math.hypot(
+                        follower.pose().x() - LaunchingPose.x(),
+                        follower.pose().y() - LaunchingPose.y()
+                )
+        );
 
         telemetry.addData("Follower Mode", follower.mode());
         telemetry.update();

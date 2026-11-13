@@ -27,6 +27,7 @@ public class Launcher {
     public double kp = 5.5;
     public double ki = 3.3;
     public double kd = 0;
+    public double autoWaitTime = 0;
 
     private final double t1;
     private final double t2;
@@ -37,7 +38,7 @@ public class Launcher {
     //155 is a good FireSpeed for swapped robot/forward spin.
 
     private final double CarouselPos1 = 0;
-    private final double CarouselPos2 = 1;
+    private final double CarouselPos2 = 0.8;
 
     public enum State {
         ServoWheels,
@@ -137,8 +138,9 @@ public class Launcher {
         }
     }
 
-    public Command LaunchPollenAuto() {
+    public Command LaunchPollenAuto(double autoWaitTime) {
         return sequential(
+                //waitMs((long) (autoWaitTime)),
                 // State 1: ServoWheels
                 instant(() -> {
                     IntakeServo1.setPower(-1);
