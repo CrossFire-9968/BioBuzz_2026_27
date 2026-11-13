@@ -76,6 +76,14 @@ public class AprilDetectUSB extends LinearOpMode {
     /**
      * The variable to store our instance of the AprilTag processor.
      */
+    public enum HiveMotion{
+        None,
+        Stationary,
+        Falling,
+        Rising
+    }
+
+    public HiveMotion hiveMotion;
     private AprilTagProcessor aprilTag;
 
     /**
@@ -88,11 +96,14 @@ public class AprilDetectUSB extends LinearOpMode {
     private long lastLoopTime;
 
     private long now;
-
+    double dthivelooptime = (now - lastLoopTime) / 1e9;
+    private double minLoopSeconds = 1 / 29;
+    private double zVelocity = 0;
     private double lastZredscoring;
     private double lastZbluescoring;
     private double lastZredaudience;
     private double lastZblueaudience;
+
 
 
     // To find the VID/PID for a camera:
@@ -127,7 +138,7 @@ public class AprilDetectUSB extends LinearOpMode {
         now = System.nanoTime();
         lastLoopTime = now;
 
-        double dt = (now - lastLoopTime) / 1e9;
+        dthivelooptime = (now - lastLoopTime) / 1e9;
 
         lastZredscoring = 0;
         lastZbluescoring = 0;
@@ -146,22 +157,23 @@ public class AprilDetectUSB extends LinearOpMode {
 
             now = System.nanoTime();
 
-            dt = (now - lastLoopTime) / 1e9;
+            dthivelooptime = (now - lastLoopTime) / 1e9;
+            if (dthivelooptime > minLoopSeconds) {
+                lastLoopTime = now;
+                telemetry.addLine(String.format("dt %6.6f seconds", dthivelooptime));
 
-            lastLoopTime = now;
-            telemetry.addLine(String.format("dt %6.6f seconds", dt));
 
+                telemetryAprilTag();
 
-            telemetryAprilTag();
+                // Push telemetry to the Driver Station.
+                telemetry.update();
 
-            // Push telemetry to the Driver Station.
-            telemetry.update();
-
-            // Save CPU resources; can resume streaming when needed.
-            if (gamepad1.dpad_down) {
-                visionPortal.stopStreaming();
-            } else if (gamepad1.dpad_up) {
-                visionPortal.resumeStreaming();
+                // Save CPU resources; can resume streaming when needed.
+                if (gamepad1.dpad_down) {
+                    visionPortal.stopStreaming();
+                } else if (gamepad1.dpad_up) {
+                    visionPortal.resumeStreaming();
+                }
             }
 
             // Share the CPU.
@@ -246,6 +258,7 @@ public class AprilDetectUSB extends LinearOpMode {
      * Add telemetry about AprilTag detections.
      */
     private void telemetryAprilTag() {
+        hiveMotion = HiveMotion.None;
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
@@ -272,17 +285,33 @@ public class AprilDetectUSB extends LinearOpMode {
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
                 telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
                 if (clusterDet.metadata.name == "RED SCORING") {
-                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (detection.ftcPose.z-lastZredscoring)/lastLoopTime));
+                    zVelocity = (lastZredscoring-detection.ftcPose.z)/dthivelooptime;
+                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", zVelocity));
+
+                    lastZredscoring = detection.ftcPose.z;
+                    if (zVelocity < -0.5) {
+                        hiveMotion = HiveMotion.Rising;
+                    }
+                    else if (zVelocity > 0.5) {
+                        hiveMotion = HiveMotion.Falling;
+                    }
+                    else {
+                        hiveMotion = HiveMotion.Stationary;
+                    }
                 }
                 if (clusterDet.metadata.name == "RED AUDIENCE"){
-                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (detection.ftcPose.z-lastZredaudience)/lastLoopTime));
+                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (lastZredaudience-detection.ftcPose.z)/dthivelooptime));
+                    lastZredaudience = detection.ftcPose.z;
                 }
                 if (clusterDet.metadata.name == "BLUE SCORING") {
-                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (detection.ftcPose.z-lastZbluescoring)/lastLoopTime));
+                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (lastZbluescoring-detection.ftcPose.z)/dthivelooptime));
+                    lastZbluescoring = detection.ftcPose.z;
                 }
                 if (clusterDet.metadata.name == "BLUE AUDIENCE") {
-                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (detection.ftcPose.z-lastZblueaudience)/lastLoopTime));
+                    telemetry.addLine(String.format("Z speed %6.3f (inch/second)", (lastZblueaudience-detection.ftcPose.z)/dthivelooptime));
+                    lastZblueaudience = detection.ftcPose.z;
                 }
+                telemetry.addLine(String.format("Hive State:  %s", hiveMotion));
 
             }
         }   // end for() loop
