@@ -19,6 +19,7 @@ import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import static com.pedropathing.ivy.commands.Commands.instant;
 
@@ -28,12 +29,13 @@ public class AutoV2 extends OpMode {
 
     // Establishes classes:
     //public PIDController pidcontroller = new PIDController();
-    public LauncherTest launcher = new LauncherTest(1, 1, 2);
+    //public Launcher launcher = new Launcher(1,0.5,0.5);
     public Intake intake = new Intake();
     double advanceAmount = 1;
     double IntakeCount = 0;
     private Command activeAutoCommand;
     private boolean nextSegmentRequested = false;
+    private boolean switchAfterIntake = false;
 
 
     //tries to fix path inconsistency
@@ -52,6 +54,12 @@ public class AutoV2 extends OpMode {
         LaunchingPose = LaunchingPose2;
 
         LaunchingPose2 = temp;
+
+        Pose temp2 = SCCP1;
+
+        SCCP1 = SCCP2;
+
+        SCCP2 = temp2;
     }
 
     //Case change logic
@@ -76,66 +84,78 @@ public class AutoV2 extends OpMode {
 //        }
 //    }
 
-    private void decideNextIntake() {
-        //AdvanceAmount is instead of the AprilTag output
+    private AutoSegment availableIntake() {
+
         if (cycleState == CycleState.Cycle1) {
-            if (advanceAmount == 1) {
-                if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeHP);
-                } else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeNLZFlower);
 
-                } else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeLZFlower);
-                } else {
-                    changeSegment(AutoSegment.Park);
-                }
-            } else {
-                changeSegment(AutoSegment.SwitchSide);
-            }
+            if (humanPlayerIntake == HumanPlayerIntake.UNUSED)
+                return AutoSegment.IntakeHP;
+
+            if (closeFlowerIntake == CloseFlowerIntake.UNUSED)
+                return AutoSegment.IntakeNLZFlower;
+
+            if (farFlowerIntake == FarFlowerIntake.UNUSED)
+                return AutoSegment.IntakeLZFlower;
+
+        } else if (cycleState == CycleState.Cycle2) {
+
+            if (humanPlayerIntake == HumanPlayerIntake.UNUSED)
+                return AutoSegment.IntakeHP;
+
+            if (farFlowerIntake == FarFlowerIntake.UNUSED)
+                return AutoSegment.IntakeLZFlower;
+
+            if (closeFlowerIntake == CloseFlowerIntake.UNUSED)
+                return AutoSegment.IntakeNLZFlower;
+
+        } else if (cycleState == CycleState.Cycle3) {
+
+            if (closeFlowerIntake == CloseFlowerIntake.UNUSED)
+                return AutoSegment.IntakeNLZFlower;
+
+            if (farFlowerIntake == FarFlowerIntake.UNUSED)
+                return AutoSegment.IntakeLZFlower;
+
+            if (humanPlayerIntake == HumanPlayerIntake.UNUSED)
+                return AutoSegment.IntakeHP;
         }
 
+        return null;
+    }
 
-        else if (cycleState == CycleState.Cycle2) {
-            if (advanceAmount == 1) {
-                if (farFlowerIntake == FarFlowerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeLZFlower);
-                }
-                else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeNLZFlower);
-                }
-                else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeHP);
-                }
-                else {
-                    changeSegment(AutoSegment.Park);
-                }
-            } else {
-                changeSegment(AutoSegment.SwitchSide);
-            }
+    private void decideNextIntake() {
+        // Cycle 3 has no fourth cycle to switch into.
+        if (cycleState == CycleState.Cycle3 && advanceAmount != 1) {
+            changeSegment(AutoSegment.Park);
+            return;
         }
 
+        AutoSegment nextIntake = availableIntake();
 
-        else if (cycleState == CycleState.Cycle3) {
-            if (advanceAmount == 1) {
-                if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeNLZFlower);
-                }
-                else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeLZFlower);
-                }
-                else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
-                    changeSegment(AutoSegment.IntakeHP);
-                }
-                else {
-                    changeSegment(AutoSegment.Park);
-                }
+        if (advanceAmount != 1) {
+            // Collect before switching; take the elements across the field.
+            if (nextIntake != null) {
+                switchAfterIntake = true;
+                changeSegment(nextIntake);
             } else {
-                changeSegment(AutoSegment.Park);
+                switchAfterIntake = false;
+                changeSegment(AutoSegment.SwitchSide);
             }
+        } else {
+            switchAfterIntake = false;
+            changeSegment(nextIntake != null ? nextIntake : AutoSegment.Park);
         }
     }
 
+    private void onIntakeFinished() {
+        if (switchAfterIntake && cycleState != CycleState.Cycle3) {
+            switchAfterIntake = false;
+            changeSegment(AutoSegment.SwitchSide);
+        } else {
+            switchAfterIntake = false;
+            changeSegment(AutoSegment.Launch);
+        }
+    }
 
     private void decideIntakeOrLaunchAfterSideSwitch(CycleState nextCycle) {
 
@@ -149,14 +169,14 @@ public class AutoV2 extends OpMode {
         // Otherwise, we need to find an available intake.
         if (nextCycle == CycleState.Cycle2) {
 
-            if (farFlowerIntake == FarFlowerIntake.UNUSED) {
+            if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
+                changeCycle(nextCycle, AutoSegment.IntakeHP);
+
+            } else if (farFlowerIntake == FarFlowerIntake.UNUSED) {
                 changeCycle(nextCycle, AutoSegment.IntakeLZFlower);
 
             } else if (closeFlowerIntake == CloseFlowerIntake.UNUSED) {
                 changeCycle(nextCycle, AutoSegment.IntakeNLZFlower);
-
-            } else if (humanPlayerIntake == HumanPlayerIntake.UNUSED) {
-                changeCycle(nextCycle, AutoSegment.IntakeHP);
 
             } else {
                 changeCycle(nextCycle, AutoSegment.Park);
@@ -216,9 +236,9 @@ public class AutoV2 extends OpMode {
     private Pose LaunchingPose2 = null;
 
     // Start poses:
-    private Pose NLZstartPosePrimary = poseFactory.of(56, 0, 90);
+    private Pose NLZstartPosePrimary = poseFactory.of(70.7156, 7.558, 0);
     private Pose NLZstartPoseSecondary = poseFactory.of(33.9378, 8.7899, 90);
-    private Pose LZstartPosePrimary = poseFactory.of(58.62, 133.2152, 270);
+    private Pose LZstartPosePrimary = poseFactory.of(72.6809, 27.9969, 180);
     private Pose LZstartPoseSecondary = poseFactory.of(33.4306, 133.0461, 270);
 
 
@@ -226,12 +246,12 @@ public class AutoV2 extends OpMode {
     private Pose HPintake = poseFactory.of(11.3642, 9.3267, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
-    private Pose NLZLaunchPosePrimary = poseFactory.of(58.7005, 17.6739, 90);
+    private Pose NLZLaunchPosePrimary = poseFactory.of(22, 22, 35);
 
 
     // LZ specific poses:
-    private Pose LZLaunchPoseSecondary = poseFactory.of(34.5359, 118.5674, 270);
-    private Pose LZLaunchPosePrimary = poseFactory.of(59.4478, 118.8165, 270);
+    private Pose LZLaunchPoseSecondary = poseFactory.of(120, 120, 315);
+    private Pose LZLaunchPosePrimary = poseFactory.of(119.6363, 116.8849, 270);
     private Pose LZFlower = poseFactory.of(46.7427, 120, 90);
 
 
@@ -243,8 +263,9 @@ public class AutoV2 extends OpMode {
     private Pose ParkCP = poseFactory.of(3, 7, 270);
     private Pose startPoseCP = poseFactory.of(5.7094, 73.2003, 180);
     private Pose LZLaunchPosePrimary_LZFlower_CP = poseFactory.of(45.1712, 110.954, 90);
-    private Pose LZLaunchPosePrimary_HPIntake_CP = poseFactory.of(68.7279, 0, 180);
-    private Pose LZLaunchPosePrimary_NLZFlower_CP1 = poseFactory.of(10.2343, 118.8719, 270);
+    private Pose LZLaunchPosePrimary_HPIntake_CP = poseFactory.of(52.6482, 4.0845, 180);
+    private Pose LZLaunchPosePrimary_HPIntake_CP2 = poseFactory.of(0, 141.5, 180);
+    private Pose LZLaunchPosePrimary_NLZFlower_CP1 = poseFactory.of(7.8399, 125.5386, 270);
     private Pose LZLaunchPosePrimary_NLZFlower_CP2 = poseFactory.of(47.9496, 38.7858, 180);
     private Pose LZLaunchPoseSecondary_LZFlower_CP = poseFactory.of(46.9151, 111.7013, 90);
     private Pose NLZLaunchPosePrimary_NLZFlower_CP = poseFactory.of(27.982, 22.7656, 180);
@@ -257,6 +278,10 @@ public class AutoV2 extends OpMode {
     private Pose NLZLaunchPoseSecondary_LZLaunchPoseSecondary_CP = poseFactory.of(8.0774, 70.0668, 90);
     private Pose NLZLaunchPoseSecondary_LZLaunchPosePrimary_CP = poseFactory.of(61.8373, 20.0262, 90);
     private Pose NLZLaunchPosePrimary_LZLaunchPoseSecondary_CP = poseFactory.of(29.0404, 32.3673, 90);
+    private Pose SwitchSidesCp1 = poseFactory.of(131.6524, 24.9164, 90);
+    private Pose SwitchSidesCp2 = poseFactory.of(4.0257, 114.158, 90);
+    private Pose SCCP1 = SwitchSidesCp1;
+    private Pose SCCP2 = SwitchSidesCp2;
 
 
     // Copy and paste for new pose (convenient)
@@ -301,7 +326,7 @@ public class AutoV2 extends OpMode {
     //Primary:
     //Intakes:
     Path LZLaunchingPose_HPIntake() {
-        return line(LaunchingPose, HPintake).linear(LaunchingPose, HPintake);
+        return curve(LaunchingPose, LZLaunchPosePrimary_HPIntake_CP,LZLaunchPosePrimary_HPIntake_CP2, HPintake).linear(LaunchingPose, HPintake);
     }
     Path LZLaunchingPose_NLZFlower() {
         return curve(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1,LZLaunchPosePrimary_NLZFlower_CP2 , NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose,LZLaunchPosePrimary_NLZFlower_CP1)).until(1,Interpolator.linear(LZLaunchPosePrimary_NLZFlower_CP1, NLZFlower)));
@@ -334,7 +359,7 @@ public class AutoV2 extends OpMode {
 
     //Switch Sides:
     Path SwitchSides() {
-        return line(LaunchingPose, LaunchingPose2).linear(LaunchingPose, LaunchingPose2);
+        return curve(LaunchingPose, SCCP1,SCCP2, LaunchingPose2).linear(LaunchingPose, LaunchingPose2);
     }
 
 
@@ -402,6 +427,8 @@ public class AutoV2 extends OpMode {
     );
 
 
+
+
     Command MarkOffHPIntake = instant(() -> humanPlayerIntake = HumanPlayerIntake.USED);
 
     Command MarkOffNLZFlowerIntake = instant(() -> closeFlowerIntake = CloseFlowerIntake.USED);
@@ -424,9 +451,9 @@ public class AutoV2 extends OpMode {
                             );
                         case Launch:
                             return sequential(
-                                    //check atag
-                                    //launch
-                                    //check atag
+                                    //setIntake,
+                                    //launcher.LaunchPollenAuto(),
+                                    //intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
@@ -439,7 +466,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffHPIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
 
                         case IntakeNLZFlower:
@@ -451,7 +478,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffNLZFlowerIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
 
                         case IntakeLZFlower:
@@ -463,7 +490,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffLZFlowerIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
 
                         case SwitchSide:
@@ -488,12 +515,13 @@ public class AutoV2 extends OpMode {
                     switch (autoSegment) {
                         case Launch:
                             return sequential(
-                                    //check atag
-                                    //launch
-                                    //check atag
+                                    //setIntake,
+                                    //launcher.LaunchPollenAuto(),
+                                    //intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
+
                         case IntakeLZFlower:
                             return sequential(
                                     //FlowerIntake Down
@@ -503,7 +531,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffLZFlowerIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
                         case IntakeNLZFlower:
                             return sequential(
@@ -514,7 +542,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffNLZFlowerIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
                         case IntakeHP:
                             return sequential(
@@ -524,7 +552,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffHPIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
                         case Park:
                             return sequential(
@@ -546,9 +574,9 @@ public class AutoV2 extends OpMode {
                     switch (autoSegment) {
                         case Launch:
                             return sequential(
-                                    //check atag
-                                    //launch
-                                    //check atag
+                                    //setIntake,
+                                    //launcher.LaunchPollenAuto(),
+                                    //intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
@@ -561,7 +589,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffLZFlowerIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
                         case IntakeNLZFlower:
                             return sequential(
@@ -572,7 +600,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffNLZFlowerIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
                         case IntakeHP:
                             return sequential(
@@ -582,7 +610,7 @@ public class AutoV2 extends OpMode {
                                     intakeOff,
                                     MarkOffHPIntake,
                                     instant(() -> intakeState = IntakeState.ElementsContained),
-                                    instant(() -> changeSegment(AutoSegment.Launch))
+                                    instant(this::onIntakeFinished)
                             );
                         case Park:
                             return sequential(
@@ -1139,4 +1167,5 @@ public class AutoV2 extends OpMode {
             //panelsTelemetry.debug(caption + ": " + message);
         }
     }
+
 }
