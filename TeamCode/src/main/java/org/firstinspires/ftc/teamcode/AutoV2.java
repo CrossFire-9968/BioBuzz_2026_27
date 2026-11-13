@@ -236,7 +236,7 @@ public class AutoV2 extends OpMode {
     private Pose LaunchingPose2 = null;
 
     // Start poses:
-    private Pose NLZstartPosePrimary = poseFactory.of(70.7156, 7.558, 0);
+    private Pose NLZstartPosePrimary = poseFactory.of(9.5908, 34.0771,  0);
     private Pose NLZstartPoseSecondary = poseFactory.of(33.9378, 8.7899, 90);
     private Pose LZstartPosePrimary = poseFactory.of(72.6809, 27.9969, 180);
     private Pose LZstartPoseSecondary = poseFactory.of(33.4306, 133.0461, 270);
@@ -271,7 +271,7 @@ public class AutoV2 extends OpMode {
     private Pose NLZLaunchPosePrimary_NLZFlower_CP = poseFactory.of(27.982, 22.7656, 180);
     private Pose NLZLaunchPosePrimary_LZFlower_CP = poseFactory.of(62.98, 101.3146, 90);
     private Pose NLZLaunchPoseSecondary_NLZFlower_CP = poseFactory.of(36.7012, 40.9513, 180);
-    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 10, 180);
+    private Pose NLZLaunchPosePrimary_HPintake_CP = poseFactory.of(57.2321, 13, 180);
     private Pose LZLaunchPoseSecondary_HPIntake_CP = poseFactory.of(40.6105, 3.2279, 180);
     private Pose LZLaunchPoseSecondary_NLZFlower_CP1 = poseFactory.of(38.2093, 45.4206, 90);
     private Pose NLZLaunchPoseSecondary_HPintake_CP = poseFactory.of(34.9573, 5.8255, 180);
