@@ -83,11 +83,11 @@ public class TeleopPPTest2 extends OpMode {
         // Execute scheduled Pedro commands
         Scheduler.execute();
         if (returningToStart) {
-            Pose currentPose = follower.pose();
-            Pose targetPose = OpModeStorage.LaunchingPose;
+                Pose currentPose = follower.pose();
+                Pose targetPose = OpModeStorage.LaunchingPose;
 
-            double dx = targetPose.x() - currentPose.x();
-            double dy = targetPose.y() - currentPose.y();
+                double dx = targetPose.x() - currentPose.x();
+                double dy = targetPose.y() - currentPose.y();
 
             double distance = Math.hypot(dx, dy);
 
