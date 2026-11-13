@@ -29,7 +29,7 @@ public class Scrim1Park extends OpMode {
 
     //public PIDController pidcontroller = new PIDController();
 
-    public LauncherTest launcher = new LauncherTest(1,1,2);
+
 
     public Intake intake = new Intake();
     // Initialize poses
@@ -144,53 +144,53 @@ public class Scrim1Park extends OpMode {
     //.setConflictBehavior(/* conflict behavior */)
     //.setPriority(/* priority */);
 
-    Command launch = Command.build()
-            .setStart(() -> {
-                telemetry.addLine("Launching");
-                intake.intake();
-                //launcher.LaunchPollenAuto();
-                //launcher.LaunchPollenAuto();
-                //launcher.LaunchPollenAuto();
-                //launcher.LaunchPollenAuto();
-                //waitMs(timeToWaitAfterLaunch);
-                launcher.LaunchOff();
-                intake.stoptake();
-                // executed on start
-            })
-            .setExecute(() -> {
-
-                // executed on execute
-            })
-            //.setDone(() -> {
-
-            // return true to end the command
-            // return false;
-            //})
-            .setEnd(endCondition -> {
-                // executed on end
-            });
-
-    Command spool = Command.build()
-            .setStart(() -> {
-
-                launcher.SpoolUpAndLaunch();
-
-                // executed on start
-            })
-            .setExecute(() -> {
-
-
-                // executed on execute
-            })
-            //.setDone(() -> {
-
-            // return true to end the command
-            // return false;
-            //})
-            .setEnd(endCondition -> {
-
-                // executed on end
-            });
+//    Command launch = Command.build()
+//            .setStart(() -> {
+//                telemetry.addLine("Launching");
+//                intake.intake();
+//                //launcher.LaunchPollenAuto();
+//                //launcher.LaunchPollenAuto();
+//                //launcher.LaunchPollenAuto();
+//                //launcher.LaunchPollenAuto();
+//                //waitMs(timeToWaitAfterLaunch);
+//                launcher.LaunchOff();
+//                intake.stoptake();
+//                // executed on start
+//            })
+//            .setExecute(() -> {
+//
+//                // executed on execute
+//            })
+//            //.setDone(() -> {
+//
+//            // return true to end the command
+//            // return false;
+//            //})
+//            .setEnd(endCondition -> {
+//                // executed on end
+//            });
+//
+//    Command spool = Command.build()
+//            .setStart(() -> {
+//
+//                launcher.SpoolUpAndLaunch();
+//
+//                // executed on start
+//            })
+//            .setExecute(() -> {
+//
+//
+//                // executed on execute
+//            })
+//            //.setDone(() -> {
+//
+//            // return true to end the command
+//            // return false;
+//            //})
+//            .setEnd(endCondition -> {
+//
+//                // executed on end
+//            });
 
 //    Command spool2 = Command.build()
 //            .setStart(() -> {
@@ -355,7 +355,7 @@ public class Scrim1Park extends OpMode {
         follower = Constants.create(hardwareMap);
 
         intake.init(hardwareMap);
-        launcher.init(hardwareMap);
+//        launcher.init(hardwareMap);
 
 
         // Log completed initialization to Panels and driver station (custom log function)

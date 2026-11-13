@@ -1,6 +1,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -31,8 +36,8 @@ public class Launcher {
     public double FireSpeed = 163;
     //155 is a good FireSpeed for swapped robot/forward spin.
 
-    private final double CarouselPos1 = 0.25;
-    private final double CarouselPos2 = 0.4;
+    private final double CarouselPos1 = 0;
+    private final double CarouselPos2 = 1;
 
     public enum State {
         ServoWheels,
@@ -131,6 +136,38 @@ public class Launcher {
                 break;
         }
     }
+
+    public Command LaunchPollenAuto() {
+        return sequential(
+                // State 1: ServoWheels
+                instant(() -> {
+                    IntakeServo1.setPower(-1);
+                    IntakeServo2.setPower(1);
+                    CarouselServo.setPosition(CarouselPos1);
+                }),
+
+                waitMs((long) (t1 * 1000)),
+
+                // State 2: FlipUp
+                instant(() -> {
+                    IntakeServo1.setPower(0);
+                    IntakeServo2.setPower(0);
+                    CarouselServo.setPosition(CarouselPos2);
+                }),
+
+                waitMs((long) (t2 * 1000)),
+
+                // State 3: FlipDown
+                instant(() -> {
+                    IntakeServo1.setPower(0);
+                    IntakeServo2.setPower(0);
+                    CarouselServo.setPosition(CarouselPos1);
+                }),
+
+                waitMs((long) (t3 * 1000))
+        );
+    }
+
 
 
 

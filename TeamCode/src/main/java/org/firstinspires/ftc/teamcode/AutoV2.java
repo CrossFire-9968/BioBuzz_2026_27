@@ -29,7 +29,7 @@ public class AutoV2 extends OpMode {
 
     // Establishes classes:
     //public PIDController pidcontroller = new PIDController();
-    public LauncherTest launcher = new LauncherTest(1, 1, 2);
+    public Launcher launcher = new Launcher(1,0.5,0.5);
     public Intake intake = new Intake();
     double advanceAmount = 1;
     double IntakeCount = 0;
@@ -246,7 +246,7 @@ public class AutoV2 extends OpMode {
     private Pose HPintake = poseFactory.of(11.3642, 9.3267, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
-    private Pose NLZLaunchPosePrimary = poseFactory.of(22, 22, 185);
+    private Pose NLZLaunchPosePrimary = poseFactory.of(22, 22, 35);
 
 
     // LZ specific poses:
