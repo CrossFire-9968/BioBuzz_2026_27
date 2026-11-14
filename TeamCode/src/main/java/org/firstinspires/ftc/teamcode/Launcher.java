@@ -34,7 +34,7 @@ public class Launcher {
     private final double t3;
 
     //FireSpeed is in Degrees per second
-    public double FireSpeed = 163;
+    public double FireSpeed = 150;
     //155 is a good FireSpeed for swapped robot/forward spin.
 
     private final double CarouselPos1 = 0;
