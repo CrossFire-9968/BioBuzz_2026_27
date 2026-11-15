@@ -140,7 +140,7 @@ public class Launcher {
 
     public Command LaunchPollenAuto(double autoWaitTime) {
         return sequential(
-                //waitMs((long) (autoWaitTime)),
+                waitMs( (autoWaitTime)),
                 // State 1: ServoWheels
                 instant(() -> {
                     IntakeServo1.setPower(-1);
@@ -148,7 +148,7 @@ public class Launcher {
                     CarouselServo.setPosition(CarouselPos1);
                 }),
 
-                waitMs((long) (t1 * 1000)),
+                waitMs((t1 * 1000)),
 
                 // State 2: FlipUp
                 instant(() -> {
@@ -157,7 +157,7 @@ public class Launcher {
                     CarouselServo.setPosition(CarouselPos2);
                 }),
 
-                waitMs((long) (t2 * 1000)),
+                waitMs( (t2 * 1000)),
 
                 // State 3: FlipDown
                 instant(() -> {
@@ -166,7 +166,7 @@ public class Launcher {
                     CarouselServo.setPosition(CarouselPos1);
                 }),
 
-                waitMs((long) (t3 * 1000))
+                waitMs( (t3 * 1000))
         );
     }
 

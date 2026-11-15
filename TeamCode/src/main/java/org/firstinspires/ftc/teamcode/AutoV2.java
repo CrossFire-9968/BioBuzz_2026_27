@@ -29,7 +29,7 @@ public class AutoV2 extends OpMode {
 
     // Establishes classes:
     //public PIDController pidcontroller = new PIDController();
-    public Launcher launcher = new Launcher(1,0.5,0.5);
+    public Launcher launcher = new Launcher(1.2,0.5,0.5);
     private String debugStep = "NOT STARTED";
     public Intake intake = new Intake();
     double advanceAmount = 1;
@@ -462,10 +462,11 @@ public class AutoV2 extends OpMode {
                         case Launch:
                             return sequential(
                                     instant(() -> debugStep = "LAUNCH ENTERED"),
-                                    instant(() -> follower.stop()),
-                                    waitMs(2000),
                                     setIntake,
-                                    launcher.LaunchPollenAuto(2000),
+                                    launcher.LaunchPollenAuto(0),
+                                    launcher.LaunchPollenAuto(0),
+                                    launcher.LaunchPollenAuto(0),
+                                    launcher.LaunchPollenAuto(0),
                                     intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
