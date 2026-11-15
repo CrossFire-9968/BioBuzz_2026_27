@@ -19,6 +19,8 @@ public class Launcher {
     public DcMotorEx Launcher1;
 //    public DcMotor Launcher2;
 
+    public Intake intake = new Intake();
+
     public Servo CarouselServo;
 
     public CRServo IntakeServo1;
@@ -143,6 +145,7 @@ public class Launcher {
                 waitMs( (autoWaitTime)),
                 // State 1: ServoWheels
                 instant(() -> {
+                    intake.intake();
                     IntakeServo1.setPower(-1);
                     IntakeServo2.setPower(1);
                     CarouselServo.setPosition(CarouselPos1);
@@ -152,6 +155,7 @@ public class Launcher {
 
                 // State 2: FlipUp
                 instant(() -> {
+                    intake.stoptake();
                     IntakeServo1.setPower(0);
                     IntakeServo2.setPower(0);
                     CarouselServo.setPosition(CarouselPos2);

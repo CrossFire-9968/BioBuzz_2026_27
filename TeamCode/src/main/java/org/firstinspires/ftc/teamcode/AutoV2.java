@@ -462,12 +462,12 @@ public class AutoV2 extends OpMode {
                         case Launch:
                             return sequential(
                                     instant(() -> debugStep = "LAUNCH ENTERED"),
-                                    setIntake,
+                                    //setIntake,
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
-                                    intakeOff,
+                                    //intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
