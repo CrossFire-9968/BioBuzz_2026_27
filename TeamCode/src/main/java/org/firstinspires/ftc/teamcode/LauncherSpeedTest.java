@@ -60,6 +60,15 @@ public class LauncherSpeedTest extends OpMode {
             }
         }
 
+        if (gamepad1.circle) {
+            if (gamepad1.dpadUpWasPressed()) {
+                launcher.f += 0.1;
+            }
+            if (gamepad1.dpadDownWasPressed()) {
+                launcher.f -= 0.1;
+            }
+        }
+
         if (gamepad1.rightTriggerWasPressed()) {
             launcher.setPID();
         }
@@ -71,6 +80,7 @@ public class LauncherSpeedTest extends OpMode {
         telemetry.addData("kp","%.01f", launcher.kp);
         telemetry.addData("ki","%.01f", launcher.ki);
         telemetry.addData("kd","%.01f", launcher.kd);
+        telemetry.addData("f","%.01f", launcher.f);
     }
 
 }
