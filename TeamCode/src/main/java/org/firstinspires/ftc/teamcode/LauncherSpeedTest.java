@@ -18,7 +18,7 @@ public class LauncherSpeedTest extends OpMode {
     public void loop() {
 
         if (gamepad1.left_bumper) {
-            launcher.SpoolUpAndLaunch();
+            launcher.SpoolUpAndLaunch(150);
         } else if (gamepad1.left_trigger_pressed) {
             launcher.LaunchOff();
         }

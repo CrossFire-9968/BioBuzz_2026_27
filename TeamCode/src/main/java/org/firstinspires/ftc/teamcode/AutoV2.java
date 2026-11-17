@@ -247,7 +247,7 @@ public class AutoV2 extends OpMode {
     private Pose HPintake = poseFactory.of(11.3642, 9.3267, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
-    private Pose NLZLaunchPosePrimary = poseFactory.of(22, 22, 35);
+    private Pose NLZLaunchPosePrimary = poseFactory.of(30, 15, 45);
 
 
     // LZ specific poses:
@@ -257,11 +257,11 @@ public class AutoV2 extends OpMode {
 
 
     // General poses:
-    private Pose Park = poseFactory.of(9, 98, 270);
+    private Pose Park = poseFactory.of(16, 99.926, 0);
 
 
     // Control points:
-    private Pose ParkCP = poseFactory.of(3, 7, 270);
+    private Pose ParkCP = poseFactory.of(32.9054, 68.2875, 0);
     private Pose startPoseCP = poseFactory.of(5.7094, 73.2003, 180);
     private Pose LZLaunchPosePrimary_LZFlower_CP = poseFactory.of(45.1712, 110.954, 90);
     private Pose LZLaunchPosePrimary_HPIntake_CP = poseFactory.of(52.6482, 4.0845, 180);
@@ -427,7 +427,7 @@ public class AutoV2 extends OpMode {
             waitMs(1500)
     );
 
-    Command spoolUp = instant(() -> launcher.SpoolUpAndLaunch());
+    Command spoolUp = instant(() -> launcher.SpoolUpAndLaunch(152));
     Command spoolOff = instant(() -> launcher.LaunchOff());
 
 
@@ -462,12 +462,12 @@ public class AutoV2 extends OpMode {
                         case Launch:
                             return sequential(
                                     instant(() -> debugStep = "LAUNCH ENTERED"),
-                                    //setIntake,
+                                    setIntake,
+                                    launcher.LaunchPollenAuto(3000),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
-                                    launcher.LaunchPollenAuto(0),
-                                    //intakeOff,
+                                    intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );

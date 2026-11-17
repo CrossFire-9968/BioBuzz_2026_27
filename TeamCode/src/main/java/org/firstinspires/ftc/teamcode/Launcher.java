@@ -145,7 +145,6 @@ public class Launcher {
                 waitMs( (autoWaitTime)),
                 // State 1: ServoWheels
                 instant(() -> {
-                    intake.intake();
                     IntakeServo1.setPower(-1);
                     IntakeServo2.setPower(1);
                     CarouselServo.setPosition(CarouselPos1);
@@ -155,7 +154,6 @@ public class Launcher {
 
                 // State 2: FlipUp
                 instant(() -> {
-                    intake.stoptake();
                     IntakeServo1.setPower(0);
                     IntakeServo2.setPower(0);
                     CarouselServo.setPosition(CarouselPos2);
@@ -182,7 +180,7 @@ public class Launcher {
 //        Launcher1.setVelocity(FireSpeed, AngleUnit.DEGREES);
 //    }
 
-    public void SpoolUpAndLaunch() {
+    public void SpoolUpAndLaunch(double FireSpeed) {
 //        Launcher1.setPower(FireSpeed);
         Launcher1.setVelocity(FireSpeed, AngleUnit.DEGREES);
     }
