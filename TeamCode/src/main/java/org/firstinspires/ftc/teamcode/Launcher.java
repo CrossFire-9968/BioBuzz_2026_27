@@ -26,8 +26,8 @@ public class Launcher {
     public CRServo IntakeServo1;
     public CRServo IntakeServo2;
 
-    public double kp = 5.5;
-    public double ki = 3.3;
+    public double kp = 45;
+    public double ki = 0;
     public double kd = 0;
     public double autoWaitTime = 0;
 
@@ -80,7 +80,7 @@ public class Launcher {
     }
 
     public void setPID() {
-        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, 0.0);
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, f);
         Launcher1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
     }
 
