@@ -26,10 +26,9 @@ public class Launcher {
     public CRServo IntakeServo1;
     public CRServo IntakeServo2;
 
-    public double kp = 45;
-    public double ki = 0;
-    public double kd = 0;
-
+    public double kp = 50;
+    public double ki = 0.4;
+    public double kd = 0.5;
     public double f = 0.45;
     public double autoWaitTime = 0;
 
