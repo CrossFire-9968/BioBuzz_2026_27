@@ -29,6 +29,8 @@ public class Launcher {
     public double kp = 45;
     public double ki = 0;
     public double kd = 0;
+
+    public double f = 0.45;
     public double autoWaitTime = 0;
 
     private final double t1;
