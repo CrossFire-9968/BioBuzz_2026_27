@@ -19,16 +19,17 @@ public class Launcher {
     public CRServo IntakeServo1;
     public CRServo IntakeServo2;
 
-    public double kp = 5.5;
-    public double ki = 3.3;
+    public double kp = 45;
+    public double ki = 0;
     public double kd = 0;
+    public double f = 0.45;
 
     private final double t1;
     private final double t2;
     private final double t3;
 
     //FireSpeed is in Degrees per second
-    public double FireSpeed = 163;
+    public double FireSpeed = 150;
     //155 is a good FireSpeed for swapped robot/forward spin.
 
     private final double CarouselPos1 = 0.25;
@@ -72,7 +73,7 @@ public class Launcher {
     }
 
     public void setPID() {
-        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, 0.0);
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, f);
         Launcher1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
     }
 
