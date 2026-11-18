@@ -244,10 +244,10 @@ public class AutoV2 extends OpMode {
 
 
     // NLZ specific poses:
-    private Pose HPintake = poseFactory.of(11.3642, 9.3267, 180);
+    private Pose HPintake = poseFactory.of(9, 9, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
-    private Pose NLZLaunchPosePrimary = poseFactory.of(30, 15, 45);
+    private Pose NLZLaunchPosePrimary = poseFactory.of(34, 8.5, 43.2);
 
 
     // LZ specific poses:
@@ -257,7 +257,7 @@ public class AutoV2 extends OpMode {
 
 
     // General poses:
-    private Pose Park = poseFactory.of(16, 99.926, 0);
+    private Pose Park = poseFactory.of(16, 92.926, 0);
 
 
     // Control points:
@@ -301,7 +301,7 @@ public class AutoV2 extends OpMode {
     //Primary:
     //Intakes:
     Path NLZLaunchingPose_HPIntake() {
-        return curve(LaunchingPose, NLZLaunchPosePrimary_HPintake_CP, HPintake).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose, NLZLaunchPosePrimary_HPintake_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_HPintake_CP ,HPintake)));
+        return line(LaunchingPose, HPintake).linear(LaunchingPose, HPintake);
     }
     Path NLZLaunchingPose_NLZFlower() {
         return curve(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower).heading(Interpolator.piecewise().until(0.5,Interpolator.linear(LaunchingPose, NLZLaunchPosePrimary_NLZFlower_CP)).until(1,Interpolator.linear(NLZLaunchPosePrimary_NLZFlower_CP, NLZFlower)));
@@ -427,7 +427,7 @@ public class AutoV2 extends OpMode {
             waitMs(1500)
     );
 
-    Command spoolUp = instant(() -> launcher.SpoolUpAndLaunch(152));
+    Command spoolUp = instant(() -> launcher.SpoolUpAndLaunch(160.8));
     Command spoolOff = instant(() -> launcher.LaunchOff());
 
 
@@ -462,12 +462,12 @@ public class AutoV2 extends OpMode {
                         case Launch:
                             return sequential(
                                     instant(() -> debugStep = "LAUNCH ENTERED"),
-                                    setIntake,
-                                    launcher.LaunchPollenAuto(3000),
+                                    //setIntake,
+                                    launcher.LaunchPollenAuto(4000),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
-                                    intakeOff,
+                                    //intakeOff,
                                     instant(() -> intakeState = IntakeState.NoElements),
                                     instant(() -> decideNextIntake())
                             );
@@ -482,7 +482,6 @@ public class AutoV2 extends OpMode {
                                     instant(() -> intakeState = IntakeState.ElementsContained),
                                     instant(this::onIntakeFinished)
                             );
-
                         case IntakeNLZFlower:
                             return sequential(
                                     //FlowerIntake Down

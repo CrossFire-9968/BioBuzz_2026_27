@@ -26,10 +26,10 @@ public class Launcher {
     public CRServo IntakeServo1;
     public CRServo IntakeServo2;
 
-    public double kp = 50;
+    public double kp = 55;
     public double ki = 0.4;
     public double kd = 0.5;
-    public double f = 0.45;
+    public double f = 0.95;
     public double autoWaitTime = 0;
 
     private final double t1;
@@ -62,6 +62,7 @@ public class Launcher {
     }
 
     public void init(HardwareMap hwMap) {
+        intake.init(hwMap);
 
         Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
         Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -143,33 +144,45 @@ public class Launcher {
 
     public Command LaunchPollenAuto(double autoWaitTime) {
         return sequential(
-                waitMs( (autoWaitTime)),
-                // State 1: ServoWheels
-                instant(() -> {
-                    IntakeServo1.setPower(-1);
-                    IntakeServo2.setPower(1);
-                    CarouselServo.setPosition(CarouselPos1);
-                }),
+             waitMs(autoWaitTime),
+            // State 1: ServoWheels
+            instant(() -> {
+                intake.intake();
+                IntakeServo1.setPower(-1);
+                IntakeServo2.setPower(1);
+                CarouselServo.setPosition(CarouselPos1);
+            }),
 
-                waitMs((t1 * 1000)),
+                    waitMs((t1 * 1000 * 0.8)),
 
-                // State 2: FlipUp
-                instant(() -> {
-                    IntakeServo1.setPower(0);
-                    IntakeServo2.setPower(0);
-                    CarouselServo.setPosition(CarouselPos2);
-                }),
+                    instant(() -> {
+                        intake.outake();
+                        IntakeServo1.setPower(-1);
+                        IntakeServo2.setPower(1);
+                        CarouselServo.setPosition(CarouselPos1);
+                    }),
 
-                waitMs( (t2 * 1000)),
+                    waitMs((t1 * 1000 * 0.1)),
 
-                // State 3: FlipDown
-                instant(() -> {
-                    IntakeServo1.setPower(0);
-                    IntakeServo2.setPower(0);
-                    CarouselServo.setPosition(CarouselPos1);
-                }),
+                    // State 2: FlipUp
+                    instant(() -> {
+                        intake.stoptake();
+                        IntakeServo1.setPower(0);
+                        IntakeServo2.setPower(0);
+                        CarouselServo.setPosition(CarouselPos2);
+                    }),
 
-                waitMs( (t3 * 1000))
+                    waitMs((t2 * 1000)),
+
+                    // State 3: FlipDown
+                    instant(() -> {
+                        IntakeServo1.setPower(0);
+                        IntakeServo2.setPower(0);
+                        CarouselServo.setPosition(CarouselPos1);
+                    }),
+
+                    waitMs((t3 * 1000))
+
         );
     }
 

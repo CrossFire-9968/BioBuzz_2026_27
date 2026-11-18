@@ -177,7 +177,7 @@ public class RobotTeleop extends OpMode {
             if (gamepad2.right_bumper) {
                 launcher.LaunchPollen();
             }
-                launcher.SpoolUpAndLaunch(150);
+                launcher.SpoolUpAndLaunch(160.8);
                 //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
 
         }
