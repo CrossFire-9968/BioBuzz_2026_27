@@ -1,41 +1,76 @@
+
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.sequential;
 
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Launcher {
 
+    public DcMotorEx Launcher1;
+//    public DcMotor Launcher2;
+
     public Intake intake = new Intake();
 
-    public DcMotor Launcher1;
-    public DcMotor Launcher2;
-    double TargetSpeedPollen = 5;
-
-    double FireSpeed = -0.05;
-    double TargetSpeedNecter = 165.0;
-
-    public CRServo CarouselServo;
+    public Servo CarouselServo;
 
     public CRServo IntakeServo1;
-
     public CRServo IntakeServo2;
 
-    //
-    public void init(HardwareMap hwMap)
-    {
-        Launcher1 = hwMap.get(DcMotor.class, "Launcher1");
-        Launcher1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Launcher1.setDirection(DcMotor.Direction.REVERSE);
+    public double kp = 55;
+    public double ki = 0.4;
+    public double kd = 0.5;
+    public double f = 0.95;
+    public double autoWaitTime = 0;
 
-        CarouselServo = hwMap.get(CRServo.class, "CarouselServo");
-        CarouselServo.setDirection(DcMotorSimple.Direction.FORWARD);
+    private final double t1;
+    private final double t2;
+    private final double t3;
+
+    //FireSpeed is in Degrees per second
+    public double FireSpeed = 150;
+    //155 is a good FireSpeed for swapped robot/forward spin.
+
+    private final double CarouselPos1 = 0;
+    private final double CarouselPos2 = 0.8;
+
+    public enum State {
+        ServoWheels,
+        FlipUp,
+        FlipDown
+    }
+
+    private State currentState = State.ServoWheels;
+
+    private double stateTime = 0.0;
+
+    private long lastLoopTime;
+
+    public Launcher(double t1, double t2, double t3) {
+        this.t1 = t1;
+        this.t2 = t2;
+        this.t3 = t3;
+    }
+
+    public void init(HardwareMap hwMap) {
+        intake.init(hwMap);
+
+        Launcher1 = hwMap.get(DcMotorEx.class, "Launcher1");
+        Launcher1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        Launcher1.setDirection(DcMotorEx.Direction.REVERSE);
+
+        setPID();
+
+        CarouselServo = hwMap.get(Servo.class, "CarouselServo");
 
         IntakeServo1 = hwMap.get(CRServo.class, "IntakeServo1");
         IntakeServo1.setDirection(CRServo.Direction.FORWARD);
@@ -43,81 +78,148 @@ public class Launcher {
         IntakeServo2 = hwMap.get(CRServo.class, "IntakeServo2");
         IntakeServo2.setDirection(CRServo.Direction.FORWARD);
 
-
-
-
-
-
-
-
-    //    PIDCoefficients pidNew = new PIDCoefficients(NEW_P, NEW_I, NEW_D, NEW_F)
-        this.stop();
+        lastLoopTime = System.nanoTime();
     }
 
-    //Manually turn on the launcher
-    public void LauncherSpeed(double speed) {
-//        Launcher1.setVelocity(speed, AngleUnit.DEGREES);
-//        Launcher1.setPower(FireSpeed);
-
-        //Launcher2.setPower(power);
+    public void setPID() {
+        PIDFCoefficients pidfNew = new PIDFCoefficients(kp, ki, kd, f);
+        Launcher1.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfNew);
     }
-    //This is the function to launch the Pollen
+
     public void LaunchPollen() {
-        CarouselServo.setPower(1);
-        IntakeServo1.setPower(-1);
-        IntakeServo2.setPower(1);
-        Launcher1.setPower(FireSpeed);
 
+        long now = System.nanoTime();
 
+        double dt = (now - lastLoopTime) / 1e9;
 
-        //Launcher2.setPower(-1);
+        lastLoopTime = now;
+
+        stateTime += dt;
+
+        switch(currentState) {
+
+            case ServoWheels:
+
+                IntakeServo1.setPower(-1);
+                IntakeServo2.setPower(1);
+
+                CarouselServo.setPosition(CarouselPos1);
+
+                if(stateTime >= t1) {
+                    currentState = State.FlipUp;
+                    stateTime = 0;
+                }
+
+                break;
+
+            case FlipUp:
+
+                IntakeServo1.setPower(0);
+                IntakeServo2.setPower(0);
+
+                CarouselServo.setPosition(CarouselPos2);
+
+                if(stateTime >= t2) {
+                    currentState = State.FlipDown;
+                    stateTime = 0;
+                }
+
+                break;
+
+            case FlipDown:
+
+                IntakeServo1.setPower(0);
+                IntakeServo2.setPower(0);
+
+                CarouselServo.setPosition(CarouselPos1);
+
+                if(stateTime >= t3) {
+                    currentState = State.ServoWheels;
+                    stateTime = 0;
+                }
+
+                break;
+        }
     }
 
-    public void SpoolUpAndLaunch() {
+    public Command LaunchPollenAuto(double autoWaitTime) {
+        return sequential(
+             waitMs(autoWaitTime),
+            // State 1: ServoWheels
+            instant(() -> {
+                intake.intake();
+                IntakeServo1.setPower(-1);
+                IntakeServo2.setPower(1);
+                CarouselServo.setPosition(CarouselPos1);
+            }),
 
+                    waitMs((t1 * 1000 * 0.8)),
 
-        Launcher1.setPower(FireSpeed);
+                    instant(() -> {
+                        intake.outake();
+                        IntakeServo1.setPower(-1);
+                        IntakeServo2.setPower(1);
+                        CarouselServo.setPosition(CarouselPos1);
+                    }),
 
-        //if (Launcher1.getVelocity(AngleUnit.DEGREES) > TargetSpeedPollen){
+                    waitMs((t1 * 1000 * 0.1)),
 
-        //}
-        //return Launcher1.getVelocity(AngleUnit.DEGREES);
+                    // State 2: FlipUp
+                    instant(() -> {
+                        intake.stoptake();
+                        IntakeServo1.setPower(0);
+                        IntakeServo2.setPower(0);
+                        CarouselServo.setPosition(CarouselPos2);
+                    }),
+
+                    waitMs((t2 * 1000)),
+
+                    // State 3: FlipDown
+                    instant(() -> {
+                        IntakeServo1.setPower(0);
+                        IntakeServo2.setPower(0);
+                        CarouselServo.setPosition(CarouselPos1);
+                    }),
+
+                    waitMs((t3 * 1000))
+
+        );
     }
 
-    public void SpoolUp() {
-        Launcher1.setPower(FireSpeed);
 
+
+
+//    public void SpoolUp() {
+//        Launcher1.setPower(FireSpeed);
+//        Launcher1.setVelocity(FireSpeed, AngleUnit.DEGREES);
+//    }
+
+    public void SpoolUpAndLaunch(double FireSpeed) {
+//        Launcher1.setPower(FireSpeed);
+        Launcher1.setVelocity(FireSpeed, AngleUnit.DEGREES);
     }
 
-    //This is the function to launch the Nectar
     public void LaunchNectar() {
-        Launcher1.setPower(FireSpeed);
-
-        //Launcher2.setPower(1);
+//        Launcher1.setPower(FireSpeed);
+        Launcher1.setVelocity(FireSpeed, AngleUnit.DEGREES);
     }
-    //This is the function to stop the launcher
+
     public void LaunchOff() {
+
         Launcher1.setPower(0);
-        CarouselServo.setPower(0);
-        //IntakeServo1.setPower(0);
-        //IntakeServo2.setPower(0);
-        //Launcher2.setPower(0);
+
+        IntakeServo1.setPower(0);
+        IntakeServo2.setPower(0);
+
+        CarouselServo.setPosition(CarouselPos1);
+
+        currentState = State.ServoWheels;
+        stateTime = 0;
+
+        lastLoopTime = System.nanoTime();
     }
 
-
-
-       /* public void noPinchSpeed() {
-            double pinchPower = -0.3;
-            Intake.setPower(pinchPower);
-        }*/
-
-        /*public void yeetPower(double power) {
-            Intake.setPower(power);
-        }*/
-
-    public void stop() {
-        double stopPower = 0.0;
-        //Launcher1.setPower(stopPower);
-       // Launcher2.setPower(stopPower);
-    }
+//    public void stop() {
+//        LaunchOff();
+//    }
 }
