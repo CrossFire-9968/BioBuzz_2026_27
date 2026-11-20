@@ -463,7 +463,7 @@ public class AutoV2 extends OpMode {
                             return sequential(
                                     instant(() -> debugStep = "LAUNCH ENTERED"),
                                     //setIntake,
-                                    launcher.LaunchPollenAuto(4000),
+                                    launcher.LaunchPollenAuto(6000),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
                                     launcher.LaunchPollenAuto(0),
@@ -686,6 +686,12 @@ public class AutoV2 extends OpMode {
         }
 
         follower.setPose(StartingPose);
+        // Primary launch: selected during INIT
+        OpModeStorage.LaunchingPose = LaunchingPose;
+
+// Secondary TeleOp launch: fixed coordinates
+        OpModeStorage.LaunchingPoseSecondary =
+                poseFactory.of(36, 123,313);
 
         activeAutoCommand = autoRoutine();
 
@@ -1013,8 +1019,7 @@ public class AutoV2 extends OpMode {
     }
     @Override
     public void stop() {
-        OpModeStorage.LaunchingPose = follower.pose(); //saves your position in that file
+        // Save only where the robot actually ended
         OpModeStorage.Park = follower.pose();
-        OpModeStorage.LaunchingPoseSecondary = follower.pose();
     }
 }

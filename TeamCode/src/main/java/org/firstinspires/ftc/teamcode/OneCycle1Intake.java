@@ -29,7 +29,7 @@
 //
 //import org.firstinspires.ftc.teamcode.pedro.Constants;
 //
-////@Configurable
+//@Configurable
 //@Autonomous(name = "OneCycle1Intake")
 //public class OneCycle1Intake extends OpMode {
 //
