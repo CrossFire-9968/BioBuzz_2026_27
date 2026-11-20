@@ -691,7 +691,7 @@ public class AutoV2 extends OpMode {
 
 // Secondary TeleOp launch: fixed coordinates
         OpModeStorage.LaunchingPoseSecondary =
-                poseFactory.of(36, 123,313);
+                poseFactory.of(37.5, 124,313);
 
         activeAutoCommand = autoRoutine();
 

@@ -15,7 +15,7 @@ public class OpModeStorage {
 
     // Secondary launching position
     public static Pose LaunchingPoseSecondary =
-            poseFactory.of(36, 123,313);
+            poseFactory.of(37.5, 124,313);
 
     // Where autonomous ended
     public static Pose Park =
