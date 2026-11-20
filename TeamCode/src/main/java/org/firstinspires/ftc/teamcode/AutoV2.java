@@ -1015,5 +1015,6 @@ public class AutoV2 extends OpMode {
     public void stop() {
         OpModeStorage.LaunchingPose = follower.pose(); //saves your position in that file
         OpModeStorage.Park = follower.pose();
+        OpModeStorage.LaunchingPoseSecondary = follower.pose();
     }
 }
