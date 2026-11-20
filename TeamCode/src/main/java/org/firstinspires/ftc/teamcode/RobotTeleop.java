@@ -68,7 +68,7 @@ public class RobotTeleop extends OpMode {
     public Intake intake = new Intake();
 
     //public PIDController pidcontroller = new PIDController();
-    public Launcher launcher = new Launcher(1,0.5,0.5);
+    public Launcher launcher = new Launcher(0.6,0.3,0.4);
 
     double Myspeed = 0;
 
@@ -172,12 +172,12 @@ public class RobotTeleop extends OpMode {
         }
 
         if (gamepad2.left_bumper) {
-           launcher.SpoolUpAndLaunch(150);
+           launcher.SpoolUpAndLaunch(160.8);
             //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
             if (gamepad2.right_bumper) {
                 launcher.LaunchPollen();
             }
-                launcher.SpoolUpAndLaunch(160.8);
+            //launcher.SpoolUpAndLaunch(160.8);
                 //telemetry.addData("Shooter2 velocity (DegPerSec):","%.01f", Myspeed);
 
         }
