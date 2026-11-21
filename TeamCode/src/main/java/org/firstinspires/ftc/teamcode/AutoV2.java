@@ -247,7 +247,7 @@ public class AutoV2 extends OpMode {
     private Pose HPintake = poseFactory.of(9, 9, 180);
     private Pose NLZFlower = poseFactory.of(10.3708, 46.3227, 180);
     private Pose NLZLaunchPoseSecondary = poseFactory.of(42.5077, 16.6774, 90);
-    private Pose NLZLaunchPosePrimary = poseFactory.of(34, 8.5, 43.2);
+    private Pose NLZLaunchPosePrimary = poseFactory.of(34, 8.5, 45);
 
 
     // LZ specific poses:
